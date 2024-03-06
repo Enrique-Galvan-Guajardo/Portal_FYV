@@ -1,0 +1,66 @@
+﻿@model Portal_FYV.Models.REQHDR
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>REQHDR</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Usuario.Username)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Usuario.Username)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Usuario1.Username)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Usuario1.Username)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Sucursal)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Sucursal)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha_creacion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha_creacion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Estatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Estatus)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha_validacion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha_validacion)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id_REQHDR }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

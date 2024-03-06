@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Portal Frutas y Verduras</title>
+    <link href="~/Content/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="~/Scripts/routes.js"></script>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body class="bg-primary-subtle">
+    <nav class="navbar sticky-top navbar-expand-lg bg-body border-bottom border-3 border-white border-opacity-25 shadow">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="@((Session["Id_User"] != null) ? Url.Action("About", "Home") : Url.Action("Index", "Home"))"><img src="~/Content/media/logo-angosto.png" alt="Logo" width="150" height="auto"></a>
+
+            <!--Menu-->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav gap-4 w-100">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle fs-5" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Panel Admin
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Estatus", "Index", "Estatus", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Productos", "Index", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Roles", "Index", "Roles", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Usuarios", "Index", "Usuarios", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("UsuariosAltas", "Index", "UsuariosAltas", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("CatalogoProductos", "Index", "CatalogoProductos", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Lista de REQHDRs", "Index", "REQHDRs", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Lista de REQDETs", "Index", "REQDETs", new { area = "" }, new { @class = "dropdown-item" })</li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle fs-5" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Panel
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Option</a></li>
+                            <li><a class="dropdown-item" href="#">Another action</a></li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
+                        </ul>
+                    </li>
+                    @if (Session["Id_User"] != null)
+                    {
+                        <li class="nav-item ms-auto">
+                            <a class="btn btn-danger" href="@Url.Action("logout", "Usuarios")"><i class="bi bi-door-open me-2"></i>Cerrar sesión</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - Mi aplicación ASP.NET</p>
+        </footer>
+    </div>
+    <script>
+        function confirmDelete(id, e) {
+            let form = e.closest('form');
+            if (confirm("¿Realmente deseas eliminar este registro?")) {
+                // Si el usuario confirma la eliminación, enviamos el formulario
+                form.submit();
+            }
+        }
+    </script>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

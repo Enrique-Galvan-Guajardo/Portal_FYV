@@ -1,0 +1,200 @@
+﻿@{
+    ViewBag.Title = "Página principal";
+}
+<script src="~/Scripts/RegionsController.js"></script>
+
+<div class="card my-5 shadow-lg">
+    <div class="card-header">
+        <div class="nav nav-tabs card-header-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-login-tab" data-bs-toggle="tab" data-bs-target="#nav-login" type="button" role="tab" aria-controls="nav-login" aria-selected="true"><i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión</button>
+            <button class="nav-link" id="nav-signup-tab" data-bs-toggle="tab" data-bs-target="#nav-signup" type="button" role="tab" aria-controls="nav-signup" aria-selected="false"><i class="bi bi-pencil-square me-2"></i>Crear cuenta</button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" tabindex="0">
+
+                @using (Html.BeginForm("logIn", "Usuarios", FormMethod.Post))
+                {
+                    <p>
+                        <small class="text-muted">Ingresa tus credenciales para acceder a la plataforma.</small>
+                    </p>
+                    <div class="mb-3">
+                        <label for="user_session" class="form-label">Usuario o correo:</label>
+                        <input type="text" class="form-control" id="user_session" name="user_session" placeholder="usuario@ejemplo.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="user_password" class="form-label">Contraseña:</label>
+                        <input type="password" class="form-control" id="user_password" name="user_password">
+                    </div>
+                    <button type="submit" id="login-form-submit" class="btn btn-primary">Acceder</button>
+                }
+
+            </div>
+            <div class="tab-pane fade" id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" tabindex="0">
+                @using (Html.BeginForm("CreateAccount", "Usuarios", FormMethod.Post, new { @class = "w-100" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="row m-0">
+                        <p>
+                            <small class="text-muted">Crea tu usuario, estará disponible cuando sea validado por un administrador.</small>
+                        </p>
+                        <div class="col-12 col-sm-12 col-md-6">
+                            <div class="mb-3">
+                                <label for="Correo" class="form-label">Correo:</label>
+                                <input type="email" class="form-control" id="Correo" name="Correo" placeholder="usuario@ejemplo.com">
+                            </div>
+                            <div class="mb-3">
+                                <label for="Contrasena" class="form-label">Contraseña:</label>
+                                <input type="password" class="form-control" id="Contrasena" name="Contrasena">
+                            </div>
+                            <div class="form-check form-switch my-4">
+                                <input class="form-check-input" type="checkbox" id="is_provider">
+                                <label class="form-check-label" for="is_provider">Soy proveedor</label>
+                            </div>
+                        </div>
+                        <script>
+                            document.querySelector('#is_provider').addEventListener('change', function () {
+                                console.log(this.checked)
+                                $(".provider_opts").slideToggle("slow");
+                                cambiarAction(this.checked, this.closest('form'));
+                            })
+
+                            // Función para cambiar el action del formulario y habilitar/deshabilitar elementos
+                            function cambiarAction(is_Checked, formElement) {
+                                if (is_Checked) {
+                                    formElement.action = '/Usuarios/Create';
+                                    // Habilita los elementos
+                                    document.getElementById('Calle').disabled = false;
+                                    document.getElementById('Numero').disabled = false;
+                                    // Establece la propiedad required
+                                    document.getElementById('Calle').required = true;
+                                    document.getElementById('Numero').required = true;
+                                } else {
+                                    formElement.action = '/Usuarios/CreateAccount';
+                                    // Deshabilita los elementos
+                                    document.getElementById('Calle').disabled = true;
+                                    document.getElementById('Numero').disabled = true;
+                                    // Elimina la propiedad required
+                                    document.getElementById('Calle').required = false;
+                                    document.getElementById('Numero').required = false;
+                                }
+                            }
+                        </script>
+                        <!---->
+                        <div class="col-12 col-sm-12 col-md-6 row m-0 p-0 gap-5 provider_opts" style="display:none;">
+                            <div class="col-12 col-sm-12 col-md-12 row m-0 p-0">
+                                <h4 class="text-muted mb-4">Información de dirección</h4>
+                                <hr />
+                                <div class="mb-3 col-12 col-sm-6">
+                                    <label for="Estado" class="form-label">Estado</label>
+                                    <select id="Estado" name="Estado" class="form-select" required>
+                                        <option>Selecciona</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-12 col-sm-6">
+                                    <label for="Municipio" class="form-label">Municipio</label>
+                                    <select id="Municipio" name="Municipio" class="form-select" required>
+                                        <option>Selecciona</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-12 col-sm-6">
+                                    <label for="Colonia" class="form-label">Colonia</label>
+                                    <select id="Colonia" name="Colonia" class="form-select" required>
+                                        <option>Selecciona</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-12 col-sm-6">
+                                    <label for="Localidad" class="form-label">Localidad</label>
+                                    <select id="Localidad" name="Localidad" class="form-select" required>
+                                        <option>Selecciona</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-12 col-sm-6">
+                                    <label for="Calle" class="form-label">Calle:</label>
+                                    <input type="text" class="form-control" id="Calle" name="Calle" placeholder="Calle...">
+                                </div>
+                                <div class="mb-3 col-12 col-sm-6">
+                                    <label for="Numero" class="form-label">Número:</label>
+                                    <input type="text" class="form-control" id="Numero" name="Numero" placeholder="Número...">
+                                </div>
+                                <script>
+                                    addEvents(["Estado", "Municipio", "Colonia", "Localidad"])
+                                </script>
+                            </div>
+                            <div class="col-12 col-sm-12 col-md-12">
+                                <h4 class="text-muted mb-4">Información de contacto</h4>
+                                <hr />
+                                <p class="d-flex justify-content-between">
+                                    <button class="btn btn-primary" type="button" id="btncontactName" data-bs-toggle="collapse" data-bs-target="#contactName" aria-expanded="false" aria-controls="contactName">Nombres</button>
+                                    <button class="btn btn-primary" type="button" id="btncontactEmail" data-bs-toggle="collapse" data-bs-target="#contactEmail" aria-expanded="false" aria-controls="contactEmail">Correos</button>
+                                    <button class="btn btn-primary" type="button" id="btncontactTel" data-bs-toggle="collapse" data-bs-target="#contactTel" aria-expanded="false" aria-controls="contactTel">Teléfonos</button>
+                                </p>
+                                <script>
+                                    document.querySelector('#btncontactName').addEventListener('click', function () {
+                                        document.querySelector('#contactEmail').classList.contains('show') ? document.querySelector('#btncontactEmail').click() : null;
+                                        document.querySelector('#contactTel').classList.contains('show') ? document.querySelector('#btncontactTel').click() : null;
+                                    })
+
+                                    document.querySelector('#btncontactEmail').addEventListener('click', function () {
+                                        document.querySelector('#contactName').classList.contains('show') ? document.querySelector('#btncontactName').click() : null;
+                                        document.querySelector('#contactTel').classList.contains('show') ? document.querySelector('#btncontactTel').click() : null;
+                                    })
+
+                                    document.querySelector('#btncontactTel').addEventListener('click', function () {
+                                        document.querySelector('#contactName').classList.contains('show') ? document.querySelector('#btncontactName').click() : null;
+                                        document.querySelector('#contactEmail').classList.contains('show') ? document.querySelector('#btncontactEmail').click() : null;
+                                    })
+                                </script>
+                                <div class="collapse show" id="contactName">
+                                    <div class="mb-3">
+                                        <label for="Contacto_nombre1" class="form-label">Contacto 1:</label>
+                                        <input type="text" class="form-control" id="Contacto_nombre1" name="Contacto_nombre1" placeholder="Contacto 1...">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Contacto_nombre2" class="form-label">Contacto 2:</label>
+                                        <input type="text" class="form-control" id="Contacto_nombre2" name="Contacto_nombre2" placeholder="Contacto 2...">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Contacto_nombre3" class="form-label">Contacto 3:</label>
+                                        <input type="text" class="form-control" id="Contacto_nombre3" name="Contacto_nombre3" placeholder="Contacto 3...">
+                                    </div>
+                                </div>
+                                <div class="collapse" id="contactEmail">
+                                    <div class="mb-3">
+                                        <label for="Contacto_correo1" class="form-label">Correo 1:</label>
+                                        <input type="email" class="form-control" id="Contacto_correo1" name="Contacto_correo1" placeholder="Correo 1...">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Contacto_correo2" class="form-label">Correo 2:</label>
+                                        <input type="email" class="form-control" id="Contacto_correo2" name="Contacto_correo2" placeholder="Correo 2...">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Contacto_correo3" class="form-label">Correo 3:</label>
+                                        <input type="email" class="form-control" id="Contacto_correo3" name="Contacto_correo3" placeholder="Correo 3...">
+                                    </div>
+                                </div>
+                                <div class="collapse" id="contactTel">
+                                    <div class="mb-3">
+                                        <label for="Contacto_telefono1" class="form-label">Teléfono 1:</label>
+                                        <input type="text" class="form-control" id="Contacto_telefono1" name="Contacto_telefono1" placeholder="Teléfono 1...">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Contacto_telefono2" class="form-label">Teléfono 2:</label>
+                                        <input type="text" class="form-control" id="Contacto_telefono2" name="Contacto_telefono2" placeholder="Teléfono 2...">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Contacto_telefono3" class="form-label">Teléfono 3:</label>
+                                        <input type="text" class="form-control" id="Contacto_telefono3" name="Contacto_telefono3" placeholder="Teléfono 3...">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Crear</button>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>
