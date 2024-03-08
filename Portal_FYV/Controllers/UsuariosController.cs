@@ -17,7 +17,7 @@ namespace Portal_FYV.Controllers
         // GET: Usuarios
         public ActionResult Index()
         {
-            var usuarios = db.Usuarios.Include(u => u.Estatus).Include(u => u.Role);
+            var usuarios = db.Usuarios.Include(u => u.Estatus).Include(u => u.Roles);
             return View(usuarios.ToList());
         }
         

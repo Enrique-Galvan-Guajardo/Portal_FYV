@@ -11,9 +11,6 @@ namespace Portal_FYV.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Usuario()
         {
-            Nombre = "Nuevo usuario";
-            Id_Estatus = 1;
-            Id_Rol = 8;
             REQHDRs = new HashSet<REQHDR>();
             REQHDRs1 = new HashSet<REQHDR>();
             UsuariosAltas = new HashSet<UsuariosAltas>();
@@ -35,14 +32,14 @@ namespace Portal_FYV.Models
         [StringLength(50)]
         public string Contrasena { get; set; }
 
-        [StringLength(50)]
-        public string Sucursal { get; set; }
-
         public int Id_Estatus { get; set; }
 
         public DateTime? Fecha_Aprov { get; set; }
 
         public int Id_Rol { get; set; }
+
+        [StringLength(50)]
+        public string Sucursal { get; set; }
 
         public string Razon_social { get; set; }
 
@@ -109,14 +106,13 @@ namespace Portal_FYV.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REQHDR> REQHDRs1 { get; set; }
 
-        public virtual Roles Role { get; set; }
+        public virtual Roles Roles { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UsuariosAltas> UsuariosAltas { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UsuariosAltas> UsuariosAltas1 { get; set; }
-
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UsuariosProductos> UsuariosProductos { get; set; }

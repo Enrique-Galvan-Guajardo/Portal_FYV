@@ -143,10 +143,9 @@
     </Compile>
     <Compile Include="Models\CatalogoProducto.cs" />
     <Compile Include="Models\db_model.cs" />
-    <Compile Include="Models\Embalajes.cs" />
+    <Compile Include="Models\Embalaje.cs" />
     <Compile Include="Models\Estatus.cs" />
     <Compile Include="Models\Producto.cs" />
-    <Compile Include="Models\Productos.cs" />
     <Compile Include="Models\REQDET.cs" />
     <Compile Include="Models\REQHDR.cs" />
     <Compile Include="Models\Roles.cs" />

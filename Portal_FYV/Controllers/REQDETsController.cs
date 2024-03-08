@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Newtonsoft.Json;
 using Portal_FYV.Models;
 
 namespace Portal_FYV.Controllers
@@ -17,13 +18,14 @@ namespace Portal_FYV.Controllers
         // GET: REQDETs
         public ActionResult Index()
         {
-            var rEQDETs = db.REQDETs.Include(r => r.REQHDR);
+            var rEQDETs = db.REQDETs.Include(r => r.REQHDR).Include(r => r.Embalaje);
             return View(rEQDETs.ToList());
         }
 
         // GET: REQDETs
         public ActionResult CapturarDetalles()
         {
+            ViewBag.Id_Embalaje = new SelectList(db.Embalajes, "Id_Embalaje", "Tipo_Embalaje");
             return View();
         }
 
@@ -46,6 +48,7 @@ namespace Portal_FYV.Controllers
         public ActionResult Create()
         {
             ViewBag.Id_REQHDR = new SelectList(db.REQHDRs, "Id_REQHDR", "Sucursal");
+            ViewBag.Id_Embalaje = new SelectList(db.Embalajes, "Id_Embalaje", "Tipo_Embalaje");
             return View();
         }
 
@@ -64,7 +67,42 @@ namespace Portal_FYV.Controllers
             }
 
             ViewBag.Id_REQHDR = new SelectList(db.REQHDRs, "Id_REQHDR", "Sucursal", rEQDET.Id_REQHDR);
+            ViewBag.Id_Embalaje = new SelectList(db.Embalajes, "Id_Embalaje", "Tipo_Embalaje", rEQDET.Id_Embalaje);
             return View(rEQDET);
+        }
+
+        [HttpPost]
+        public ActionResult CreateREQDETS(List<REQDET> rs)
+        {
+            Usuario us = db.Usuarios.Find(Convert.ToInt32(Session["Id_Usuario"]));
+            try
+            {
+                REQHDR rh = new REQHDR();
+
+                rh.Sucursal = us.Sucursal;
+                rh.Fecha_creacion = DateTime.Now;
+                rh.Id_Creador = us.Id_Usuario;
+                rh.Estatus = 1;
+                db.REQHDRs.Add(rh);
+                db.SaveChanges();
+
+                foreach (var item in rs)
+                {
+                    item.Id_REQHDR = rh.Id_REQHDR;
+                    item.Estatus = "1";
+                    item.Fecha_creacion = DateTime.Now;
+                }
+
+                db.REQDETs.AddRange(rs);
+                db.SaveChanges();
+
+                return new HttpStatusCodeResult(HttpStatusCode.OK);
+            }
+            catch (Exception)
+            {
+
+                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
+            }
         }
 
         // GET: REQDETs/Edit/5
@@ -80,6 +118,7 @@ namespace Portal_FYV.Controllers
                 return HttpNotFound();
             }
             ViewBag.Id_REQHDR = new SelectList(db.REQHDRs, "Id_REQHDR", "Sucursal", rEQDET.Id_REQHDR);
+            ViewBag.Id_Embalaje = new SelectList(db.Embalajes, "Id_Embalaje", "Tipo_Embalaje", rEQDET.Id_Embalaje);
             return View(rEQDET);
         }
 
@@ -97,6 +136,7 @@ namespace Portal_FYV.Controllers
                 return RedirectToAction("Index");
             }
             ViewBag.Id_REQHDR = new SelectList(db.REQHDRs, "Id_REQHDR", "Sucursal", rEQDET.Id_REQHDR);
+            ViewBag.Id_Embalaje = new SelectList(db.Embalajes, "Id_Embalaje", "Tipo_Embalaje", rEQDET.Id_Embalaje);
             return View(rEQDET);
         }
 

@@ -23,6 +23,7 @@ namespace Portal_FYV
                       "~/Scripts/bootstrap.bundle.min.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
+                      "~/Content/bootstrap-icons/font/bootstrap-icons.css",
                       "~/Content/bootstrap.min.css",
                       "~/Content/site.css"));
         }

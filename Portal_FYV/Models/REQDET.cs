@@ -50,6 +50,8 @@ namespace Portal_FYV.Models
         [StringLength(50)]
         public string Estatus { get; set; }
 
+        public virtual Embalaje Embalaje { get; set; }
+
         public virtual REQHDR REQHDR { get; set; }
     }
 }

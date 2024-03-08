@@ -33,7 +33,7 @@
                     @Html.DisplayNameFor(model => model.Fecha_creacion)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Id_Embalaje)
+                    @Html.DisplayNameFor(model => model.Embalaje.Tipo_Embalaje)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Cantidad_validada)
@@ -84,7 +84,7 @@
                         @Html.DisplayFor(modelItem => item.Fecha_creacion)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Id_Embalaje)
+                        @Html.DisplayFor(modelItem => item.Embalaje.Tipo_Embalaje)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Cantidad_validada)

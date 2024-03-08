@@ -13,6 +13,7 @@ namespace Portal_FYV.Models
         }
 
         public virtual DbSet<CatalogoProducto> CatalogoProductos { get; set; }
+        public virtual DbSet<Embalaje> Embalajes { get; set; }
         public virtual DbSet<Estatus> Estatus { get; set; }
         public virtual DbSet<Producto> Productos { get; set; }
         public virtual DbSet<REQDET> REQDETs { get; set; }
@@ -24,6 +25,11 @@ namespace Portal_FYV.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Embalaje>()
+                .HasMany(e => e.REQDETs)
+                .WithRequired(e => e.Embalaje)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<Estatus>()
                 .HasMany(e => e.Usuarios)
                 .WithRequired(e => e.Estatus)
@@ -57,7 +63,7 @@ namespace Portal_FYV.Models
 
             modelBuilder.Entity<Roles>()
                 .HasMany(e => e.Usuarios)
-                .WithRequired(e => e.Role)
+                .WithRequired(e => e.Roles)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Usuario>()
