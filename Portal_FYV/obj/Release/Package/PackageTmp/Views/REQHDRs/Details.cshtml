@@ -1,0 +1,186 @@
+﻿@model Tuple<Portal_FYV.Models.REQHDR, List<Portal_FYV.Models.REQDET>, SelectList>
+
+@{
+    ViewBag.Title = "Detalles Requisición";
+}
+<div class="bg-white">
+
+    <div class="col-12 col-sm-12 col-md-12 row m-0 p-3 bg-light bg-gradient shadow-sm mb-5 border-end border-start border-5 border-primary rounded">
+
+        <div class="form-group col-12 col-sm-12 d-flex flex-wrap">
+            <h2 class="text-primary fw-bold">Información.</h2>
+
+            <div class="d-flex ms-auto gap-3">
+                <button class="btn btn-success btn-lg ms-auto" onclick="saveREQDETS()" type="button"><i class="bi bi-check-circle me-2"></i>Validar</button>
+                <button class="btn btn-secondary btn-lg ms-2" type="button"><i class="bi bi-x-circle me-2"></i>Cancelar</button>
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-sm-6">
+            @Html.LabelFor(model => model.Item1.Sucursal, htmlAttributes: new { @class = "control-label col-md-12 fw-bold m-0" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Item1.Sucursal, new { htmlAttributes = new { @class = "form-control-plaintext fs-4 text-secondary", @readonly = "readonly" } })
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-sm-6">
+            @Html.LabelFor(model => model.Item1.Fecha_creacion, "Fecha creación:", htmlAttributes: new { @class = "control-label col-md-12 fw-bold m-0" })
+            <div class="col-md-10">
+                <input type="text" class="form-control-plaintext fs-4 text-secondary" id="Fecha_creacion" name="Fecha_creacion" value="@String.Format("{0:yyyy-MM-dd}", Model.Item1.Fecha_creacion)" />
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-sm-6">
+            @Html.LabelFor(model => model.Item1.Usuario.Username, "Usuario que solicita:", htmlAttributes: new { @class = "control-label col-md-12 fw-bold m-0" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Item1.Usuario.Username, new { htmlAttributes = new { @class = "form-control-plaintext fs-4 text-secondary", @readonly = "readonly" } })
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-sm-6">
+            @Html.LabelFor(model => model.Item1.Id_REQHDR, "# de requisición:", htmlAttributes: new { @class = "control-label col-md-12 fw-bold m-0" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Item1.Id_REQHDR, new { htmlAttributes = new { @class = "form-control-plaintext fs-4 text-secondary", @readonly = "readonly" } })
+            </div>
+        </div>
+    </div>
+
+
+    <div class="table-responsive rounded rounded-2 border">
+        <table id="productosSeleccionados" class="table table-striped m-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>
+                        Id
+                    </th>
+                    <th>
+                        Cantidad Solicitada
+                    </th>
+                    <th>
+                        Descripción
+                    </th>
+                    <th>
+                        Embalaje Solicitado
+                    </th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+
+                @foreach (var item in Model.Item2)
+                {
+                    <tr class="tr-edit">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id_REQDET)
+                        </td>
+
+                        <td>
+                            <span>
+                                @Html.DisplayFor(modelItem => item.Cantidad_solicitada)
+                            </span>
+                            @Html.EditorFor(model => item.Cantidad_validada, new { htmlAttributes = new { @class = "form-control", @placeholder = "Cantidad validad" } })
+                        </td>
+
+                        <td>
+                            <span>
+                                @Html.DisplayFor(modelItem => item.Descripcion)
+                            </span>
+                            @Html.TextAreaFor(model => item.Descripcion, new { @class = "form-control", @placeholder = "Descripción" })
+                        </td>
+
+                        <td>
+                            <span>
+                                @Html.DisplayFor(modelItem => item.Embalaje.Tipo_Embalaje)
+                            </span>
+                            @Html.DropDownListFor(model => item.Id_Embalaje_validado, Model.Item3, "Seleccione un tipo de embalaje", new { @class = "form-control", @data_id = item.Id_Embalaje })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    </div>
+    <div class="d-grid gap-2 my-3 col-6 mx-auto">
+        <button class="btn btn-primary btn-lg addTr" type="button"><i class="bi bi-plus-square-dotted me-2"></i>Añadir nuevo registro</button>
+        <script>
+            document.querySelector('.addTr').addEventListener('click', function () {
+                const tr = `
+                            <tr>
+                                <td>
+                                    ${Date.now()}
+                                </td>
+                                <td>
+                                    <input class="form-control text-box single-line" data-val="true" data-val-number="El campo Cantidad debe ser un número." id="item_Cantidad" name="item.Cantidad" type="text" value="" placeholder="Cantidad solicitada">
+                                </td>
+                                <td>
+                                    <input class="form-control text-box single-line" data-val="true" data-val-length="El campo Descripcion debe ser una cadena con una longitud máxima de 60." data-val-length-max="60" data-val-required="El campo Descripcion es obligatorio." id="item_Descripcion" name="item.Descripcion" type="text" placeholder="Descripción">
+                                </td>
+                                <td>
+                                    ${document.querySelector('.table tbody tr td:last-child select').outerHTML}
+                                </td>
+
+                            </tr>
+                        `
+
+                document.querySelector('.table tbody').innerHTML += tr;
+            })
+        </script>
+    </div>
+</div>
+
+<script>
+    function saveREQDETS() {
+        let table = document.querySelectorAll('#productosSeleccionados tbody tr');
+
+        arrayDeREQDETs = [];
+        let reqhdr = {
+            "Id_REQDHR": document.querySelector('#Item1_Id_REQHDR').value
+        };
+
+        table.forEach(tr => {
+            // Crear un objeto y añadirlo al arreglo
+            let reqdet = {}
+            if (tr.querySelector('td:nth-child(2) input#item_Cantidad_validada')) {
+
+                reqdet = {
+                    "Clave_articulo": "",
+                    "Descripcion": "",
+                    "Cantidad_solicitada": parseFloat(tr.querySelector('td:nth-child(2) span').innerText),
+                    "Cantidad_validada": tr.querySelector('td:nth-child(2) input#item_Cantidad_validada').value,
+                    "Id_Embalaje": tr.querySelector('td:nth-child(4) input#item_Id_Embalaje_validado').dataset.id,
+                    "Id_Embalaje_validado": tr.querySelector('td:nth-child(4) input#item_Id_Embalaje_validado').value
+                };
+            } else {
+
+                reqdet = {
+                    "Clave_articulo": "",
+                    "Descripcion": "",
+                    "Cantidad_solicitada": tr.querySelector('td:nth-child(2) input#item_Cantidad').value,
+                    "Cantidad_validada": tr.querySelector('td:nth-child(2) input#item_Cantidad_validada').value,
+                    "Id_Embalaje": tr.querySelector('td:nth-child(4) input#item_Id_Embalaje_validado').value,
+                    "Id_Embalaje_validado": tr.querySelector('td:nth-child(4) input#item_Id_Embalaje_validado').value
+                };
+
+            }
+
+            arrayDeREQDETs.push(reqdet);
+        });
+
+        // Enviar el arreglo de objetos al controlador utilizando AJAX
+        $.ajax({
+            url: '/REQDETs/CreateREQDETS',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ reqhdr, arrayDeREQDETs }),
+            success: function (response) {
+                // Manejar la respuesta del servidor si es necesario
+                console.log('Datos enviados correctamente');
+                console.log(response);
+            },
+            error: function (xhr, status, error) {
+                // Manejar errores si ocurrieron durante la solicitud AJAX
+                console.error('Error al enviar datos:', error);
+            }
+        });
+    }
+</script>

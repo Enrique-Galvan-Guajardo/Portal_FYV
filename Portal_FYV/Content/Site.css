@@ -37,11 +37,29 @@ textarea {
             }
             td{
                 padding-inline: 3rem;
-
                 .btn, form{
                     width: 5rem;
                 }
+
             }
+            tr {
+                height: 8rem;
+
+                &:not(.newRow){
+                input, select, textarea{
+                                    visibility: hidden;
+                    }
+                }
+                
+                &:hover {
+                    span{
+                        display: none;
+                    }
+                    input, select, textarea{
+                        visibility: visible;
+                    }
+                }
+            }   
         }
         form{
             margin-bottom: 5rem;

@@ -1,0 +1,179 @@
+﻿
+@{
+    ViewBag.Title = "CapturarDetalles";
+}
+
+<script src="~/Scripts/REQDETsController.js"></script>
+<div class="bg-white capturarDetalles" data-sucursal="@Session["Id_Usuario"]">
+    <h2>Capturar</h2>
+
+    <div>
+        <div class="d-flex justify-content-between mb-3">
+            <div class="form-group">
+                <div class="input-group">
+                    <input id="texto" name="texto" type="text" class="form-control" placeholder="Buscar...">
+                    <button class="btn btn-outline-primary" type="button" id="buscar" data-bs-target="#agregarProducto" data-bs-toggle="modal"><i class="bi bi-search me-2"></i>Buscar</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-success" onclick="saveREQDETS()"><i class="bi bi-floppy me-2"></i>Guardar</button>
+            </div>
+        </div>
+        <div class="table-responsive rounded rounded-2 border">
+            <table class="table table-striped" id="productosSeleccionados">
+                <thead class="table-dark">
+                    <tr>
+                        <th>
+                            # Art
+                        </th>
+                        <th>
+                            Descripción
+                        </th>
+                        <th>
+                            # Cantidad
+                        </th>
+                        <th>
+                            # Ultima Compra
+                        </th>
+                        <th>
+                            # Existencia
+                        </th>
+                        <th>
+                            Embalaje
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="agregarProducto" aria-hidden="true" aria-labelledby="agregarProductoLabel" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="agregarProductoLabel">Elegir Producto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive rounded rounded-2 border">
+                        <table class="table table-striped my-0" id="tablaProductos">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>
+                                        # Art
+                                    </th>
+                                    <th>
+                                        Descripción
+                                    </th>
+                                    <th>
+                                        # Existencia
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="productoElegido" aria-hidden="true" aria-labelledby="productoElegidoLabel2" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="productoElegidoLabel2">Agregar Producto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="col-12 col-md-12">
+                            <div class="row m-0">
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Fecha_ultima_compra" class="control-label">Fecha Ultima Compra:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="date" name="Fecha_ultima_compra" id="Fecha_ultima_compra" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Cantidad_ultima_compra" class="control-label">Cantidad Ultima Compra:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="number" name="Cantidad_ultima_compra" id="Cantidad_ultima_compra" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Fecha_existencia" class="control-label">Fecha Existencia:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="date" name="Fecha_existencia" id="Fecha_existencia" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Clave_articulo" class="control-label">Clave Artículo:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="text" name="Clave_articulo" id="Clave_articulo" />
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="row m-0">
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Descripcion" class="control-label">Descripción:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="text" name="Descripcion" id="Descripcion" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Existencia" class="control-label">Existencia:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="number" name="Existencia" id="Existencia" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Cantidad_solicitada" class="control-label">Cantidad Solicitada:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="number" name="Cantidad_solicitada" id="Cantidad_solicitada" />
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Id_Embalaje" class="control-label col-md-2">Embalaje:</label>
+                                    <div class="col-md-10">
+                                        @Html.DropDownList("Id_Embalaje", null, htmlAttributes: new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-target="#agregarProducto" data-bs-toggle="modal">Regresar</button>
+                    <button class="btn btn-primary" onclick="imprimirEnTabla('productosSeleccionados')" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-plus-circle me-2"></i>Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelector('input#texto').addEventListener('input', function () {
+        // Selecciona el elemento por su ID (reemplaza 'elementoId' con el ID real del elemento)
+        const elemento = document.querySelector('.capturarDetalles');
+
+        // Obtiene el valor del atributo data-Sucursal utilizando la propiedad dataset
+        const sucursal = elemento.dataset.sucursal;
+        getProducts(this.value, sucursal)
+    })
+</script>

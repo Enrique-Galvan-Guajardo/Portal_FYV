@@ -1,0 +1,210 @@
+﻿@model IEnumerable<Portal_FYV.Models.Usuario>
+
+@{
+    ViewBag.Title = "Index";
+}
+<div class="bg-white">
+    <h2>Lista de usuarios</h2>
+
+    <p>
+        @Html.ActionLink("Crear Nuevo", "Create", new { area = "" }, new { @class = "btn btn-success" })
+    </p>
+    <div class="table-responsive rounded rounded-2 border">
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Estatus
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Roles.Rol)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Username)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Correo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Contrasena)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Sucursal)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fecha_Aprov)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Razon_social)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RFC)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Pais)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Estado)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Ciudad)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Colonia)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Localidad)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Codigo_postal)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Calle)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Numero)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Proveeedor_no_mks)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Contacto_nombre1)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Contacto_nombre2)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Contacto_nombre3)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Contacto_correo1)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Contacto_correo2)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Contacto_correo3)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Contacto_tel1)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Contacto_tel2)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Contacto_tel3)
+                </th>
+                <th></th>
+            </tr>
+
+        @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id_Usuario)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Estatus.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Roles.Rol)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Username)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nombre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Correo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contrasena)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Sucursal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fecha_Aprov)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Razon_social)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RFC)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Pais)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Estado)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Ciudad)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Colonia)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Localidad)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Codigo_postal)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Calle)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Numero)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Proveeedor_no_mks)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contacto_nombre1)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contacto_nombre2)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contacto_nombre3)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contacto_correo1)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contacto_correo2)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contacto_correo3)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contacto_tel1)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contacto_tel2)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Contacto_tel3)
+                </td>
+                <td class="d-flex flex-column gap-3 align-items-end">
+                    <button class="btn btn-info rounded-1" onclick="location.href='@Url.Action("Edit", "Usuarios", new { id = item.Id_Usuario })'"><i class="bi bi-pencil"></i></button>
+
+                    @using (Html.BeginForm("Delete", "Usuarios", new { id = item.Id_Usuario }, FormMethod.Post, new { @class = "m-0", id = "deleteForm_" + item.Id_Usuario }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("id", item.Id_Usuario)
+                        <button class="btn btn-danger rounded-1 w-100" type="button" onclick="confirmDelete(@item.Id_Usuario, this)"><i class="bi bi-trash"></i></button>
+                    }
+                </td>
+            </tr>
+        }
+
+        </table>
+        
+    </div>
+</div>

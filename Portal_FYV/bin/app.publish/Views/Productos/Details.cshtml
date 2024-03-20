@@ -1,0 +1,98 @@
+﻿@model Portal_FYV.Models.Producto
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Producto</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nombre)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Nombre)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Descripcion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Descripcion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Clave_externa)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Clave_externa)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Clave_interna)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Clave_interna)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Codigo_barras)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Codigo_barras)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Imagen_ruta)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Imagen_ruta)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Embalaje)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Embalaje)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Unidad)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Unidad)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha_Creacion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha_Creacion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fecha_Modificacion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fecha_Modificacion)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id_Producto }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

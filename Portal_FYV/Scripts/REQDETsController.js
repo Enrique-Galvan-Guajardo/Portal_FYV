@@ -1,5 +1,4 @@
 ﻿let dataProductos = ''
-
 function getProducts(producto, clave) {
     $.get(getProductSearch + producto + "&clave_sucursal=" + clave, function (data) {
         // La función de callback se ejecutará cuando la solicitud se complete exitosamente
@@ -32,7 +31,7 @@ function imprimirEnTablaAgregar(data, tablaId) {
                         + '<td>' + producto.descripcion + '</td>'
                         + '<td>' + producto.existencia + '</td>'
                         + '<td>'
-            + '<button class="btn btn-primary d-flex w-100 justify-content-evenly" onclick="getTablaProductosItem(this)" data-cveart="' + producto.cve_art + '" data-description="' + producto.descripcion + '" data-existencia="' + producto.Cantidad_Real + '" data-fechaUltimaCompra="' + producto.fec + '" data-fechaExistencia="' + producto.fecha_consulta + '" data-bs-target="#productoElegido" data-bs-toggle="modal"><i class="bi bi-check2-circle me-2"></i>Elegir</button>'
+                        + '<button class="btn btn-primary d-flex w-100 justify-content-evenly" onclick="getTablaProductosItem(this)" data-cveart="' + producto.cve_art + '" data-description="' + producto.descripcion + '" data-existencia="' + producto.Cantidad_Real + '" data-fechaUltimaCompra="' + producto.fec + '" data-fechaExistencia="' + producto.fecha_consulta + '" data-bs-target="#productoElegido" data-bs-toggle="modal"><i class="bi bi-check2-circle me-2"></i>Elegir</button>'
                         + '</td>'
                     + '</tr>'
         // Agregar la fila a la tabla
@@ -46,22 +45,49 @@ function imprimirEnTabla(tablaId) {
     let tabla = document.getElementById(tablaId).querySelector('tbody');
     let mdl_item_selected = document.querySelector('#productoElegido');
 
+    let fila
     // Limpiar la tabla antes de agregar nuevos datos
     //tabla.innerHTML = '';
+    if (tablaId == 'productosSeleccionados') {
 
-    // Crear una fila para cada producto y agregarla a la tabla
-    let fila = '<tr class="alert alert-dismissible fade show" id="agregar-' + mdl_item_selected.querySelector('#Clave_articulo').value + '">'
-        + '<td>' + mdl_item_selected.querySelector('#Clave_articulo').value + '</td>'
-        + '<td>' + mdl_item_selected.querySelector('#Descripcion').value + '</td>'
-        + '<td>' + mdl_item_selected.querySelector('#Cantidad_solicitada').value + '</td>'
-        + '<td>' + mdl_item_selected.querySelector('#Cantidad_ultima_compra').value + '</td>'
-        + '<td>' + mdl_item_selected.querySelector('#Existencia').value + '</td>'
-        + '<td data-embalaje="' + mdl_item_selected.querySelector('#Id_Embalaje').value + '">' + mdl_item_selected.querySelector('#Id_Embalaje').children[mdl_item_selected.querySelector('#Id_Embalaje').selectedIndex].innerText + '</td>'
-        + '<td><button type="button" class="btn btn-danger" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-trash"></i></button></td>'
-        + '</tr>'
+        // Crear una fila para cada producto y agregarla a la tabla
+        fila = '<tr class="alert alert-dismissible fade show" id="agregar-' + mdl_item_selected.querySelector('#Clave_articulo').value + '">'
+            + '<td>' + mdl_item_selected.querySelector('#Clave_articulo').value + '</td>'
+            + '<td>' + mdl_item_selected.querySelector('#Descripcion').value + '</td>'
+            + '<td>' + mdl_item_selected.querySelector('#Cantidad_solicitada').value + '</td>'
+            + '<td>' + mdl_item_selected.querySelector('#Cantidad_ultima_compra').value + '</td>'
+            + '<td>' + mdl_item_selected.querySelector('#Existencia').value + '</td>'
+            + '<td data-embalaje="' + mdl_item_selected.querySelector('#Id_Embalaje').value + '">' + mdl_item_selected.querySelector('#Id_Embalaje').children[mdl_item_selected.querySelector('#Id_Embalaje').selectedIndex].innerText + '</td>'
+            + '<td><button type="button" class="btn btn-danger" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-trash"></i></button></td>'
+            + '</tr>'
 
-    // Agregar la fila a la tabla
-    tabla.innerHTML += fila;
+        // Agregar la fila a la tabla
+        tabla.innerHTML += fila;
+    } else if (tablaId == 'productosValidados') {
+        // Crear una fila para cada producto y agregarla a la tabla
+        fila = `<tr class="newRow alert alert-dismissible fade show">
+                    <td>
+                        ${mdl_item_selected.querySelector('#Clave_articulo').value}
+                    </td>
+                    <td>
+                        <input class="form-control text-box single-line" data-val="true" data-val-number="El campo Cantidad debe ser un número." id="item_Cantidad" name="item.Cantidad" type="text" value="${mdl_item_selected.querySelector('#Cantidad_solicitada').value}" placeholder="Cantidad solicitada">
+                    </td>
+                    <td>
+                        <input class="form-control text-box single-line" data-val="true" data-val-length="El campo Descripcion debe ser una cadena con una longitud máxima de 60." data-val-length-max="60" data-val-required="El campo Descripcion es obligatorio." value="${mdl_item_selected.querySelector('#Descripcion').value}" id="item_Descripcion" name="item.Descripcion" type="text" placeholder="Descripción">
+                    </td>
+                    <td>
+                        ${document.querySelector('.table tbody tr td select').outerHTML}
+                    </td>
+                    <td><button type="button" class="btn btn-danger" data-bs-dismiss="alert" aria-label="Close"><i class="bi bi-trash"></i></button></td>
+                </tr>`
+        // Agregar la fila a la tabla
+        tabla.innerHTML += fila;
+        let sel = tabla.lastElementChild.querySelector('#item_Id_Embalaje_validado')
+        sel.setAttribute('data-id', '')
+        sel.setAttribute('value', mdl_item_selected.querySelector('#Id_Embalaje').value)
+        sel.selectedIndex = mdl_item_selected.querySelector('#Id_Embalaje').selectedIndex + 1
+    }
+
 }
 
 function getTablaProductosItem(element) {

@@ -1,0 +1,106 @@
+﻿@model IEnumerable<Portal_FYV.Models.Producto>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="bg-white">
+    <h2>Lista de Productos</h2>
+
+    <p>
+        @Html.ActionLink("Crear Nuevo", "Create", new { area = "" }, new { @class = "btn btn-success" })
+    </p>
+
+    <div class="table-responsive rounded rounded-2 border">
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Descripcion)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Clave_externa)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Clave_interna)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Codigo_barras)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Imagen_ruta)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Embalaje)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Unidad)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fecha_Creacion)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fecha_Modificacion)
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id_Producto)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Descripcion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Clave_externa)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Clave_interna)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Codigo_barras)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Imagen_ruta)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Embalaje)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Unidad)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha_Creacion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha_Modificacion)
+                    </td>
+                    <td class="d-flex flex-column gap-3 align-items-end">
+                        <button class="btn btn-info rounded-1" onclick="location.href='@Url.Action("Edit", "Productos", new { id = item.Id_Producto })'"><i class="bi bi-pencil"></i></button>
+
+                        @using (Html.BeginForm("Delete", "Productos", new { id = item.Id_Producto }, FormMethod.Post, new { @class = "m-0", id = "deleteForm_" + item.Id_Producto }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("id", item.Id_Producto)
+                            <button class="btn btn-danger rounded-1 w-100" type="button" onclick="confirmDelete(@item.Id_Producto, this)"><i class="bi bi-trash"></i></button>
+                        }
+                    </td>
+                </tr>
+            }
+
+        </table>
+
+    </div>
+</div>
+

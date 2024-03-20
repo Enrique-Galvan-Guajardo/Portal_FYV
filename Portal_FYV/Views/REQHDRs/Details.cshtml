@@ -1,66 +1,366 @@
-﻿@model Portal_FYV.Models.REQHDR
+﻿@model Tuple<Portal_FYV.Models.REQHDR, List<Portal_FYV.Models.REQDET>, SelectList>
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Detalles Requisición";
 }
+<script src="~/Scripts/REQDETsController.js"></script>
+<div class="bg-white validateDetalles" data-sucursal="@Session["Id_Usuario"]">
 
-<h2>Details</h2>
+    <div class="col-12 col-sm-12 col-md-12 row m-0 p-3 bg-light bg-gradient shadow-sm mb-5 border-end border-start border-5 border-primary rounded">
 
-<div>
-    <h4>REQHDR</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Usuario.Username)
-        </dt>
+        <div class="form-group col-12 col-sm-12 d-flex flex-wrap">
+            <h2 class="text-primary fw-bold">Información.</h2>
 
-        <dd>
-            @Html.DisplayFor(model => model.Usuario.Username)
-        </dd>
+            <div class="d-flex ms-auto gap-3">
+                <button class="btn btn-success btn-lg ms-auto" onclick="saveREQDETS(1)" type="button"><i class="bi bi-check-circle me-2"></i>Validar</button>
+                <button class="btn btn-secondary btn-lg ms-2" onclick="saveREQDETS(0)" type="button"><i class="bi bi-x-circle me-2"></i>Cancelar</button>
+            </div>
+        </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Usuario1.Username)
-        </dt>
+        <div class="form-group col-12 col-sm-6">
+            @Html.LabelFor(model => model.Item1.Sucursal, htmlAttributes: new { @class = "control-label col-md-12 fw-bold m-0" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Item1.Sucursal, new { htmlAttributes = new { @class = "form-control-plaintext fs-4 text-secondary", @readonly = "readonly" } })
+            </div>
+        </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.Usuario1.Username)
-        </dd>
+        <div class="form-group col-12 col-sm-6">
+            @Html.LabelFor(model => model.Item1.Fecha_creacion, "Fecha creación:", htmlAttributes: new { @class = "control-label col-md-12 fw-bold m-0" })
+            <div class="col-md-10">
+                <input type="text" class="form-control-plaintext fs-4 text-secondary" id="Fecha_creacion" name="Fecha_creacion" value="@String.Format("{0:yyyy-MM-dd}", Model.Item1.Fecha_creacion)" />
+            </div>
+        </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Sucursal)
-        </dt>
+        <div class="form-group col-12 col-sm-6">
+            @Html.LabelFor(model => model.Item1.Usuario.Username, "Usuario que solicita:", htmlAttributes: new { @class = "control-label col-md-12 fw-bold m-0" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Item1.Usuario.Username, new { htmlAttributes = new { @class = "form-control-plaintext fs-4 text-secondary", @readonly = "readonly" } })
+            </div>
+        </div>
 
-        <dd>
-            @Html.DisplayFor(model => model.Sucursal)
-        </dd>
+        <div class="form-group col-12 col-sm-6">
+            @Html.LabelFor(model => model.Item1.Id_REQHDR, "# de requisición:", htmlAttributes: new { @class = "control-label col-md-12 fw-bold m-0" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.Item1.Id_REQHDR, new { htmlAttributes = new { @class = "form-control-plaintext fs-4 text-secondary", @readonly = "readonly" } })
+            </div>
+        </div>
+    </div>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Fecha_creacion)
-        </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.Fecha_creacion)
-        </dd>
+    <div class="table-responsive rounded rounded-2 border">
+        <table id="productosValidados" class="table table-striped m-0">
+            <thead class="table-dark">
+                <tr>
+                    <th>
+                        Clave
+                    </th>
+                    <th>
+                        Cantidad Solicitada
+                    </th>
+                    <th>
+                        Descripción
+                    </th>
+                    <th>
+                        Embalaje Solicitado
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Estatus)
-        </dt>
+                @foreach (var item in Model.Item2)
+                {
+                    <tr class="tr-edit">
+                        <td data-id="@item.Id_REQDET">
+                            @Html.DisplayFor(modelItem => item.Clave_articulo)
+                        </td>
 
-        <dd>
-            @Html.DisplayFor(model => model.Estatus)
-        </dd>
+                        <td>
+                            <span>
+                                @Html.DisplayFor(modelItem => item.Cantidad_solicitada)
+                            </span>
+                            @Html.EditorFor(model => item.Cantidad_validada, new { htmlAttributes = new { @class = "form-control", @placeholder = "Cantidad validada" } })
+                        </td>
 
-        <dt>
-            @Html.DisplayNameFor(model => model.Fecha_validacion)
-        </dt>
+                        <td>
+                            <span>
+                                @Html.DisplayFor(modelItem => item.Descripcion)
+                            </span>
+                            @Html.TextAreaFor(model => item.Descripcion, new { @class = "form-control", @placeholder = "Descripción" })
+                        </td>
 
-        <dd>
-            @Html.DisplayFor(model => model.Fecha_validacion)
-        </dd>
+                        <td>
+                            <span>
+                                @Html.DisplayFor(modelItem => item.Embalaje.Tipo_Embalaje)
+                            </span>
+                            @Html.DropDownListFor(model => item.Id_Embalaje_validado, Model.Item3, "Seleccione un tipo de embalaje", new { @class = "form-control", @data_id = item.Id_Embalaje })
+                        </td>
+                        <td>
+                            @using (Html.BeginForm("Delete", "REQDETs", new { id = item.Id_REQDET }, FormMethod.Post, new { @class = "m-0", id = "deleteForm_" + item.Id_REQDET }))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("id", item.Id_REQDET)
+                                <button class="btn btn-danger rounded-1 w-100" type="button" onclick="confirmDelete(@item.Id_REQDET, this)"><i class="bi bi-trash"></i></button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
 
-    </dl>
+        </table>
+    </div>
+
+    <div class="modal fade" id="agregarProducto" aria-hidden="true" aria-labelledby="agregarProductoLabel" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="agregarProductoLabel">Elegir Producto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group my-4 mx-auto justify-content-center">
+                            <input id="texto" name="texto" type="text" class="form-control" placeholder="Buscar...">
+                            <button class="btn btn-outline-primary" type="button" id="buscar"><i class="bi bi-search me-2"></i>Buscar</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive rounded rounded-2 border">
+                        <table class="table table-striped my-0" id="tablaProductos">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>
+                                        # Art
+                                    </th>
+                                    <th>
+                                        Descripción
+                                    </th>
+                                    <th>
+                                        # Existencia
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="productoElegido" aria-hidden="true" aria-labelledby="productoElegidoLabel2" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="productoElegidoLabel2">Agregar Producto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        <div class="col-12 col-md-12">
+                            <div class="row m-0">
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Fecha_ultima_compra" class="control-label">Fecha Ultima Compra:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="date" name="Fecha_ultima_compra" id="Fecha_ultima_compra" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Cantidad_ultima_compra" class="control-label">Cantidad Ultima Compra:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="number" name="Cantidad_ultima_compra" id="Cantidad_ultima_compra" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Fecha_existencia" class="control-label">Fecha Existencia:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="date" name="Fecha_existencia" id="Fecha_existencia" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Clave_articulo" class="control-label">Clave Artículo:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="text" name="Clave_articulo" id="Clave_articulo" />
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="row m-0">
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Descripcion" class="control-label">Descripción:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="text" name="Descripcion" id="Descripcion" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Existencia" class="control-label">Existencia:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="number" name="Existencia" id="Existencia" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Cantidad_solicitada" class="control-label">Cantidad Solicitada:</label>
+                                    <div class="col-md-10">
+                                        <input class="form-control" type="number" name="Cantidad_solicitada" id="Cantidad_solicitada" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group col-12 col-md-3">
+                                    <label for="Id_Embalaje" class="control-label col-md-2">Embalaje:</label>
+                                    <div class="col-md-10">
+                                        @Html.DropDownList("Id_Embalaje", null, htmlAttributes: new { @class = "form-control" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-bs-target="#agregarProducto" data-bs-toggle="modal">Regresar</button>
+                    <button class="btn btn-primary" onclick="imprimirEnTabla('productosValidados')" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-plus-circle me-2"></i>Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-grid gap-2 my-3 col-6 mx-auto">
+
+        <button class="btn btn-primary btn-lg" data-bs-target="#agregarProducto" data-bs-toggle="modal" type="button"><i class="bi bi-plus-square-dotted me-2"></i>Añadir nuevo registro</button>
+        <script>
+            /*
+            document.querySelector('.addTr').addEventListener('click', function () {
+                const tr = `<tr class="newRow">
+                                <td>
+                                    ${Date.now()}
+                                </td>
+                                <td>
+                                    <input class="form-control text-box single-line" data-val="true" data-val-number="El campo Cantidad debe ser un número." id="item_Cantidad" name="item.Cantidad" type="text" value="" placeholder="Cantidad solicitada">
+                                </td>
+                                <td>
+                                    <input class="form-control text-box single-line" data-val="true" data-val-length="El campo Descripcion debe ser una cadena con una longitud máxima de 60." data-val-length-max="60" data-val-required="El campo Descripcion es obligatorio." id="item_Descripcion" name="item.Descripcion" type="text" placeholder="Descripción">
+                                </td>
+                                <td>
+                                    ${document.querySelector('.table tbody tr td:last-child select').outerHTML}
+                                </td>
+                            </tr>`
+
+                document.querySelector('.table tbody').innerHTML += tr;
+            })
+             */
+            document.querySelector('#buscar').addEventListener('click', function () {
+                // Selecciona el elemento por su ID (reemplaza 'elementoId' con el ID real del elemento)
+                const elemento = document.querySelector('.validateDetalles');
+
+                // Obtiene el valor del atributo data-Sucursal utilizando la propiedad dataset
+                const sucursal = elemento.dataset.sucursal;
+                getProducts(document.querySelector('input#texto').value, sucursal)
+            })
+        </script>
+    </div>
 </div>
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id_REQHDR }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
+
+<script>
+    function saveREQDETS(opt) {
+        let table = document.querySelectorAll('#productosValidados tbody tr');
+
+        rs = [];
+        let rh = {
+            "Id_REQHDR": parseInt(document.querySelector('#Item1_Id_REQHDR').value)
+        };
+
+        table.forEach(tr => {
+            // Crear un objeto y añadirlo al arreglo
+            let reqdet = {}
+            if (tr.querySelector('td:nth-child(2) input#item_Cantidad_validada')) {
+
+                reqdet = {
+                    "Id_REQDET": parseInt(tr.querySelector('td:first-child').getAttribute("data-id")),
+                    "Clave_articulo": parseInt(tr.querySelector('td:first-child').innerText),
+                    "Descripcion": tr.querySelector('td:nth-child(3) #item_Descripcion').value,
+                    "Cantidad_solicitada": parseFloat(tr.querySelector('td:nth-child(2) span').innerText),
+                    "Cantidad_validada": parseInt(tr.querySelector('td:nth-child(2) input#item_Cantidad_validada').value),
+                    "Id_Embalaje": parseInt(tr.querySelector('td:nth-child(4) select').getAttribute("data-id")),
+                    "Id_Embalaje_validado": parseInt(tr.querySelector('td:nth-child(4) select').value)
+                };
+            } else {
+
+                reqdet = {
+                    "Id_REQHDR": parseInt(document.getElementById('Item1_Id_REQHDR').value),
+                    "Id_REQDET": Date.now(),
+                    "Clave_articulo": parseInt(tr.querySelector('td:first-child').innerText),
+                    "Descripcion": tr.querySelector('td:nth-child(3) #item_Descripcion').value,
+                    "Cantidad_solicitada": null,
+                    "Cantidad_validada": parseInt(tr.querySelector('td:nth-child(2) input#item_Cantidad').value),
+                    "Id_Embalaje": parseInt(tr.querySelector('td:nth-child(4) select').value),
+                    "Id_Embalaje_validado": parseInt(tr.querySelector('td:nth-child(4) select').value)
+                };
+
+            }
+
+            rs.push(reqdet);
+        });
+
+        // Enviar el arreglo de objetos al controlador utilizando AJAX
+        $.ajax({
+            url: '/REQHDRs/EditREQHDR',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ rh, rs, opt }),
+            success: function (response) {
+                // Manejar la respuesta del servidor si es necesario
+                console.log('Datos enviados correctamente');
+                console.log(response);
+            },
+            error: function (xhr, status, error) {
+                // Manejar errores si ocurrieron durante la solicitud AJAX
+                console.error('Error al enviar datos:', error);
+            }
+        });
+    }
+
+    function deleteREQDET(e) {
+        let rd = {
+            "Id_REQHDR": parseInt(document.querySelector('#Item1_Id_REQHDR').value),
+            "Clave_articulo": parseInt(e.closest('tr').querySelector('td:first-child').innerText)
+
+        };
+        // Mostrar el mensaje de confirmación
+        var confirmacion = confirm("¿Estás seguro de que deseas eliminar esto?");
+
+        // Verificar si el usuario confirmó la eliminación
+        if (confirmacion) {
+            // Aquí colocas el código para eliminar
+            //alert("El elemento ha sido eliminado."); // Solo un mensaje de ejemplo
+            // Enviar el arreglo de objetos al controlador utilizando AJAX
+            $.ajax({
+                url: '/REQDETs/DeleteREQDET',
+                type: 'DELETE',
+                contentType: 'application/json',
+                data: JSON.stringify({ rd }),
+                success: function (response) {
+                    // Manejar la respuesta del servidor si es necesario
+                    console.log('Datos enviados correctamente');
+                    console.log(response);
+                    $(e.closest('tr')).fadeOut();
+                },
+                error: function (xhr, status, error) {
+                    // Manejar errores si ocurrieron durante la solicitud AJAX
+                    console.error('Error al enviar datos:', error);
+                }
+            });
+        } else {
+            // El usuario canceló la eliminación
+            alert("La eliminación ha sido cancelada."); // Solo un mensaje de ejemplo
+        }
+    }
+</script>
+

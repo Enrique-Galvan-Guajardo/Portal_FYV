@@ -1,5 +1,5 @@
 ﻿const local = ""
-const public = "http://192.168.1.76:8030/"
+const public = "http://192.168.1.120:8025/"
 
 const env = public + "api/"
 

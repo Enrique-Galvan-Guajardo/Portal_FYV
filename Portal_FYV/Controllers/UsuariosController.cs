@@ -31,8 +31,15 @@ namespace Portal_FYV.Controllers
                 
                 Session["Id_Usuario"] = usuario.Id_Usuario;
                 Session["Sucursal"] = usuario.Sucursal;
+                if (usuario.Id_Rol == 3)
+                {
+                    return RedirectToAction("CapturarDetalles", "REQDETs");
 
-                return RedirectToAction("About", "Home");
+                }
+                else
+                {
+                    return RedirectToAction("About", "Home");
+                }
             }
             return RedirectToAction("Index", "Home");
         }
