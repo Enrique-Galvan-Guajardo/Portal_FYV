@@ -145,6 +145,7 @@
     <Compile Include="Models\db_model.cs" />
     <Compile Include="Models\Embalaje.cs" />
     <Compile Include="Models\Estatus.cs" />
+    <Compile Include="Models\OrdenCompra_Web.cs" />
     <Compile Include="Models\Producto.cs" />
     <Compile Include="Models\REQDET.cs" />
     <Compile Include="Models\REQHDR.cs" />
@@ -2264,6 +2265,7 @@
     <Content Include="Content\bootstrap-icons\package.json" />
     <Content Include="Content\bootstrap-icons\README.md" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
+    <Content Include="Scripts\Consolidation.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
     <Content Include="Scripts\jquery-3.7.1.slim.js" />
@@ -2271,6 +2273,8 @@
     <Content Include="Scripts\jquery-3.7.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.7.1.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -2279,6 +2283,8 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Scripts\RegionsController.js" />
     <Content Include="Scripts\REQDETsController.js" />
+    <Content Include="Scripts\Resumen_comprador.js" />
+    <Content Include="Scripts\Resumen_proveedor.js" />
     <Content Include="Scripts\routes.js" />
     <Content Include="Scripts\UsersController.js" />
     <Content Include="Web.config" />
@@ -2336,6 +2342,8 @@
     <Content Include="Views\REQDETs\Edit.cshtml" />
     <Content Include="Views\REQDETs\Index.cshtml" />
     <Content Include="Views\REQDETs\CapturarDetalles.cshtml" />
+    <Content Include="Views\REQHDRs\Consolidation.cshtml" />
+    <Content Include="Views\REQHDRs\Resumen.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

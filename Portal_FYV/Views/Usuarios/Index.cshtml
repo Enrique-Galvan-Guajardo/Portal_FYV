@@ -99,6 +99,18 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Contacto_tel3)
                 </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.permitir_Fru)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.permitir_Sec)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.permitir_Veg)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Prorroga)
+                </th>
                 <th></th>
             </tr>
 
@@ -190,6 +202,18 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Contacto_tel3)
+                </td>
+                <td>
+                    @(item.permitir_Fru == true ? "Activo" : "Inactivo")
+                </td>
+                <td>
+                    @(item.permitir_Sec == true ? "Activo" : "Inactivo")
+                </td>
+                <td>
+                    @(item.permitir_Veg == true ? "Activo" : "Inactivo")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Prorroga) horas
                 </td>
                 <td class="d-flex flex-column gap-3 align-items-end">
                     <button class="btn btn-info rounded-1" onclick="location.href='@Url.Action("Edit", "Usuarios", new { id = item.Id_Usuario })'"><i class="bi bi-pencil"></i></button>

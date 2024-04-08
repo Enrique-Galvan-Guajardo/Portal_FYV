@@ -12,6 +12,7 @@ namespace Portal_FYV.Models
         {
         }
 
+        public virtual DbSet<OrdenCompra_Web> OrdenCompras_Web { get; set; }
         public virtual DbSet<CatalogoProducto> CatalogoProductos { get; set; }
         public virtual DbSet<Embalaje> Embalajes { get; set; }
         public virtual DbSet<Estatus> Estatus { get; set; }

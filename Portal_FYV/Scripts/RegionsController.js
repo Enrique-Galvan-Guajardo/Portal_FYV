@@ -92,7 +92,7 @@ function buscarMunicipio(c_Estado){
     });
 }
 
-function buscarColonias(c_Estado, c_Municipio) {
+function buscarColonias(c_Municipio, c_Estado) {
     $.get(getColonias + c_Estado + "&municipio=" + c_Municipio, function (data) {
         // La función de callback se ejecutará cuando la solicitud se complete exitosamente
         dataColonias = data;

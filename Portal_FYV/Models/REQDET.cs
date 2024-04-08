@@ -53,5 +53,6 @@ namespace Portal_FYV.Models
         public virtual Embalaje Embalaje { get; set; }
 
         public virtual REQHDR REQHDR { get; set; }
+
     }
 }

@@ -9,12 +9,20 @@ namespace Portal_FYV.Models
     [Table("UsuariosProductos")]
     public partial class UsuariosProductos
     {
+        public UsuariosProductos() {
+            Id_REQHDR = 0;
+            Cantidad_comprada = 0;
+        }
         [Key]
         public int Id_UsuarioProducto { get; set; }
 
         public int Id_Usuario { get; set; }
 
         public int Id_Producto { get; set; }
+
+        public decimal Precio { get; set; }
+        public int Id_REQHDR { get; set; }
+        public decimal Cantidad_comprada { get; set; }
 
         public virtual Producto Producto { get; set; }
 

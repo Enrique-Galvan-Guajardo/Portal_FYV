@@ -17,7 +17,16 @@ namespace Portal_FYV.Controllers
         // GET: Productos
         public ActionResult Index()
         {
-            return View(db.Productos.ToList());
+            int idProv = Session["Id_Usuario"] != null ? Convert.ToInt32(Session["Id_Usuario"]) : 0;
+            // Cargar la lista de embalajes
+            if (idProv == 0)
+            {
+                return View(db.Productos.ToList());
+            }
+            else
+            {
+                return View(db.Productos.Where(x => x.Id_Proveedor == idProv).ToList());
+            }
         }
 
         // GET: Productos/Details/5
@@ -38,7 +47,18 @@ namespace Portal_FYV.Controllers
         // GET: Productos/Create
         public ActionResult Create()
         {
-            return View();
+            int idProv = Session["Id_Usuario"] != null ? Convert.ToInt32(Session["Id_Usuario"]) : 0;
+            // Cargar la lista de embalajes
+            var catalogo = db.CatalogoProductos.ToList();
+            var productos = db.Productos.ToList();
+            var catalogoProductos = catalogo.Where(x => !productos.Any(y => y.Descripcion == x.Descripcion && y.Id_Proveedor == idProv)).ToList();
+
+            //var precioProductos = db.CatalogoProductos.ToList();
+
+            // Crear un Tuple que contenga ambos modelos y la lista de embalajes
+            var modelos = new Tuple<Producto, SelectList, SelectList>( new Producto(), new SelectList(catalogoProductos, "Descripcion", "Descripcion"), new SelectList(db.Embalajes, "Tipo_Embalaje", "Tipo_Embalaje"));
+
+            return View(modelos);
         }
 
         // POST: Productos/Create
@@ -46,15 +66,19 @@ namespace Portal_FYV.Controllers
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id_Producto,Nombre,Descripcion,Clave_externa,Clave_interna,Codigo_barras,Imagen_ruta,Embalaje,Unidad,Fecha_Creacion,Fecha_Modificacion")] Producto producto)
+        public ActionResult Create([Bind(Include = "Id_Producto,Nombre,Descripcion,Clave_externa,Clave_interna," +
+            "Codigo_barras,Imagen_ruta,Embalaje,Unidad,Fecha_Creacion,Fecha_Modificacion,Id_Proveedor")] Producto producto)
         {
             if (ModelState.IsValid)
             {
                 db.Productos.Add(producto);
                 db.SaveChanges();
+                return RedirectToAction("Index");
             }
-
-            return View(producto);
+            else
+            {
+                return View(producto);
+            }
         }
 
         // GET: Productos/Edit/5
@@ -69,7 +93,17 @@ namespace Portal_FYV.Controllers
             {
                 return HttpNotFound();
             }
-            return View(producto);
+
+            // Cargar la lista de embalajes
+            var catalogoProductos = db.CatalogoProductos.ToList();
+            //var precioProductos = db.CatalogoProductos.ToList();
+
+            // Crear un Tuple que contenga ambos modelos y la lista de embalajes
+            var modelos = new Tuple<Producto, SelectList, SelectList>(producto, new SelectList(catalogoProductos, "Descripcion", "Descripcion"), new SelectList(db.Embalajes, "Tipo_Embalaje", "Tipo_Embalaje"));
+
+            return View(modelos);
+
+            //return View(producto);
         }
 
         // POST: Productos/Edit/5
@@ -77,14 +111,21 @@ namespace Portal_FYV.Controllers
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id_Producto,Nombre,Descripcion,Clave_externa,Clave_interna,Codigo_barras,Imagen_ruta,Embalaje,Unidad,Fecha_Creacion,Fecha_Modificacion")] Producto producto)
+        public ActionResult Edit([Bind(Include = "Id_Producto,Nombre,Descripcion,Clave_externa,Clave_interna," +
+            "Codigo_barras,Imagen_ruta,Embalaje,Unidad,Fecha_Creacion,Fecha_Modificacion,Id_Proveedor")] Producto producto)
         {
+
             if (ModelState.IsValid)
             {
+                producto.Fecha_Modificacion = DateTime.Now;
                 db.Entry(producto).State = EntityState.Modified;
                 db.SaveChanges();
+                return RedirectToAction("Index");
             }
-            return View(producto);
+            else
+            {
+                return View(producto);
+            }
         }
 
         // GET: Productos/Delete/5

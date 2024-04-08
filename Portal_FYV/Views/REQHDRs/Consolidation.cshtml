@@ -1,0 +1,385 @@
+﻿@model Tuple<List<Portal_FYV.Models.REQHDR>, List<Portal_FYV.Models.REQDET>, Portal_FYV.Models.Usuario, SelectList>
+@{ 
+    List<SelectListItem> opciones = new List<SelectListItem>();
+
+    foreach (var reqhdr in Model.Item1)
+    {
+        // Personaliza el texto que se mostrará en cada opción
+        string textoOpcion = $"{reqhdr.Sucursal} - {reqhdr.Fecha_creacion.ToString("M")} ( {String.Join(", ", Model.Item2.Where(x => x.Id_REQHDR == reqhdr.Id_REQHDR).Select(x => x.Clave_articulo).ToArray())} )";
+
+        // Crea un objeto SelectListItem con el valor y el texto personalizado
+        SelectListItem opcion = new SelectListItem
+        {
+            Value = reqhdr.Id_REQHDR.ToString(),
+            Text = textoOpcion
+        };
+
+        opciones.Add(opcion);
+    }
+
+    // Crea el SelectList con la lista de opciones personalizadas
+    SelectList reqhdrsList = new SelectList(opciones, "Value", "Text");
+}
+
+<div class="bg-white validar-consolidacion datasets" data-sucursal="@Session["Id_Usuario"]" data-fru="@Model.Item3.permitir_Fru" data-sec="@Model.Item3.permitir_Sec" data-veg="@Model.Item3.permitir_Veg">
+    <div class="col-12 col-sm-12 col-md-12 row m-0 p-3 bg-light bg-gradient shadow-sm mb-5 border-end border-start border-5 border-primary rounded">
+
+        <div class="form-group col-12 col-sm-12 d-flex flex-wrap">
+            <h2 class="text-primary fw-bold">Información de consolidación.</h2>
+            <input type="hidden" name="Id_REQHDRs" id="Id_REQHDRs" value="@String.Join(",", Model.Item1.Select(x => x.Id_REQHDR).ToArray())" />
+
+            <div class="d-flex ms-auto gap-3">
+                <button class="btn btn-success btn-lg ms-auto" type="button" onclick="saveREQHDRS(1)"><i class="bi bi-check-circle me-2"></i>Validar</button>
+                <button class="btn btn-secondary btn-lg ms-2" type="button" onclick="saveREQHDRS(0)"><i class="bi bi-x-circle me-2"></i>Cancelar</button>
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-sm-6">
+            <label class="control-label col-md-12 fw-bold m-0">Fecha de consulta:</label>
+            <div class="col-md-10">
+                <div>
+                    @{
+                        var fechas = Model.Item1.OrderBy(x => x.Fecha_creacion).Select(x => x.Fecha_creacion).Distinct();
+                        var primeraFecha = fechas.FirstOrDefault();
+                        var ultimaFecha = fechas.LastOrDefault();
+                    } 
+
+                    @primeraFecha - @ultimaFecha
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-sm-6">
+            <label class="control-label col-md-12 fw-bold m-0">Total validado:</label>
+            <div class="col-md-10">
+                <div class="total-sum">
+                    @Model.Item2.Select(x => x.Cantidad_validada).Sum()
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-sm-6">
+            <label class="control-label col-md-12 fw-bold m-0">Sucursales:</label>
+            <div class="col-md-10">
+                <div>
+                    @foreach (var sucursal in Model.Item1.Select(x => x.Sucursal).Distinct())
+                    {
+                        if (sucursal == "JUA")
+                        {
+                            <span class="badge rounded-pill text-bg-primary p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                        }
+                        else if (sucursal == "GUA")
+                        {
+                            <span class="badge rounded-pill text-bg-secondary p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                        }
+                        else if (sucursal == "OFE")
+                        {
+                            <span class="badge rounded-pill text-bg-success p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                        }
+                        else if (sucursal == "BAL")
+                        {
+                            <span class="badge rounded-pill text-bg-danger p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                        }
+                        else if (sucursal == "GTO")
+                        {
+                            <span class="badge rounded-pill text-bg-warning p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                        }
+                        else if (sucursal == "CDI")
+                        {
+                            <span class="badge rounded-pill text-bg-info p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                        }
+                        else if (sucursal == "JAR")
+                        {
+                            <span class="badge rounded-pill text-bg-light p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                        }
+                        else if (sucursal == "AMG")
+                        {
+                            <span class="badge rounded-pill text-bg-dark p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive rounded rounded-2 border">
+        <table class="table table-striped m-0" id="productosConsolidados">
+            <thead class="table-dark">
+                <tr>
+                    <th>
+                        Clave
+                    </th>
+                    <th>
+                        Descripción
+                    </th>
+                    <th>
+                        Desgloce
+                    </th>
+                    <th>
+                        Total
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Item2.Select(x => x.Descripcion).Distinct())
+                {
+                    int[] itemsREQHDR = Model.Item2.Where(x => x.Descripcion == item).Select(x => x.Id_REQHDR).ToArray();
+                    decimal? total = Model.Item2.Where(x => x.Descripcion == item).Select(x => x.Cantidad_validada).Sum();
+                    string[] sucursales = Model.Item1.Where(x => itemsREQHDR.Contains(x.Id_REQHDR)).Select(x => x.Sucursal).ToArray();
+                    string info;
+                    int Id_REQDET = Model.Item2.FirstOrDefault(x => x.Descripcion == item).Id_REQDET;
+
+                    <tr class="py-3" id="tr_@String.Join("_", Model.Item2.Where(x => x.Descripcion == item).Select(x => x.Id_REQDET).ToArray())">
+                        <td>
+                            <div class="my-0">
+                                @Html.DisplayFor(modelItem => Model.Item2.FirstOrDefault(x => x.Descripcion == item).Clave_articulo)
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="my-0">
+                                <div class="accordion accordion-flush" id="accordionFlush-@Id_REQDET">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-@Id_REQDET" aria-expanded="false" aria-controls="flush-@Model.Item2.FirstOrDefault(x => x.Descripcion == item).Id_REQDET">
+                                                @Html.DisplayFor(model => item)
+                                            </button>
+                                        </h2>
+                                    </div>
+                                </div>
+                                <div id="flush-@Id_REQDET" class="accordion-collapse collapse" data-bs-parent="#accordionFlush-@Id_REQDET">
+                                    <div class="accordion-body">
+                                        <div class="p-2 bg-light">
+                                            <div class="d-flex flex-column gap-4 m-1">
+                                                @foreach (var sucursal in sucursales.Distinct())
+                                                {
+                                                    decimal? cantidadValidada = Model.Item2.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Cantidad_validada;
+                                                    int? id_EmbalajeValidado = Convert.ToInt32(Model.Item2.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Id_Embalaje_validado);
+                                                    int id_rd = Convert.ToInt32(Model.Item2.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Id_REQDET);
+                                                    <div class="d-flex my-1">
+                                                        <div class="d-flex gap-4">
+                                                            <b>@sucursal:</b>
+                                                            <div class="d-flex flex-column gap-3">
+                                                                <span class="embalaje_@id_rd">&nbsp;@Model.Item2.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Embalaje.Tipo_Embalaje</span>
+                                                                @Html.DropDownListFor(model => id_EmbalajeValidado, Model.Item4.Select(x => new SelectListItem
+                                                                {
+                                                                    Text = x.Text,
+                                                                    Value = x.Value,
+                                                                    Selected = x.Value == (id_EmbalajeValidado == 0 ? 0 : id_EmbalajeValidado).ToString() // Aquí se compara el valor con id_EmbalajeValidado
+                                                                }), "Seleccione un tipo de embalaje", new { @class = "form-control", @id = "id_EmbalajeValidado_" + id_rd })
+                                                            </div>
+                                                            <div class="d-flex flex-column gap-3">
+                                                                <span class="cantidad_@id_rd">&nbsp;@(cantidadValidada != null ? cantidadValidada : 0)</span>
+                                                                <input type="number" class="form-control text-box single-line" name="cantidad_Validada" id="cantidad_Validada_@id_rd" value="@(cantidadValidada != null ? cantidadValidada : 0)" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="ms-auto d-flex gap-2">
+                                                            <div>
+                                                                <button class="btn btn-sm btn-primary rounded-1 m-0 w-auto" type="button" onclick="confirmEdit(@id_rd, this)"><i class="bi bi-pencil"></i></button>
+                                                            </div>
+                                                            <div>
+                                                                <div class="m-0 w-auto">
+                                                                    <button class="btn btn-sm btn-danger rounded-1 w-auto" type="button" onclick="deleteREQDET(@id_rd, this, '@sucursal')"><i class="bi bi-trash"></i></button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="my-0">
+                                @foreach (var sucursal in sucursales.Distinct())
+                                {
+                                    decimal? cantidadValidada = Model.Item2.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Cantidad_validada;
+                                    info = sucursal + " - " + (cantidadValidada != null ? cantidadValidada : 0);
+                                    int id_rd = Convert.ToInt32(Model.Item2.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Id_REQDET);
+
+                                    if (sucursal == "JUA")
+                                    {
+                                        <span class="badge rounded-pill text-bg-primary p-2 m-1 sucursal_@id_rd">@info</span>
+                                    }
+                                    else if (sucursal == "GUA")
+                                    {
+                                        <span class="badge rounded-pill text-bg-secondary p-2 m-1 sucursal_@id_rd">@info</span>
+                                    }
+                                    else if (sucursal == "OFE")
+                                    {
+                                        <span class="badge rounded-pill text-bg-success p-2 m-1 sucursal_@id_rd">@info</span>
+                                    }
+                                    else if (sucursal == "BAL")
+                                    {
+                                        <span class="badge rounded-pill text-bg-danger p-2 m-1 sucursal_@id_rd">@info</span>
+                                    }
+                                    else if (sucursal == "GTO")
+                                    {
+                                        <span class="badge rounded-pill text-bg-warning p-2 m-1 sucursal_@id_rd">@info</span>
+                                    }
+                                    else if (sucursal == "CDI")
+                                    {
+                                        <span class="badge rounded-pill text-bg-info p-2 m-1 sucursal_@id_rd">@info</span>
+                                    }
+                                    else if (sucursal == "JAR")
+                                    {
+                                        <span class="badge rounded-pill text-bg-light p-2 m-1 sucursal_@id_rd">@info</span>
+                                    }
+                                    else if (sucursal == "AMG")
+                                    {
+                                        <span class="badge rounded-pill text-bg-dark p-2 m-1 sucursal_@id_rd">@info</span>
+                                    }
+
+                                }
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="my-0">
+                                @total
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+       
+    <div class="d-grid gap-2 my-3 col-6 mx-auto">
+        <button class="btn btn-primary btn-lg" data-bs-target="#agregarProducto" data-bs-toggle="modal" type="button"><i class="bi bi-plus-square-dotted me-2"></i>Añadir nuevo registro</button>
+    </div>
+        
+</div>
+
+<div class="modal fade" id="agregarProducto" aria-hidden="true" aria-labelledby="agregarProductoLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="agregarProductoLabel">Elegir Producto</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="input-group my-4 mx-auto justify-content-center">
+                        @Html.DropDownList("select_Id_REQHDR", reqhdrsList, htmlAttributes: new { @class = "form-control" })
+
+                        <input id="texto" name="texto" type="text" class="form-control" placeholder="Buscar...">
+                        <button class="btn btn-outline-primary" type="button" id="buscar"><i class="bi bi-search me-2"></i>Buscar</button>
+                    </div>
+                </div>
+                <div class="table-responsive rounded rounded-2 border">
+                    <table class="table table-striped my-0" id="tablaProductos">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>
+                                    # Art
+                                </th>
+                                <th>
+                                    Descripción
+                                </th>
+                                <th>
+                                    # Existencia
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-group-divider">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="productoElegido" aria-hidden="true" aria-labelledby="productoElegidoLabel2" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="productoElegidoLabel2">Agregar Producto</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <div class="col-12 col-md-12">
+                        <div class="row m-0">
+
+                            <div class="form-group col-12 col-md-3">
+                                <label for="Fecha_ultima_compra" class="control-label">Fecha Ultima Compra:</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" type="date" name="Fecha_ultima_compra" id="Fecha_ultima_compra" />
+                                </div>
+                            </div>
+
+                            <div class="form-group col-12 col-md-3">
+                                <label for="Cantidad_ultima_compra" class="control-label">Cantidad Ultima Compra:</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" type="number" name="Cantidad_ultima_compra" id="Cantidad_ultima_compra" />
+                                </div>
+                            </div>
+
+                            <div class="form-group col-12 col-md-3">
+                                <label for="Fecha_existencia" class="control-label">Fecha Existencia:</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" type="date" name="Fecha_existencia" id="Fecha_existencia" />
+                                </div>
+                            </div>
+
+                            <div class="form-group col-12 col-md-3">
+                                <label for="Clave_articulo" class="control-label">Clave Artículo:</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" type="text" name="Clave_articulo" id="Clave_articulo" />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="row m-0">
+
+                            <div class="form-group col-12 col-md-3">
+                                <label for="Descripcion" class="control-label">Descripción:</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" type="text" name="Descripcion" id="Descripcion" />
+                                </div>
+                            </div>
+
+                            <div class="form-group col-12 col-md-3">
+                                <label for="Existencia" class="control-label">Existencia:</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" type="number" name="Existencia" id="Existencia" />
+                                </div>
+                            </div>
+
+                            <div class="form-group col-12 col-md-3">
+                                <label for="Cantidad_solicitada" class="control-label">Cantidad Solicitada:</label>
+                                <div class="col-md-10">
+                                    <input class="form-control" type="number" name="Cantidad_solicitada" id="Cantidad_solicitada" />
+                                </div>
+                            </div>
+
+                            <div class="form-group col-12 col-md-3">
+                                <label for="Id_Embalaje" class="control-label col-md-2">Embalaje:</label>
+                                <div class="col-md-10">
+                                    @Html.DropDownList("Id_Embalaje", Model.Item4, htmlAttributes: new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-bs-target="#agregarProducto" data-bs-toggle="modal">Regresar</button>
+                <button class="btn btn-primary" onclick="saveREQDET()" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-plus-circle me-2"></i>Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/REQDETsController.js"></script>
+
+<script src="~/Scripts/Consolidation.js"></script>

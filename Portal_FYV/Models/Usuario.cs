@@ -11,6 +11,11 @@ namespace Portal_FYV.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Usuario()
         {
+            permitir_Fru = false;
+            permitir_Sec = false;
+            permitir_Veg = false;
+            Id_Estatus = 1;
+            Prorroga = "36";
             REQHDRs = new HashSet<REQHDR>();
             REQHDRs1 = new HashSet<REQHDR>();
             UsuariosAltas = new HashSet<UsuariosAltas>();
@@ -97,6 +102,11 @@ namespace Portal_FYV.Models
 
         [StringLength(50)]
         public string Contacto_tel3 { get; set; }
+
+        public bool permitir_Fru { get; set; }
+        public bool permitir_Sec { get; set; }
+        public bool permitir_Veg { get; set; }
+        public string Prorroga { get; set; }
 
         public virtual Estatus Estatus { get; set; }
 

@@ -32,6 +32,8 @@ namespace Portal_FYV.Models
         [Required]
         public string Subfamilia { get; set; }
 
+        [Required]
+        public string Unidades { get; set; }
         public bool Estatus { get; set; }
     }
 }

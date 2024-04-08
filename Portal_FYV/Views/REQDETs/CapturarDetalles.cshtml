@@ -1,10 +1,11 @@
-﻿
+﻿@model Portal_FYV.Models.Usuario
+
 @{
     ViewBag.Title = "CapturarDetalles";
 }
 
 <script src="~/Scripts/REQDETsController.js"></script>
-<div class="bg-white capturarDetalles" data-sucursal="@Session["Id_Usuario"]">
+<div class="bg-white capturarDetalles datasets" data-sucursal="@Session["Id_Usuario"]" data-fru="@Model.permitir_Fru" data-sec="@Model.permitir_Sec" data-veg="@Model.permitir_Veg">
     <h2>Capturar</h2>
 
     <div>
@@ -147,7 +148,7 @@
                                         <input class="form-control" type="number" name="Cantidad_solicitada" id="Cantidad_solicitada" />
                                     </div>
                                 </div>
-                                
+
                                 <div class="form-group col-12 col-md-3">
                                     <label for="Id_Embalaje" class="control-label col-md-2">Embalaje:</label>
                                     <div class="col-md-10">

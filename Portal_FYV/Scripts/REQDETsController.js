@@ -10,7 +10,7 @@ function getProducts(producto, clave) {
         imprimirEnTablaAgregar(dataProductos, "tablaProductos")
     }).fail(function (jqXHR, textStatus, errorThrown) {
         // Si la solicitud falla, puedes manejar el error aquí.
-        dataProductos = '[{"cve_art":"46829","existencia":0.0000,"descripcion":"MANGO PICADO EN CHAROLA ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"06/03/2024 19:16:57"},{"cve_art":"124","existencia":0.0000,"descripcion":"MANGO MANILILLA KG ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"06/03/2024 19:16:57"},{"cve_art":"28942","existencia":0.0000,"descripcion":"MANGO AHOGADO GRANEL ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"06/03/2024 19:16:58"},{"cve_art":"47","existencia":0.0000,"descripcion":"MANGO ATAULFO KG ","cant":0.0,"fec":"","CantidadVendida":574.7400,"Cantidad_Real":0.0,"fecha_consulta":"06/03/2024 19:17:03"},{"cve_art":"48","existencia":0.0000,"descripcion":"MANGO HADEN ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"06/03/2024 19:17:03"},{"cve_art":"49","existencia":0.0000,"descripcion":"MANGO MANILA ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"06/03/2024 19:17:04"},{"cve_art":"50","existencia":0.0000,"descripcion":"MANGO ORO ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"06/03/2024 19:17:04"},{"cve_art":"51","existencia":78.0550,"descripcion":"MANGO TOMY KG ","cant":0.0,"fec":"","CantidadVendida":6.2600,"Cantidad_Real":0.0,"fecha_consulta":"06/03/2024 19:17:05"},{"cve_art":"55","existencia":0.0000,"descripcion":"MANGO KENT ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"06/03/2024 19:17:05"},{"cve_art":"669","existencia":0.0000,"descripcion":"FRUTA DESIDRATADA MANGO IMPORTADO ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"06/03/2024 19:17:06"},{"cve_art":"670","existencia":0.0000,"descripcion":"FRUTA MANGO C/CHILE ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"06/03/2024 19:17:06"},{"cve_art":"825","existencia":0.0000,"descripcion":"SNACK MANGO ENCHILADO ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"06/03/2024 19:17:07"}]';
+        dataProductos = '[{"cve_art":"46829","existencia":0.0000,"descripcion":"MANGO PICADO EN CHAROLA                                     ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"21/03/2024 18:45:12","linea":"FYVE","sublinea":"FYVE","familia":"FREC","subfamilia":"NOAP"},{"cve_art":"124","existencia":0.0000,"descripcion":"MANGO MANILILLA KG                                          ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"21/03/2024 18:45:12","linea":"FYVE","sublinea":"FYVE","familia":"FRUT","subfamilia":"NOAP"},{"cve_art":"28942","existencia":0.0000,"descripcion":"MANGO AHOGADO GRANEL                                        ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"21/03/2024 18:45:13","linea":"FYVE","sublinea":"FYVE","familia":"FRUT","subfamilia":"NOAP"},{"cve_art":"47","existencia":0.0000,"descripcion":"MANGO ATAULFO  KG                                           ","cant":0.0,"fec":"","CantidadVendida":313.0400,"Cantidad_Real":0.0,"fecha_consulta":"21/03/2024 18:45:18","linea":"FYVE","sublinea":"FYVE","familia":"FRUT","subfamilia":"NOAP"},{"cve_art":"48","existencia":0.0000,"descripcion":"MANGO HADEN                                                 ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"21/03/2024 18:45:19","linea":"FYVE","sublinea":"FYVE","familia":"FRUT","subfamilia":"NOAP"},{"cve_art":"49","existencia":0.0000,"descripcion":"MANGO MANILA                                                ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"21/03/2024 18:45:19","linea":"FYVE","sublinea":"FYVE","familia":"FRUT","subfamilia":"NOAP"},{"cve_art":"50","existencia":0.0000,"descripcion":"MANGO ORO                                                   ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"21/03/2024 18:45:20","linea":"FYVE","sublinea":"FYVE","familia":"FRUT","subfamilia":"NOAP"},{"cve_art":"51","existencia":78.0550,"descripcion":"MANGO TOMY KG                                               ","cant":0.0,"fec":"","CantidadVendida":10.9150,"Cantidad_Real":0.0,"fecha_consulta":"21/03/2024 18:45:20","linea":"FYVE","sublinea":"FYVE","familia":"FRUT","subfamilia":"NOAP"},{"cve_art":"55","existencia":0.0000,"descripcion":"MANGO KENT                                                  ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"21/03/2024 18:45:21","linea":"FYVE","sublinea":"FYVE","familia":"FRUT","subfamilia":"NOAP"},{"cve_art":"669","existencia":0.0000,"descripcion":"FRUTA DESIDRATADA MANGO IMPORTADO                           ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"21/03/2024 18:45:21","linea":"PSEC","sublinea":"PSEC","familia":"PRSE","subfamilia":"NOAP"},{"cve_art":"670","existencia":0.0000,"descripcion":"FRUTA MANGO C/CHILE                                         ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"21/03/2024 18:45:22","linea":"PSEC","sublinea":"PSEC","familia":"PRSE","subfamilia":"NOAP"},{"cve_art":"825","existencia":0.0000,"descripcion":"SNACK MANGO ENCHILADO                                       ","cant":0.0,"fec":"","CantidadVendida":0.0,"Cantidad_Real":0.0,"fecha_consulta":"21/03/2024 18:45:22","linea":"PSEC","sublinea":"PSEC","familia":"PRSE","subfamilia":"NOAP"}]';
         console.log("Productos recibidos:", JSON.parse(dataProductos));
         imprimirEnTablaAgregar(dataProductos, "tablaProductos")
     });
@@ -26,19 +26,26 @@ function imprimirEnTablaAgregar(data, tablaId) {
 
     // Crear una fila para cada producto y agregarla a la tabla
     data.forEach(producto => {
-        let fila = '<tr id="obtenido-' + producto.cve_art + '">'
-                        + '<td>' + producto.cve_art + '</td>'
-                        + '<td>' + producto.descripcion + '</td>'
-                        + '<td>' + producto.existencia + '</td>'
-                        + '<td>'
-                        + '<button class="btn btn-primary d-flex w-100 justify-content-evenly" onclick="getTablaProductosItem(this)" data-cveart="' + producto.cve_art + '" data-description="' + producto.descripcion + '" data-existencia="' + producto.Cantidad_Real + '" data-fechaUltimaCompra="' + producto.fec + '" data-fechaExistencia="' + producto.fecha_consulta + '" data-bs-target="#productoElegido" data-bs-toggle="modal"><i class="bi bi-check2-circle me-2"></i>Elegir</button>'
-                        + '</td>'
-                    + '</tr>'
-        // Agregar la fila a la tabla
-        tabla.innerHTML += fila;
+
+        let is_frut = document.querySelector('.datasets').dataset.fru == "True" ? true : false
+        let is_sec = document.querySelector('.datasets').dataset.sec == "True" ? true : false
+        let is_verd = document.querySelector('.datasets').dataset.veg == "True" ? true : false
+        
+        if ((producto.familia == "FRUT" && is_frut) || (producto.familia == "PRSE" && is_sec) || (producto.familia == "VERD" && is_verd)) {
+            let fila = '<tr id="obtenido-' + producto.cve_art + '">'
+                            + '<td>' + producto.cve_art + '</td>'
+                            + '<td>' + producto.descripcion + '</td>'
+                            + '<td>' + producto.existencia + '</td>'
+                            + '<td>'
+                            + '<button class="btn btn-primary d-flex w-100 justify-content-evenly" onclick="getTablaProductosItem(this)" data-cveart="' + producto.cve_art + '" data-description="' + producto.descripcion + '" data-existencia="' + producto.Cantidad_Real + '" data-fechaUltimaCompra="' + producto.fec + '" data-fechaExistencia="' + producto.fecha_consulta + '" data-bs-target="#productoElegido" data-bs-toggle="modal"><i class="bi bi-check2-circle me-2"></i>Elegir</button>'
+                            + '</td>'
+                        + '</tr>'
+            // Agregar la fila a la tabla
+            tabla.innerHTML += fila;
+        }
     });
 
-    tabla.closest('div.modal-content').querySelector('.modal-footer').innerHTML = data.length > 0 ? '<div class="alert alert-warning my-2 w-100" role="alert">Se ha encontrado más de 1 artículo. Elija uno para continuar.</div>' : '<div class="alert alert-warning my-2 w-100" role="alert">Producto no encontrado</div>';
+    tabla.closest('div.modal-content').querySelector('.modal-footer').innerHTML = tabla.childElementCount > 0 ? '<div class="alert alert-warning my-2 w-100" role="alert">Se ha encontrado más de 1 artículo. Elija uno para continuar.</div>' : '<div class="alert alert-warning my-2 w-100" role="alert">Producto no encontrado</div>';
 }
 
 function imprimirEnTabla(tablaId) {
@@ -104,13 +111,13 @@ function getTablaProductosItem(element) {
 
 
 // Declarar un arreglo vacío para almacenar objetos
-var arrayDeREQDETs = [];
+var rs = [];
 
 
 function saveREQDETS() {
     let table = document.querySelector('#productosSeleccionados tbody');
 
-    arrayDeREQDETs = [];
+    rs = [];
 
     table.childNodes.forEach(tr => {
         // Crear un objeto y añadirlo al arreglo
@@ -123,7 +130,7 @@ function saveREQDETS() {
             "Id_Embalaje": tr.children[5].dataset.embalaje
         };
 
-        arrayDeREQDETs.push(reqdet);
+        rs.push(reqdet);
     });
 
     // Enviar el arreglo de objetos al controlador utilizando AJAX
@@ -131,7 +138,7 @@ function saveREQDETS() {
         url: '/REQDETs/CreateREQDETS',
         type: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify(arrayDeREQDETs),
+        data: JSON.stringify(rs),
         success: function (response) {
             // Manejar la respuesta del servidor si es necesario
             console.log('Datos enviados correctamente');

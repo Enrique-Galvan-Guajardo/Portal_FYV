@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
+using System.Web.Helpers;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using Portal_FYV.Models;
@@ -25,11 +26,22 @@ namespace Portal_FYV.Controllers
         // GET: REQDETs
         public ActionResult CapturarDetalles()
         {
-            ViewBag.Id_Embalaje = new SelectList(db.Embalajes, "Id_Embalaje", "Tipo_Embalaje");
-            return View();
-        }
+            int id = Convert.ToInt32(Session["Id_Usuario"]);
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
 
-        
+            switch (rol)
+            {
+                case "Admin+":
+                case "Admin":
+                case "Compras": 
+                case "Requisiciones":
+                    Usuario usuario = db.Usuarios.Find(id);
+                    ViewBag.Id_Embalaje = new SelectList(db.Embalajes, "Id_Embalaje", "Tipo_Embalaje");
+                    return View(usuario);
+                default:
+                    return RedirectToAction("Index", "Home");
+            }
+        }
 
         // GET: REQDETs/Details/5
         public ActionResult Details(int? id)
@@ -79,26 +91,40 @@ namespace Portal_FYV.Controllers
             Usuario us = db.Usuarios.Find(Convert.ToInt32(Session["Id_Usuario"]));
             try
             {
-                REQHDR rh = new REQHDR();
+                // Obtener la fecha actual
+                DateTime fechaActual = DateTime.Now.Date;
 
-                rh.Sucursal = us.Sucursal;
-                rh.Fecha_creacion = DateTime.Now;
-                rh.Id_Creador = us.Id_Usuario;
-                rh.Estatus = 1;
-                db.REQHDRs.Add(rh);
-                db.SaveChanges();
+                // Consultar la base de datos para verificar si existe un REQHDR con la fecha de hoy
+                bool existeRegistroHoy = db.REQHDRs.Any(r => DbFunctions.TruncateTime(r.Fecha_creacion) == fechaActual);
 
-                foreach (var item in rs)
-                {
-                    item.Id_REQHDR = rh.Id_REQHDR;
-                    item.Estatus = "1";
-                    item.Fecha_creacion = DateTime.Now;
+                if (!existeRegistroHoy || us.Prorroga == "-1") {
+                    REQHDR rh = new REQHDR();
+
+                    rh.Sucursal = us.Sucursal;
+                    rh.Fecha_creacion = DateTime.Now;
+                    rh.Id_Creador = us.Id_Usuario;
+                    rh.Estatus = 1;
+                    db.REQHDRs.Add(rh);
+                    db.SaveChanges();
+
+                    foreach (var item in rs)
+                    {
+                        item.Id_REQHDR = rh.Id_REQHDR;
+                        item.Cantidad_validada = item.Cantidad_solicitada;
+                        item.Id_Embalaje_validado = item.Id_Embalaje;
+                        item.Estatus = "1";
+                        item.Fecha_creacion = DateTime.Now;
+                    }
+
+                    db.REQDETs.AddRange(rs);
+                    db.SaveChanges();
+            
+                    return new HttpStatusCodeResult(HttpStatusCode.OK);
                 }
-
-                db.REQDETs.AddRange(rs);
-                db.SaveChanges();
-
-                return new HttpStatusCodeResult(HttpStatusCode.OK);
+                else
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                }
             }
             catch (Exception)
             {
@@ -142,6 +168,68 @@ namespace Portal_FYV.Controllers
             return View(rEQDET);
         }
 
+        [HttpPost]
+        public ActionResult guardarREQDET([Bind(Include = "Id_REQDET,Id_REQHDR,Clave_articulo,Descripcion,Cantidad_solicitada,Id_Embalaje,Cantidad_validada,Id_Embalaje_validado")] REQDET rEQDET)
+        {
+            //rEQDET.Id_REQDET = 0;
+            rEQDET.Fecha_creacion = DateTime.Now;
+            rEQDET.Fecha_validacion = DateTime.Now;
+            rEQDET.Estatus = "2";
+
+            if (!db.REQDETs.Any(x => x.Descripcion == rEQDET.Descripcion && x.Id_REQHDR == rEQDET.Id_REQHDR) && rEQDET != null && rEQDET.Cantidad_validada != null && rEQDET.Id_Embalaje_validado != null)
+            {
+                try
+                {
+                    db.REQDETs.Add(rEQDET);
+                    db.SaveChanges();
+                    // Generar el token anti-falsificación
+                    var token = AntiForgery.GetHtml().ToString();
+                    // Crear un objeto anónimo con las propiedades necesarias de rEQDET
+                    // Convertir el objeto rEQDET en un objeto JSON
+                    string reqdetJson = JsonConvert.SerializeObject(rEQDET, new JsonSerializerSettings
+                    {
+                        // Ignorar las referencias circulares
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                        // Incluir solo propiedades que tengan un valor
+                        NullValueHandling = NullValueHandling.Ignore
+                    });
+                    return Json(new { Success = true, value = reqdetJson, Message = "Registro agregado correctamente.", Message_data = new { sucursal = db.REQHDRs.Find(rEQDET.Id_REQHDR).Sucursal, embalaje = db.Embalajes.Find(rEQDET.Id_Embalaje).Tipo_Embalaje, token}, Message_Classes = "alert-success", Message_concat = false });
+                }
+                catch (Exception)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
+                }
+            }
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        [HttpPost]
+        public ActionResult EditarCantidadValidada([Bind(Include = "Id_REQDET,Cantidad_validada,Id_Embalaje_validado")] REQDET rEQDET)
+        {
+            
+            REQDET rd = db.REQDETs.Find(rEQDET.Id_REQDET);
+            if (rEQDET.Cantidad_validada != null)
+                rd.Cantidad_validada = rEQDET.Cantidad_validada;
+            if (rEQDET.Id_Embalaje_validado != null)
+                rd.Id_Embalaje_validado = rEQDET.Id_Embalaje_validado;
+
+
+            if (rd != null)
+            {
+                try
+                {
+                    db.Entry(rd).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return new HttpStatusCodeResult(HttpStatusCode.OK);
+                }
+                catch (Exception)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
+                }
+            }
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
         // GET: REQDETs/Delete/5
         public ActionResult Delete(int? id)
         {
@@ -166,6 +254,16 @@ namespace Portal_FYV.Controllers
             db.REQDETs.Remove(rEQDET);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        // POST: REQDETs/Delete/5
+        [HttpPost, ActionName("DeleteREQDET")]
+        public ActionResult DeleteREQDET(int id)
+        {
+            REQDET rEQDET = db.REQDETs.Find(id);
+            db.REQDETs.Remove(rEQDET);
+            db.SaveChanges();
+            return Json(new { Success = true, value = "", Message = "Registro eliminado correctamente.", Message_data = "", Message_Classes = "alert-success", Message_concat = false });
         }
 
         protected override void Dispose(bool disposing)

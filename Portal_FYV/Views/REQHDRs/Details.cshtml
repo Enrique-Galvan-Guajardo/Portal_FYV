@@ -1,10 +1,10 @@
-﻿@model Tuple<Portal_FYV.Models.REQHDR, List<Portal_FYV.Models.REQDET>, SelectList>
+﻿@model Tuple<Portal_FYV.Models.REQHDR, List<Portal_FYV.Models.REQDET>, SelectList, Portal_FYV.Models.Usuario>
 
 @{
     ViewBag.Title = "Detalles Requisición";
 }
 <script src="~/Scripts/REQDETsController.js"></script>
-<div class="bg-white validateDetalles" data-sucursal="@Session["Id_Usuario"]">
+<div class="bg-white validateDetalles datasets" data-sucursal="@Session["Id_Usuario"]" data-fru="@Model.Item4.permitir_Fru" data-sec="@Model.Item4.permitir_Sec" data-veg="@Model.Item4.permitir_Veg">
 
     <div class="col-12 col-sm-12 col-md-12 row m-0 p-3 bg-light bg-gradient shadow-sm mb-5 border-end border-start border-5 border-primary rounded">
 
@@ -48,7 +48,7 @@
 
 
     <div class="table-responsive rounded rounded-2 border">
-        <table id="productosValidados" class="table table-striped m-0">
+        <table id="productosValidados" class="table table-striped m-0 table-edit">
             <thead class="table-dark">
                 <tr>
                     <th>
@@ -236,26 +236,7 @@
 
         <button class="btn btn-primary btn-lg" data-bs-target="#agregarProducto" data-bs-toggle="modal" type="button"><i class="bi bi-plus-square-dotted me-2"></i>Añadir nuevo registro</button>
         <script>
-            /*
-            document.querySelector('.addTr').addEventListener('click', function () {
-                const tr = `<tr class="newRow">
-                                <td>
-                                    ${Date.now()}
-                                </td>
-                                <td>
-                                    <input class="form-control text-box single-line" data-val="true" data-val-number="El campo Cantidad debe ser un número." id="item_Cantidad" name="item.Cantidad" type="text" value="" placeholder="Cantidad solicitada">
-                                </td>
-                                <td>
-                                    <input class="form-control text-box single-line" data-val="true" data-val-length="El campo Descripcion debe ser una cadena con una longitud máxima de 60." data-val-length-max="60" data-val-required="El campo Descripcion es obligatorio." id="item_Descripcion" name="item.Descripcion" type="text" placeholder="Descripción">
-                                </td>
-                                <td>
-                                    ${document.querySelector('.table tbody tr td:last-child select').outerHTML}
-                                </td>
-                            </tr>`
-
-                document.querySelector('.table tbody').innerHTML += tr;
-            })
-             */
+            
             document.querySelector('#buscar').addEventListener('click', function () {
                 // Selecciona el elemento por su ID (reemplaza 'elementoId' con el ID real del elemento)
                 const elemento = document.querySelector('.validateDetalles');

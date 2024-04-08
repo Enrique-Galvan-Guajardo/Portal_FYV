@@ -42,24 +42,27 @@ textarea {
                 }
 
             }
-            tr {
-                height: 8rem;
+            
+           &.table-edit{
+               tr {
+                    height: 8rem;
 
-                &:not(.newRow){
-                input, select, textarea{
-                                    visibility: hidden;
-                    }
-                }
-                
-                &:hover {
-                    span{
-                        display: none;
-                    }
+                    &:not(.newRow){
                     input, select, textarea{
-                        visibility: visible;
+                                        visibility: hidden;
+                        }
                     }
-                }
-            }   
+                
+                    &:hover {
+                        span{
+                            display: none;
+                        }
+                        input, select, textarea{
+                            visibility: visible;
+                        }
+                    }
+                }   
+           }
         }
         form{
             margin-bottom: 5rem;

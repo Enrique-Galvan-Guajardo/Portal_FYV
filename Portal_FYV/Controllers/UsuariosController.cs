@@ -31,15 +31,13 @@ namespace Portal_FYV.Controllers
                 
                 Session["Id_Usuario"] = usuario.Id_Usuario;
                 Session["Sucursal"] = usuario.Sucursal;
+                Session["Rol"] = usuario.Roles.Rol;
+
                 if (usuario.Id_Rol == 3)
                 {
                     return RedirectToAction("CapturarDetalles", "REQDETs");
-
                 }
-                else
-                {
-                    return RedirectToAction("About", "Home");
-                }
+                
             }
             return RedirectToAction("Index", "Home");
         }
@@ -87,9 +85,11 @@ namespace Portal_FYV.Controllers
         // GET: Usuarios/Create
         public ActionResult Create()
         {
+            Usuario usuario = new Usuario();
+
             ViewBag.Id_Estatus = new SelectList(db.Estatus, "Id_Estatus", "Name");
             ViewBag.Id_Rol = new SelectList(db.Roles, "Id_Rol", "Rol");
-            return View();
+            return View(usuario);
         }
 
         // POST: Usuarios/Create
@@ -150,7 +150,7 @@ namespace Portal_FYV.Controllers
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id_Usuario,Username,Nombre,Correo,Contrasena,Sucursal,Id_Estatus,Fecha_Aprov,Id_Rol,Razon_social,RFC,Pais,Estado,Ciudad,Colonia,Localidad,Codigo_postal,Calle,Numero,Proveeedor_no_mks,Contacto_nombre1,Contacto_nombre2,Contacto_nombre3,Contacto_correo1,Contacto_correo2,Contacto_correo3,Contacto_tel1,Contacto_tel2,Contacto_tel3")] Usuario usuario)
+        public ActionResult Edit([Bind(Include = "Id_Usuario,Username,Nombre,Correo,Contrasena,Sucursal,Id_Estatus,Fecha_Aprov,Id_Rol,Razon_social,RFC,Pais,Estado,Ciudad,Colonia,Localidad,Codigo_postal,Calle,Numero,Proveeedor_no_mks,Contacto_nombre1,Contacto_nombre2,Contacto_nombre3,Contacto_correo1,Contacto_correo2,Contacto_correo3,Contacto_tel1,Contacto_tel2,Contacto_tel3,permitir_Fru,permitir_Sec,permitir_Veg")] Usuario usuario)
         {
             if (ModelState.IsValid)
             {
