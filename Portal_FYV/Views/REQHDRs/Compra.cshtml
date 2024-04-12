@@ -1,0 +1,140 @@
+﻿@model Tuple<List<Portal_FYV.Models.REQHDR>, List<Portal_FYV.Models.REQDET>, List<Portal_FYV.Models.UsuariosProductos>, List<Portal_FYV.Models.CatalogoProducto>>
+
+@{
+    ViewBag.Title = "Compra";
+    int Id_Usuario = Convert.ToInt32(Session["Id_Usuario"]);
+    string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+    var descripciones = Model.Item2.Select(x => x.Descripcion).Distinct();
+}
+
+<div class="bg-white productos-compra">
+    <div class="col-12 col-sm-12 col-md-12 row m-0 p-3 bg-light bg-gradient shadow-sm mb-5 border-end border-start border-5 border-primary rounded">
+        <div class="form-group col-12 col-sm-12 d-flex flex-wrap">
+            <h2 class="text-primary fw-bold">Productos comprados.</h2>
+            <input type="hidden" name="Id_REQHDRs" id="Id_REQHDRs" value="@String.Join(",", Model.Item1.Select(x => x.Id_REQHDR).ToArray())" />
+        </div>
+
+        <div class="form-group col-12 col-sm-6">
+            <label class="control-label col-md-12 fw-bold m-0">Fecha de consulta:</label>
+            <div class="col-md-10">
+                <div>
+                    @{
+                        var fechas = Model.Item1.OrderBy(x => x.Fecha_creacion).Select(x => x.Fecha_creacion).Distinct();
+                        var primeraFecha = fechas.FirstOrDefault();
+                        var ultimaFecha = fechas.LastOrDefault();
+                    }
+
+                    @primeraFecha - @ultimaFecha
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-sm-6">
+            <label class="control-label col-md-12 fw-bold m-0">Total de productos:</label>
+            <div class="col-md-10">
+                <div>
+                    @descripciones.Count()
+                    <!--Total Productos-->
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-sm-6">
+            <label class="control-label col-md-12 fw-bold m-0">Sucursales:</label>
+            <div class="col-md-10">
+                <div>
+                    @foreach (var sucursal in Model.Item1.Select(x => x.Sucursal).Distinct())
+                    {
+                        if (sucursal == "JUA")
+                        {
+                            <span class="badge rounded-pill text-bg-primary p-2 m-1">@sucursal</span>
+                        }
+                        else if (sucursal == "GUA")
+                        {
+                            <span class="badge rounded-pill text-bg-secondary p-2 m-1">@sucursal</span>
+                        }
+                        else if (sucursal == "OFE")
+                        {
+                            <span class="badge rounded-pill text-bg-success p-2 m-1">@sucursal</span>
+                        }
+                        else if (sucursal == "BAL")
+                        {
+                            <span class="badge rounded-pill text-bg-danger p-2 m-1">@sucursal</span>
+                        }
+                        else if (sucursal == "GTO")
+                        {
+                            <span class="badge rounded-pill text-bg-warning p-2 m-1">@sucursal</span>
+                        }
+                        else if (sucursal == "CDI")
+                        {
+                            <span class="badge rounded-pill text-bg-info p-2 m-1">@sucursal</span>
+                        }
+                        else if (sucursal == "JAR")
+                        {
+                            <span class="badge rounded-pill text-bg-light p-2 m-1">@sucursal</span>
+                        }
+                        else if (sucursal == "AMG")
+                        {
+                            <span class="badge rounded-pill text-bg-dark p-2 m-1">@sucursal</span>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-sm-6 ms-auto">
+            <label class="control-label col-md-12 fw-bold m-0">Monto total:</label>
+            <div class="col-md-10">
+                <div>
+                    <span class="total-suma text-success">$0</span>
+                    <!--Monto Total Productos-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive rounded rounded-2 border">
+        <table class="table table-striped m-0" id="productosConsolidados">
+            <thead class="table-dark">
+                <tr>
+                    <th>
+                        Producto
+                    </th>
+                    <th>
+                        Cantidad Solicitada
+                    </th>
+                    <th>
+                        Cantidad Validada
+                    </th>
+                    <th>
+                        Juarez
+                    </th>
+                    <th>
+                        Villas
+                    </th>
+                    <th>
+                        Almaguer
+                    </th>
+                    <th>
+                        Jarachina
+                    </th>
+                    <th>
+                        Guanza
+                    </th>
+                    <th>
+                        Ofertas
+                    </th>
+                    <th>
+                        Guanajuato
+                    </th>
+                    <th>
+                        Costo
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+               
+            </tbody>
+        </table>
+    </div>
+</div>

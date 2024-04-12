@@ -1,5 +1,5 @@
 ﻿@model Tuple<List<Portal_FYV.Models.REQHDR>, List<Portal_FYV.Models.REQDET>, Portal_FYV.Models.Usuario, SelectList>
-@{ 
+@{
     List<SelectListItem> opciones = new List<SelectListItem>();
 
     foreach (var reqhdr in Model.Item1)
@@ -19,13 +19,15 @@
 
     // Crea el SelectList con la lista de opciones personalizadas
     SelectList reqhdrsList = new SelectList(opciones, "Value", "Text");
+
+    DateTime dateTime = DateTime.Now.AddDays(1);
 }
 
 <div class="bg-white validar-consolidacion datasets" data-sucursal="@Session["Id_Usuario"]" data-fru="@Model.Item3.permitir_Fru" data-sec="@Model.Item3.permitir_Sec" data-veg="@Model.Item3.permitir_Veg">
     <div class="col-12 col-sm-12 col-md-12 row m-0 p-3 bg-light bg-gradient shadow-sm mb-5 border-end border-start border-5 border-primary rounded">
 
         <div class="form-group col-12 col-sm-12 d-flex flex-wrap">
-            <h2 class="text-primary fw-bold">Información de consolidación.</h2>
+            <h2 class="text-primary fw-bold">Información de solicitud.</h2>
             <input type="hidden" name="Id_REQHDRs" id="Id_REQHDRs" value="@String.Join(",", Model.Item1.Select(x => x.Id_REQHDR).ToArray())" />
 
             <div class="d-flex ms-auto gap-3">
@@ -42,7 +44,7 @@
                         var fechas = Model.Item1.OrderBy(x => x.Fecha_creacion).Select(x => x.Fecha_creacion).Distinct();
                         var primeraFecha = fechas.FirstOrDefault();
                         var ultimaFecha = fechas.LastOrDefault();
-                    } 
+                    }
 
                     @primeraFecha - @ultimaFecha
                 </div>
@@ -64,40 +66,60 @@
                 <div>
                     @foreach (var sucursal in Model.Item1.Select(x => x.Sucursal).Distinct())
                     {
-                        if (sucursal == "JUA")
-                        {
-                            <span class="badge rounded-pill text-bg-primary p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                        }
-                        else if (sucursal == "GUA")
-                        {
-                            <span class="badge rounded-pill text-bg-secondary p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                        }
-                        else if (sucursal == "OFE")
-                        {
-                            <span class="badge rounded-pill text-bg-success p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                        }
-                        else if (sucursal == "BAL")
-                        {
-                            <span class="badge rounded-pill text-bg-danger p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                        }
-                        else if (sucursal == "GTO")
-                        {
-                            <span class="badge rounded-pill text-bg-warning p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                        }
-                        else if (sucursal == "CDI")
-                        {
-                            <span class="badge rounded-pill text-bg-info p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                        }
-                        else if (sucursal == "JAR")
-                        {
-                            <span class="badge rounded-pill text-bg-light p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                        }
-                        else if (sucursal == "AMG")
-                        {
-                            <span class="badge rounded-pill text-bg-dark p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                        }
+                        
+                        <details>
+                            <summary>
+                                @if (sucursal == "JUA")
+                                {
+                                <span class="badge rounded-pill text-bg-primary p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+
+                                }
+                                else if (sucursal == "GUA")
+                                {
+                                <span class="badge rounded-pill text-bg-secondary p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                }
+                                else if (sucursal == "OFE")
+                                {
+                                <span class="badge rounded-pill text-bg-success p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                }
+                                else if (sucursal == "BAL")
+                                {
+                                <span class="badge rounded-pill text-bg-danger p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                }
+                                else if (sucursal == "GTO")
+                                {
+                                <span class="badge rounded-pill text-bg-warning p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                }
+                                else if (sucursal == "CDI")
+                                {
+                                <span class="badge rounded-pill text-bg-info p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                }
+                                else if (sucursal == "JAR")
+                                {
+                                <span class="badge rounded-pill text-bg-light p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                }
+                                else if (sucursal == "AMG")
+                                {
+                                <span class="badge rounded-pill text-bg-dark p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                }
+                                Fechas límites:
+                            </summary>
+                            <div class="col-md-10">
+                                <div>
+                                    Proveedores: @(Convert.ToDateTime(Model.Item1.Where(x => x.Sucursal == sucursal && x.Estatus != 0).Select(x => x.Fecha_lim_proveedor).FirstOrDefault()).ToString("D")) <br />
+                                    Recepción: @(Convert.ToDateTime(Model.Item1.Where(x => x.Sucursal == sucursal && x.Estatus != 0).Select(x => x.Fecha_lim_recepcion).FirstOrDefault()).ToString("D"))
+                                </div>
+                            </div>
+                        </details>
                     }
                 </div>
+            </div>
+        </div>
+
+        <div class="form-group col-12 col-sm-6">
+            <label class="control-label col-md-12 fw-bold m-0">Establecer fechas límite:</label>
+            <div class="col-md-10">
+                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#FechasModal">Mostrar</button>
             </div>
         </div>
     </div>
@@ -248,11 +270,11 @@
             </tbody>
         </table>
     </div>
-       
+
     <div class="d-grid gap-2 my-3 col-6 mx-auto">
         <button class="btn btn-primary btn-lg" data-bs-target="#agregarProducto" data-bs-toggle="modal" type="button"><i class="bi bi-plus-square-dotted me-2"></i>Añadir nuevo registro</button>
     </div>
-        
+
 </div>
 
 <div class="modal fade" id="agregarProducto" aria-hidden="true" aria-labelledby="agregarProductoLabel" tabindex="-1">
@@ -375,6 +397,73 @@
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-bs-target="#agregarProducto" data-bs-toggle="modal">Regresar</button>
                 <button class="btn btn-primary" onclick="saveREQDET()" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-plus-circle me-2"></i>Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="FechasModal" tabindex="-1" aria-labelledby="FechasModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="FechasModalLabel">Establecer fechas límite</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row col-12 col-sm-12 mx-0">
+                    <div class="form-group col-12 col-sm-6">
+                        <label class="control-label col-md-12 fw-bold m-0">Fecha límite proveedores:</label>
+                        <div class="col-md-10">
+                            <input type="date" class="form-control" name="Fecha_limite_provs" id="Fecha_limite_provs" value="@(dateTime.ToString("yyyy-MM-dd"))" />
+                        </div>
+                    </div>
+
+                    <div class="form-group col-12 col-sm-6">
+                        <label class="control-label col-md-12 fw-bold m-0">Fecha límite recepción:</label>
+                        <div class="col-md-10">
+                            <input type="date" class="form-control" name="Fecha_limite_recepcion" id="Fecha_limite_recepcion" value="@(dateTime.ToString("yyyy-MM-dd"))" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="updateLimitDates()">Guardar</button>
+                <script>
+                    function updateLimitDates() {
+                        let ids = document.getElementById('Id_REQHDRs').value.split(',')
+                        REQHDRs = [];
+
+                        ids.forEach(Id_REQHDR => {
+                            // Crear un objeto y añadirlo al arreglo
+                            let rs = {
+                                "Id_REQHDR": parseInt(Id_REQHDR),
+                                "Fecha_lim_proveedor": document.getElementById('Fecha_limite_provs').value,
+                                "Fecha_lim_recepcion": document.getElementById('Fecha_limite_recepcion').value
+                            };
+
+                            REQHDRs.push(rs);
+                        });
+
+                        // Enviar el arreglo de objetos al controlador utilizando AJAX
+                        $.ajax({
+                            url: '/REQHDRs/updateDates',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(REQHDRs),
+                            success: function (response) {
+                                // Manejar la respuesta del servidor si es necesario
+                                console.log('Datos enviados correctamente');
+                                console.log(response);
+                            },
+                            error: function (xhr, status, error) {
+                                // Manejar errores si ocurrieron durante la solicitud AJAX
+                                console.error('Error al enviar datos:', error);
+                            }
+                        });
+                    }
+                </script>
             </div>
         </div>
     </div>

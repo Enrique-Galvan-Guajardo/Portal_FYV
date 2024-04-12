@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Security.Policy;
 using System.Web;
 using System.Web.Mvc;
 using Portal_FYV.Models;
@@ -148,6 +149,107 @@ namespace Portal_FYV.Controllers
             
         }
 
+        public ActionResult Compra(DateTime startDate, DateTime endDate)
+        {
+            int[] selectedIds;
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+            string sucursal = Session["Sucursal"] != null ? Session["Sucursal"].ToString() : "";
+            int id = Convert.ToInt32(Session["Id_Usuario"]);
+
+            Usuario usuario = db.Usuarios.Find(id);
+
+            List<REQHDR> rEQHDRs = new List<REQHDR>();
+            List<REQDET> rEQDETs = new List<REQDET>();
+            List<Producto> productos = new List<Producto>();
+
+            string[] descripciones;
+            int[] ids_productos;
+
+            List<CatalogoProducto> catalogo = new List<CatalogoProducto>();
+            List<UsuariosProductos> usuariosProductos = new List<UsuariosProductos>();
+
+            var modelos = new object();
+            endDate = endDate.AddDays(1);
+
+            switch (rol)
+            {
+                case "Admin+":
+                case "Admin":
+                case "Compras":
+
+                    if (startDate == null || endDate == null)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+
+                    rEQHDRs = db.REQHDRs.Where(x => x.Fecha_creacion >= startDate && x.Fecha_creacion < endDate).ToList();
+                    selectedIds = rEQHDRs.Select(x => x.Id_REQHDR).ToArray();
+                    rEQDETs = db.REQDETs.Where(x => selectedIds.Contains(x.Id_REQHDR)).ToList();
+
+                    descripciones = rEQDETs.Select(x => x.Descripcion).ToArray();
+
+                    productos = db.Productos.Where(x => descripciones.Contains(x.Descripcion)).ToList();
+
+                    ids_productos = productos.Select(x => x.Id_Producto).ToArray();
+
+                    catalogo = db.CatalogoProductos.Where(x => descripciones.Contains(x.Descripcion.Trim())).ToList();
+
+                    if (rEQDETs == null)
+                    {
+                        return HttpNotFound();
+                    }
+
+                    int[] ids_proveedores = db.UsuariosProductos.Where(x => selectedIds.Contains(x.Id_REQHDR) && ids_productos.Contains(x.Id_Producto)).Select(x => x.Id_Usuario).Distinct().ToArray();
+
+                    foreach (var r in ids_proveedores)
+                    {
+                        usuariosProductos.Add(db.UsuariosProductos.Where(x => selectedIds.Contains(x.Id_REQHDR) && ids_productos.Contains(x.Id_Producto) && x.Id_Usuario == r).OrderByDescending(x => x.Id_UsuarioProducto).FirstOrDefault());
+                    }
+
+
+                    // Crear un Tuple que contenga ambos modelos y la lista de embalajes
+                    modelos = new Tuple<List<REQHDR>, List<REQDET>, List<UsuariosProductos>, List<CatalogoProducto>>(rEQHDRs, rEQDETs, usuariosProductos, catalogo);
+
+                    return View(modelos);
+
+                case "Proveedores":
+                    if (startDate == null || endDate == null)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+
+                    rEQHDRs = db.REQHDRs.Where(x => x.Fecha_creacion >= startDate && x.Fecha_creacion < endDate).ToList();
+                    selectedIds = rEQHDRs.Select(x => x.Id_REQHDR).ToArray();
+
+                    productos = db.Productos.Where(x => x.Id_Proveedor == usuario.Id_Usuario).ToList();
+
+                    descripciones = productos.Select(x => x.Descripcion).ToArray();
+                    ids_productos = productos.Select(x => x.Id_Producto).ToArray();
+
+                    catalogo = db.CatalogoProductos.Where(x => descripciones.Contains(x.Descripcion)).ToList();
+
+                    foreach (var r in rEQHDRs)
+                    {
+                        rEQDETs.AddRange(r.REQDETs.Where(x => selectedIds.Contains(x.Id_REQHDR) && descripciones.Contains(x.Descripcion)).ToList());
+                    }
+
+                    if (rEQDETs == null)
+                    {
+                        return HttpNotFound();
+                    }
+
+                    usuariosProductos = db.UsuariosProductos.Where(x => ids_productos.Contains(x.Id_Producto) && selectedIds.Contains(x.Id_REQHDR) && x.Id_Usuario == usuario.Id_Usuario).ToList();
+
+                    // Crear un Tuple que contenga ambos modelos y la lista de embalajes
+                    modelos = new Tuple<List<REQHDR>, List<REQDET>, List<UsuariosProductos>, List<CatalogoProducto>>(rEQHDRs, rEQDETs, usuariosProductos, catalogo);
+
+                    return View(modelos);
+                default:
+                    return RedirectToAction("Index", "Home");
+            }
+
+        }
+
         [HttpPost]
         public ActionResult distribuirCompras(List<UsuariosProductos> usuariosProductos)
         {
@@ -162,6 +264,15 @@ namespace Portal_FYV.Controllers
                     UsuariosProductos up = db.UsuariosProductos.Find(item.Id_UsuarioProducto);
                     up.Cantidad_comprada = item.Cantidad_comprada;
 
+                    //Consultas para objeto ordenCompra
+
+                    REQHDR hdr = db.REQHDRs.Find(up.Id_REQHDR);
+                    Producto prd = db.Productos.Find(up.Id_Producto);
+                    REQDET rdet = db.REQDETs.FirstOrDefault(x => x.Id_REQHDR == hdr.Id_REQHDR && x.Descripcion == prd.Descripcion);
+
+
+
+                    /*
                     ordenCompra.num_orden = up.Id_REQHDR.ToString();
                     ordenCompra.cve_art = up.Producto.Clave_externa;
                     ordenCompra.suc = db.REQHDRs.Find(up.Id_REQHDR).Sucursal;
@@ -170,13 +281,33 @@ namespace Portal_FYV.Controllers
                     ordenCompra.fecha = DateTime.Now;
                     ordenCompra.estatus = "0";
                     ordenCompra.tipo = "MULTIPLE";
+                    */
 
-                    ordenCW.Add(ordenCompra);
+                    ordenCompra.Id_REQDET = "";
+                    ordenCompra.Creador = hdr.Usuario.Nombre;
+                    ordenCompra.Proveedor = up.Usuario.Nombre;
+                    ordenCompra.Id_Merksys = "";
+                    ordenCompra.Producto = prd.Descripcion;
+                    ordenCompra.Cantidad_solicitada = "";
+                    ordenCompra.Embalaje = "";
+                    ordenCompra.Precio = "";
+                    ordenCompra.Cantidad_validada = "";
+                    ordenCompra.Juarez = "";
+                    ordenCompra.Villas = "";
+                    ordenCompra.Almaguer = "";
+                    ordenCompra.Jarachina = "";
+                    ordenCompra.Guanza = "";
+                    ordenCompra.Ofertas = "";
+                    ordenCompra.Guanajuato = "";
+                    ordenCompra.Fecha_limite = DateTime.Now;
+                    ordenCompra.Id_Proveedor_Merksys = "";
+
+                    //ordenCW.Add(ordenCompra);
 
                     db.Entry(up).State = EntityState.Modified;
                 }
 
-                db.OrdenCompras_Web.AddRange(ordenCW);
+                //db.OrdenCompras_Web.AddRange(ordenCW);
 
                 db.SaveChanges();
 
@@ -212,16 +343,30 @@ namespace Portal_FYV.Controllers
             {
                 Producto productoR = db.Productos.FirstOrDefault( x => x.Descripcion == producto);
                 precio.Id_Producto = productoR.Id_Producto;
-
+                bool check = true;
                 foreach (var item in db.REQDETs.Where(x => ids_REQHDRS.Contains(x.Id_REQHDR) && x.Descripcion == producto))
                 {
                     precio.Id_REQHDR = item.Id_REQHDR;
-                    db.UsuariosProductos.Add(precio);
+                    if (Convert.ToDateTime(DateTime.Now).Date > Convert.ToDateTime(item.REQHDR.Fecha_lim_proveedor).Date && check)
+                    {
+                        check = false;
+                        break;
+                    }
+                    else
+                    {
+                        db.UsuariosProductos.Add(precio);
+                    }
+                }
+                
+                if (check)
+                {
+                    db.SaveChanges();
+                    return Json(new { Success = true, value = new { precio.Id_Producto, precio.Id_Usuario, precio.Precio}, Message = "Precio agregado correctamente.", Message_data = "", Message_Classes = "alert-success", Message_concat = false });
+                }else
+                {
+                    return Json(new { Success = false, value = "", Message = "Fecha límite para proveedor superada, no se han actualizado los campos.", Message_data = "", Message_Classes = "alert-success", Message_concat = false });
                 }
 
-                db.SaveChanges();
-
-                return Json(new { Success = true, value = new { precio.Id_Producto, precio.Id_Usuario, precio.Precio}, Message = "Precio agregado correctamente.", Message_data = "", Message_Classes = "alert-success", Message_concat = false });
             }
             catch (Exception)
             {
@@ -248,6 +393,7 @@ namespace Portal_FYV.Controllers
             }
 
             int id = Convert.ToInt32(Session["Id_Usuario"]);
+
             Usuario usuario = db.Usuarios.Find(id);
 
             var embalajes = db.Embalajes.ToList();
@@ -260,6 +406,29 @@ namespace Portal_FYV.Controllers
             return View(modelos);
         }
         
+        [HttpPost]
+        public ActionResult updateDates(List<REQHDR> REQHDRs)
+        {
+            try
+            {
+                foreach (var rh in REQHDRs)
+                {
+                    REQHDR r = db.REQHDRs.Find(rh.Id_REQHDR);
+                    r.Fecha_lim_proveedor = rh.Fecha_lim_proveedor;
+                    r.Fecha_lim_recepcion = rh.Fecha_lim_recepcion;
+                    db.Entry(r).State = EntityState.Modified;
+                    //db.REQHDRs.Add(r);
+                }
+
+                db.SaveChanges();
+
+                return Json(new { Success = true, value = "", Message = "Fechas actualizadas correctamente.", Message_data = "", Message_Classes = "alert-success", Message_concat = false });
+            }
+            catch (Exception)
+            {
+                return Json(new { Success = false, value = "", Message = "Error al registrar fechas.", Message_data = "", Message_Classes = "alert-danger", Message_concat = false });
+            }
+        }
         // GET: REQHDRs/Create
         public ActionResult Create()
         {

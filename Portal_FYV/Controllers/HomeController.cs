@@ -20,11 +20,9 @@ namespace Portal_FYV.Controllers
                 int id = Convert.ToInt32(Session["Id_Usuario"]);
                 
                 Usuario usuario = db.Usuarios.Find(id);
-                
-                // Obtener la fecha actual del servidor
-                DateTime fechaActual = DateTime.Now;
-                // Calcular la fecha y hora límite para que hayan pasado 1.5 días (36 horas)
-                DateTime fechaLimite = fechaActual.AddHours(-Convert.ToInt32(usuario.Prorroga)); // 1.5 días = 36 horas
+                // Obtener la fecha de inicio y fin del mes actual
+                DateTime fechaInicioMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                DateTime fechaFinMes = fechaInicioMes.AddMonths(1).AddDays(-1);
                 
                 List<REQHDR> rEQHDRs = new List<REQHDR>();
                 List<REQDET> rEQDETs = new List<REQDET>();
@@ -43,7 +41,8 @@ namespace Portal_FYV.Controllers
                     case "Compras":
 
                         // Filtrar los registros que todavía no han pasado 1.5 días desde su creación
-                        rEQHDRs = db.REQHDRs.Where(r => r.Fecha_creacion >= fechaLimite && r.Sucursal == sucursal).ToList();
+                        //rEQHDRs = db.REQHDRs.Where(r => r.Sucursal == sucursal).ToList();
+                        rEQHDRs = db.REQHDRs.ToList();
                         ids_reqhdrs = rEQHDRs.Select(r => r.Id_REQHDR).ToArray();
 
                         rEQDETs = db.REQDETs.Where(r => ids_reqhdrs.Contains(r.Id_REQHDR)).ToList();
@@ -65,7 +64,7 @@ namespace Portal_FYV.Controllers
                         break;
                     case "Proveedores":
                         
-                        rEQHDRs = db.REQHDRs.Where(r => r.Fecha_creacion >= fechaLimite && r.Estatus == 2).ToList();
+                        rEQHDRs = db.REQHDRs.Where(r => r.Fecha_creacion >= fechaInicioMes && r.Fecha_creacion <= fechaFinMes && r.Estatus == 2).ToList();
                         ids_reqhdrs = rEQHDRs.Select(r => r.Id_REQHDR).ToArray();
 
                         rEQDETs = db.REQDETs.Where(r => ids_reqhdrs.Contains(r.Id_REQHDR)).ToList();

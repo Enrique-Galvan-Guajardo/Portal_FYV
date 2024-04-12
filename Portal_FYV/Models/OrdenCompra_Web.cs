@@ -11,34 +11,47 @@
     {
         public OrdenCompra_Web()
         {
-            estatus = "0";
-            tipo = "MULTIPLE";
-            fecha = DateTime.Now;
+            Fecha_creacion = DateTime.Now;
         }
         [Key]
         public int Id_OrdenCompra { get; set; }
 
-        [StringLength(20)]
-        public string num_orden { get; set; }
+        [StringLength(6)]
+        public string Id_REQDET { get; set; }
+        [StringLength(100)]
+        public string Creador { get; set; }
+        [StringLength(100)]
+        public string Proveedor { get; set; }
+        [StringLength(100)]
+        public string Id_Merksys { get; set; }
+        [StringLength(100)]
+        public string Producto { get; set; }
 
-        [StringLength(15)]
-        public string cve_art { get; set; }
-        [StringLength(10)]
-        public string suc { get; set; }
-
-        public decimal cant { get; set; }
-        public decimal descto { get; set; }
-        [StringLength(300)]
-        public string promocion { get; set; }
-        [StringLength(15)]
-        public string prv { get; set; }
-        public DateTime? fecha { get; set; }
-        [StringLength(300)]
-        public string estatus { get; set; }
-        [StringLength(25)]
-        public string tipo { get; set; }
-        [StringLength(50)]
-        public string sucursal_receptora { get; set; }
-
+        [StringLength(100)]
+        public string Cantidad_solicitada { get; set; }
+        [StringLength(100)]
+        public string Embalaje { get; set; }
+        [StringLength(100)]
+        public string Precio { get; set; }
+        [StringLength(100)]
+        public string Cantidad_validada { get; set; }
+        public DateTime Fecha_creacion { get; set; }
+        [StringLength(45)]
+        public string Juarez { get; set; }
+        [StringLength(45)]
+        public string Villas { get; set; }
+        [StringLength(45)]
+        public string Almaguer { get; set; }
+        [StringLength(45)]
+        public string Jarachina { get; set; }
+        [StringLength(45)]
+        public string Guanza { get; set; }
+        [StringLength(45)]
+        public string Ofertas { get; set; }
+        [StringLength(45)]
+        public string Guanajuato { get; set; }
+        public DateTime Fecha_limite { get; set; }
+        [StringLength(45)]
+        public string Id_Proveedor_Merksys { get; set; }
     }
 }

@@ -13,6 +13,8 @@ namespace Portal_FYV.Models
         public REQHDR()
         {
             REQDETs = new HashSet<REQDET>();
+            Fecha_lim_proveedor = DateTime.Now;
+            Fecha_lim_recepcion = DateTime.Now;
         }
 
         [Key]
@@ -38,5 +40,7 @@ namespace Portal_FYV.Models
         public virtual Usuario Usuario { get; set; }
 
         public virtual Usuario Usuario1 { get; set; }
+        public DateTime? Fecha_lim_proveedor { get; set; }
+        public DateTime? Fecha_lim_recepcion { get; set; }
     }
 }
