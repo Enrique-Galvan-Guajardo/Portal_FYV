@@ -100,10 +100,13 @@ namespace Portal_FYV.Controllers
                     }
 
                     int[] ids_proveedores = db.UsuariosProductos.Where(x => selectedIds.Contains(x.Id_REQHDR) && ids_productos.Contains(x.Id_Producto)).Select(x => x.Id_Usuario).Distinct().ToArray();
-
-                    foreach (var r in ids_proveedores)
+                    List<UsuariosProductos> uspr = db.UsuariosProductos.Where(x => selectedIds.Contains(x.Id_REQHDR) && ids_productos.Contains(x.Id_Producto) && ids_proveedores.Contains(x.Id_Usuario)).OrderByDescending(x => x.Id_UsuarioProducto).ToList();
+                    foreach (var r in uspr)
                     {
-                        usuariosProductos.Add(db.UsuariosProductos.Where(x => selectedIds.Contains(x.Id_REQHDR) && ids_productos.Contains(x.Id_Producto) && x.Id_Usuario == r).OrderByDescending(x => x.Id_UsuarioProducto).FirstOrDefault());
+                        if (!usuariosProductos.Any(x => x.Id_Usuario == r.Id_Usuario && x.Id_Producto == r.Id_Producto && x.Id_REQHDR == r.Id_REQHDR))
+                        {
+                            usuariosProductos.Add(r);
+                        }
                     }
 
                     
@@ -149,114 +152,50 @@ namespace Portal_FYV.Controllers
             
         }
 
-        public ActionResult Compra(DateTime startDate, DateTime endDate)
+        public ActionResult Compra(string REQHDRS)
         {
-            int[] selectedIds;
             string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
             string sucursal = Session["Sucursal"] != null ? Session["Sucursal"].ToString() : "";
             int id = Convert.ToInt32(Session["Id_Usuario"]);
-
-            Usuario usuario = db.Usuarios.Find(id);
-
-            List<REQHDR> rEQHDRs = new List<REQHDR>();
-            List<REQDET> rEQDETs = new List<REQDET>();
-            List<Producto> productos = new List<Producto>();
-
-            string[] descripciones;
-            int[] ids_productos;
-
-            List<CatalogoProducto> catalogo = new List<CatalogoProducto>();
-            List<UsuariosProductos> usuariosProductos = new List<UsuariosProductos>();
-
             var modelos = new object();
-            endDate = endDate.AddDays(1);
 
-            switch (rol)
+            try
             {
-                case "Admin+":
-                case "Admin":
-                case "Compras":
+                Usuario usuario = db.Usuarios.Find(id);
 
-                    if (startDate == null || endDate == null)
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
+                List<OrdenCompra_Web> ordenCompra_Web = new List<OrdenCompra_Web>();
 
-                    rEQHDRs = db.REQHDRs.Where(x => x.Fecha_creacion >= startDate && x.Fecha_creacion < endDate).ToList();
-                    selectedIds = rEQHDRs.Select(x => x.Id_REQHDR).ToArray();
-                    rEQDETs = db.REQDETs.Where(x => selectedIds.Contains(x.Id_REQHDR)).ToList();
+                ordenCompra_Web = db.OrdenCompras_Web.Where(x => x.REQHDRS == REQHDRS).ToList();
 
-                    descripciones = rEQDETs.Select(x => x.Descripcion).ToArray();
-
-                    productos = db.Productos.Where(x => descripciones.Contains(x.Descripcion)).ToList();
-
-                    ids_productos = productos.Select(x => x.Id_Producto).ToArray();
-
-                    catalogo = db.CatalogoProductos.Where(x => descripciones.Contains(x.Descripcion.Trim())).ToList();
-
-                    if (rEQDETs == null)
-                    {
-                        return HttpNotFound();
-                    }
-
-                    int[] ids_proveedores = db.UsuariosProductos.Where(x => selectedIds.Contains(x.Id_REQHDR) && ids_productos.Contains(x.Id_Producto)).Select(x => x.Id_Usuario).Distinct().ToArray();
-
-                    foreach (var r in ids_proveedores)
-                    {
-                        usuariosProductos.Add(db.UsuariosProductos.Where(x => selectedIds.Contains(x.Id_REQHDR) && ids_productos.Contains(x.Id_Producto) && x.Id_Usuario == r).OrderByDescending(x => x.Id_UsuarioProducto).FirstOrDefault());
-                    }
-
-
-                    // Crear un Tuple que contenga ambos modelos y la lista de embalajes
-                    modelos = new Tuple<List<REQHDR>, List<REQDET>, List<UsuariosProductos>, List<CatalogoProducto>>(rEQHDRs, rEQDETs, usuariosProductos, catalogo);
-
+                var ids_reqhdrs = REQHDRS.Split('-');
+                if (ordenCompra_Web != null)
+                {
+                    modelos = new Tuple<List<OrdenCompra_Web>, List<REQHDR>>(ordenCompra_Web, db.REQHDRs.Where(x => ids_reqhdrs.Contains(x.Id_REQHDR.ToString())).ToList());
                     return View(modelos);
-
-                case "Proveedores":
-                    if (startDate == null || endDate == null)
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
-
-                    rEQHDRs = db.REQHDRs.Where(x => x.Fecha_creacion >= startDate && x.Fecha_creacion < endDate).ToList();
-                    selectedIds = rEQHDRs.Select(x => x.Id_REQHDR).ToArray();
-
-                    productos = db.Productos.Where(x => x.Id_Proveedor == usuario.Id_Usuario).ToList();
-
-                    descripciones = productos.Select(x => x.Descripcion).ToArray();
-                    ids_productos = productos.Select(x => x.Id_Producto).ToArray();
-
-                    catalogo = db.CatalogoProductos.Where(x => descripciones.Contains(x.Descripcion)).ToList();
-
-                    foreach (var r in rEQHDRs)
-                    {
-                        rEQDETs.AddRange(r.REQDETs.Where(x => selectedIds.Contains(x.Id_REQHDR) && descripciones.Contains(x.Descripcion)).ToList());
-                    }
-
-                    if (rEQDETs == null)
-                    {
-                        return HttpNotFound();
-                    }
-
-                    usuariosProductos = db.UsuariosProductos.Where(x => ids_productos.Contains(x.Id_Producto) && selectedIds.Contains(x.Id_REQHDR) && x.Id_Usuario == usuario.Id_Usuario).ToList();
-
-                    // Crear un Tuple que contenga ambos modelos y la lista de embalajes
-                    modelos = new Tuple<List<REQHDR>, List<REQDET>, List<UsuariosProductos>, List<CatalogoProducto>>(rEQHDRs, rEQDETs, usuariosProductos, catalogo);
-
-                    return View(modelos);
-                default:
+                }
+                else
+                {
                     return RedirectToAction("Index", "Home");
-            }
+                }
 
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         [HttpPost]
-        public ActionResult distribuirCompras(List<UsuariosProductos> usuariosProductos)
+        public ActionResult distribuirCompras(List<UsuariosProductos> usuariosProductos, int[] idsREQHDRS_Resumen, int[] idsUsuariosProductos_Resumen)
         {
+            int id = Convert.ToInt32(Session["Id_Usuario"]);
+            Usuario usuario = db.Usuarios.Find(id);
+
             try
             {
                 List<OrdenCompra_Web> ordenCW = new List<OrdenCompra_Web>();
-                
+                bool isNewRow = false;
+                decimal totalPrecio = 0;
                 foreach (var item in usuariosProductos)
                 {
                     OrdenCompra_Web ordenCompra = new OrdenCompra_Web();
@@ -266,48 +205,60 @@ namespace Portal_FYV.Controllers
 
                     //Consultas para objeto ordenCompra
 
-                    REQHDR hdr = db.REQHDRs.Find(up.Id_REQHDR);
                     Producto prd = db.Productos.Find(up.Id_Producto);
+                    REQHDR hdr = db.REQHDRs.Find(up.Id_REQHDR);
                     REQDET rdet = db.REQDETs.FirstOrDefault(x => x.Id_REQHDR == hdr.Id_REQHDR && x.Descripcion == prd.Descripcion);
 
+                    int[] ids_reqhdrs = usuariosProductos.Select(x => x.Id_REQHDR).ToArray();
+                    int[] ids_reqdets = db.REQDETs.Where(x => ids_reqhdrs.Contains(x.Id_REQHDR) && x.Descripcion == prd.Descripcion).Select(x => x.Id_REQDET).ToArray();
 
-
-                    /*
-                    ordenCompra.num_orden = up.Id_REQHDR.ToString();
-                    ordenCompra.cve_art = up.Producto.Clave_externa;
-                    ordenCompra.suc = db.REQHDRs.Find(up.Id_REQHDR).Sucursal;
-                    ordenCompra.cant = up.Cantidad_comprada;
-                    ordenCompra.prv = up.Id_Usuario.ToString();
-                    ordenCompra.fecha = DateTime.Now;
-                    ordenCompra.estatus = "0";
-                    ordenCompra.tipo = "MULTIPLE";
-                    */
-
-                    ordenCompra.Id_REQDET = "";
-                    ordenCompra.Creador = hdr.Usuario.Nombre;
-                    ordenCompra.Proveedor = up.Usuario.Nombre;
-                    ordenCompra.Id_Merksys = "";
+                    ordenCompra.REQHDRS = String.Join("-", idsREQHDRS_Resumen);
                     ordenCompra.Producto = prd.Descripcion;
-                    ordenCompra.Cantidad_solicitada = "";
-                    ordenCompra.Embalaje = "";
-                    ordenCompra.Precio = "";
-                    ordenCompra.Cantidad_validada = "";
-                    ordenCompra.Juarez = "";
-                    ordenCompra.Villas = "";
-                    ordenCompra.Almaguer = "";
-                    ordenCompra.Jarachina = "";
-                    ordenCompra.Guanza = "";
-                    ordenCompra.Ofertas = "";
-                    ordenCompra.Guanajuato = "";
-                    ordenCompra.Fecha_limite = DateTime.Now;
-                    ordenCompra.Id_Proveedor_Merksys = "";
+                    ordenCompra.Proveedor = up.Usuario.Nombre;
+                    ordenCompra.Creador = usuario.Correo;
 
-                    //ordenCW.Add(ordenCompra);
+                    //Si existe ya uno en db, meterlo a la lista
+                    if (db.OrdenCompras_Web.Any(x => x.REQHDRS == ordenCompra.REQHDRS && x.Producto == ordenCompra.Producto && x.Proveedor == ordenCompra.Proveedor))
+                    {
+                        ordenCW.Add(db.OrdenCompras_Web.FirstOrDefault(x => x.REQHDRS == ordenCompra.REQHDRS && x.Producto == ordenCompra.Producto && x.Proveedor == ordenCompra.Proveedor));
+                    }
+                    else
+                    {
+                        isNewRow = true;
+                    }
+
+                    //Si es la 2 vuelta, traerlo de la lista actual
+                    if (ordenCW.Any(x => x.REQHDRS == ordenCompra.REQHDRS && x.Producto == ordenCompra.Producto && x.Proveedor == ordenCompra.Proveedor))
+                    {
+                        ordenCompra = ordenCW.FirstOrDefault(x => x.REQHDRS == ordenCompra.REQHDRS && x.Producto == ordenCompra.Producto && x.Proveedor == ordenCompra.Proveedor);
+                        ordenCompra.Creador = usuario.Correo;
+                        totalPrecio = up.Precio * up.Cantidad_comprada;
+                        ordenCompra = asignarCantidadSucursal(ordenCompra, up);
+                        ordenCompra.Precio = Convert.ToString(asignarPrecioSucursal(db.UsuariosProductos.Where(x => idsUsuariosProductos_Resumen.Contains(x.Id_UsuarioProducto) && x.Id_Producto == up.Id_Producto && x.Id_Usuario == up.Id_Usuario).ToList()));
+                        
+                        if (ordenCompra.Id_OrdenCompra > 0)
+                        {
+                            db.Entry(ordenCompra).State = EntityState.Modified;
+                        }
+                        
+                    }//Si es la primera vuelta, generarlo en la lista
+                    else
+                    {
+                        ordenCompra.Cantidad_solicitada = db.REQDETs.Where(x => ids_reqdets.Contains(x.Id_REQDET)).Select(x => x.Cantidad_solicitada).Sum().ToString();
+                        ordenCompra.Cantidad_validada = db.REQDETs.Where(x => ids_reqdets.Contains(x.Id_REQDET)).Select(x => x.Cantidad_validada).Sum().ToString();
+                        totalPrecio = up.Precio * up.Cantidad_comprada;
+                        ordenCompra.Precio = totalPrecio.ToString();
+                        ordenCompra = asignarCantidadSucursal(ordenCompra, up);
+                        ordenCW.Add(ordenCompra);
+                    }
 
                     db.Entry(up).State = EntityState.Modified;
                 }
 
-                //db.OrdenCompras_Web.AddRange(ordenCW);
+                if (isNewRow)
+                {
+                    db.OrdenCompras_Web.AddRange(ordenCW);
+                }
 
                 db.SaveChanges();
 
@@ -335,6 +286,94 @@ namespace Portal_FYV.Controllers
             }
         }
 
+        public OrdenCompra_Web asignarCantidadSucursal(OrdenCompra_Web oc, UsuariosProductos us)
+        {
+            REQHDR rEQHDR = db.REQHDRs.Find(us.Id_REQHDR);
+
+            switch (rEQHDR.Sucursal)
+            {
+                case "JUA":
+                    oc.Juarez = us.Cantidad_comprada.ToString();
+                    break;
+                case "GUA":
+                    oc.Guanza = us.Cantidad_comprada.ToString();
+                    break;
+                case "OFE":
+                    oc.Ofertas = us.Cantidad_comprada.ToString();
+                    break;
+                case "BAL":
+                    oc.Balcones = us.Cantidad_comprada.ToString();
+                    break;
+                case "GTO":
+                    oc.Guanajuato = us.Cantidad_comprada.ToString();
+                    break;
+                case "CDI":
+                    oc.Cedis = us.Cantidad_comprada.ToString();
+                    break;
+                case "JAR":
+                    oc.Jarachina = us.Cantidad_comprada.ToString();
+                    break;
+                case "AMG":
+                    oc.Almaguer = us.Cantidad_comprada.ToString();
+                    break;
+                default:
+                    break;
+            }
+
+            return oc;
+        }
+
+        public decimal asignarPrecioSucursal(List<UsuariosProductos> usuariosProductos)
+        {
+            decimal preJua = 0;
+            decimal preGua = 0;
+            decimal preOfe = 0;
+            decimal preBal = 0;
+            decimal preGto = 0;
+            decimal preCdi = 0;
+            decimal preJar = 0;
+            decimal preAmg = 0;
+
+            decimal Total = 0;
+            
+            foreach (var us in usuariosProductos)
+            {
+                REQHDR rEQHDR = db.REQHDRs.Find(us.Id_REQHDR);
+
+                switch (rEQHDR.Sucursal)
+                {
+                    case "JUA":
+                        preJua = us.Precio * us.Cantidad_comprada;
+                        break;
+                    case "GUA":
+                        preGua = us.Precio * us.Cantidad_comprada;
+                        break;
+                    case "OFE":
+                        preOfe = us.Precio * us.Cantidad_comprada;
+                        break;
+                    case "BAL":
+                        preBal = us.Precio * us.Cantidad_comprada;
+                        break;
+                    case "GTO":
+                        preGto = us.Precio * us.Cantidad_comprada;
+                        break;
+                    case "CDI":
+                        preCdi = us.Precio * us.Cantidad_comprada;
+                        break;
+                    case "JAR":
+                        preJar = us.Precio * us.Cantidad_comprada;
+                        break;
+                    case "AMG":
+                        preAmg = us.Precio * us.Cantidad_comprada;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            Total = preJua + preGua + preOfe + preBal + preGto + preCdi + preJar + preAmg;
+            return Total;
+        }
+
         // POST: REQHDRs/Delete/5
         [HttpPost]
         public ActionResult guardarPrecio(UsuariosProductos precio, string producto, int[] ids_REQHDRS)
@@ -342,11 +381,12 @@ namespace Portal_FYV.Controllers
             try
             {
                 Producto productoR = db.Productos.FirstOrDefault( x => x.Descripcion == producto);
-                precio.Id_Producto = productoR.Id_Producto;
+                List<UsuariosProductos> usuariosProductos = new List<UsuariosProductos>();
+                
                 bool check = true;
                 foreach (var item in db.REQDETs.Where(x => ids_REQHDRS.Contains(x.Id_REQHDR) && x.Descripcion == producto))
                 {
-                    precio.Id_REQHDR = item.Id_REQHDR;
+                    
                     if (Convert.ToDateTime(DateTime.Now).Date > Convert.ToDateTime(item.REQHDR.Fecha_lim_proveedor).Date && check)
                     {
                         check = false;
@@ -354,12 +394,20 @@ namespace Portal_FYV.Controllers
                     }
                     else
                     {
-                        db.UsuariosProductos.Add(precio);
+                        UsuariosProductos newUP = new UsuariosProductos();
+
+                        newUP.Id_REQHDR = item.Id_REQHDR;
+                        newUP.Id_Producto = productoR.Id_Producto;
+                        newUP.Precio = precio.Precio;
+                        newUP.Id_Usuario = precio.Id_Usuario;
+
+                        usuariosProductos.Add(newUP);
                     }
                 }
                 
                 if (check)
                 {
+                    db.UsuariosProductos.AddRange(usuariosProductos);
                     db.SaveChanges();
                     return Json(new { Success = true, value = new { precio.Id_Producto, precio.Id_Usuario, precio.Precio}, Message = "Precio agregado correctamente.", Message_data = "", Message_Classes = "alert-success", Message_concat = false });
                 }else

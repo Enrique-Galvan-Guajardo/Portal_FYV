@@ -22,6 +22,7 @@
     //ViewBag.totalRegistrosFiltrados = db.REQHDRs.Where(r => r.Fecha_creacion >= fechaInicioMes && r.Fecha_creacion <= fechaFinMes);
     // Convertir a lista
 
+    IEnumerable<Portal_FYV.Models.OrdenCompra_Web> ordenCompras = ViewBag.ordenCompra != null ? ViewBag.ordenCompra : new List<Portal_FYV.Models.OrdenCompra_Web>();
 
 }
 <script src="~/Scripts/RegionsController.js"></script>
@@ -293,19 +294,17 @@ else {
                             <div class="accordion-item">
                                 <h2 class="accordion-header">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                        Lista de ordenes
+                                        Lista de compras
                                     </button>
                                 </h2>
                                 <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
                                         <div class="list-group">
 
-                                            @foreach (var item in rEQHDRs.Where(x => x.Estatus == 2).Select(x => Convert.ToDateTime(x.Fecha_creacion).ToString("D")).Distinct())
+                                            @foreach (var item in ordenCompras.Select(x => x.REQHDRS).Distinct())
                                             {
-                                                DateTime fechaval = Convert.ToDateTime(item);
-                                                string fechaEncoded = HttpUtility.UrlEncode(fechaval.ToString("yyyy-MM-dd"));
-                                                <a href="/REQHDRs/Compra/?startDate=@fechaEncoded&endDate=@fechaEncoded" class="list-group-item list-group-item-action" aria-current="true">
-                                                    <b class="text-primary text-opacity-75">@rEQHDRs.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == fechaval.ToString("d")).Count() ordenes en @fechaval.ToString("D")</b>
+                                                <a href="@Url.Action("Compra", "REQHDRs", new { REQHDRS = item })" class="list-group-item list-group-item-action" aria-current="true">
+                                                    <b class="text-primary text-opacity-75">@ordenCompras.Where(x => x.REQHDRS == item).Count() compras en @ordenCompras.FirstOrDefault(x => x.REQHDRS == item).Fecha_creacion.ToString("D")</b>
                                                 </a>
                                             }
 

@@ -15,6 +15,7 @@ namespace Portal_FYV.Models
             permitir_Sec = false;
             permitir_Veg = false;
             Id_Estatus = 1;
+            Id_Rol = 3;
             Prorroga = "0";
             REQHDRs = new HashSet<REQHDR>();
             REQHDRs1 = new HashSet<REQHDR>();

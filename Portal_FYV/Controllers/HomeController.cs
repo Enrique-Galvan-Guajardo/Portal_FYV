@@ -61,6 +61,9 @@ namespace Portal_FYV.Controllers
                         ViewBag.totalProductos = productosProveedor;
                         ViewBag.totalPrecios = usuarioPrecios;
 
+
+                        ViewBag.ordenCompra = db.OrdenCompras_Web.Where(x => x.Fecha_creacion >= fechaInicioMes && x.Fecha_creacion <= fechaFinMes).ToList();
+
                         break;
                     case "Proveedores":
                         

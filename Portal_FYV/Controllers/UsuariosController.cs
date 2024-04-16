@@ -63,9 +63,9 @@ namespace Portal_FYV.Controllers
                 db.Usuarios.Add(usuario);
                 db.SaveChanges();
 
-                Session["Id_Usuario"] = usuario.Id_Usuario;
+                //Session["Id_Usuario"] = usuario.Id_Usuario;
             }
-            return RedirectToAction("About", "Home");
+            return RedirectToAction("CapturarDetalles", "REQDETs");
         }
         // GET: Usuarios/Details/5
         public ActionResult Details(int? id)

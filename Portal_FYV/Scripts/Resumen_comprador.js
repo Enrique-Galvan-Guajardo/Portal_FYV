@@ -1,5 +1,6 @@
 ﻿const exampleModal = document.getElementById('seleccionar-precio-modal')
-
+const idsREQHDRS_Resumen = document.querySelector("table.table").getAttribute('data-ids').split('-');
+const idsUsuariosProductos_Resumen = document.querySelector("table.table").getAttribute('data-idsusps').split('-');
 const spanMaximo = document.querySelector('#seleccionar-cantidad-modal-Label span');
 
 let usuariosProductos = [];
@@ -15,9 +16,10 @@ if (exampleModal) {
 
         // Extract info from data-bs-* attributes
         const producto = button.getAttribute('data-bs-prod')
+        const idrhdr = button.getAttribute('data-bs-idrhdr')
         const cantidad = button.getAttribute('data-bs-cant')
         const provs = button.getAttribute('data-bs-provs')
-
+        console.log(idrhdr)
         let dist = obtenerDistribuciones(button)
 
         declararDistribucion(dist)
@@ -32,6 +34,7 @@ if (exampleModal) {
         //const modalBodyInput = exampleModal.querySelector('.modal-body input')
         if (producto != "NA") {
             modalTitulo.innerHTML = `Producto seleccionado: <span class="prov-sel text-primary">${producto}</span>`
+            modalCantidad.querySelector('input.hidden-rqhdr').value = idrhdr
             modalCantidad.querySelector('span').innerHTML = `${cantidad}`
         } else {
             modalTitulo.innerHTML = `Precio no asignado por <span class="prov-sel">proveedor</span>`
@@ -54,12 +57,13 @@ function obtenerDistribuciones(button) {
     // Iterar sobre cada span y obtener sus atributos y contenido de texto
     spans.forEach(span => {
         const Id_Usuario = parseInt(span.getAttribute('data-bs-idprov'));
+        const Id_REQHDR = parseInt(span.getAttribute('data-bs-idrhdr'));
         const Id_UsuarioProducto = parseInt(span.getAttribute('data-bs-idusprod'));
         const Precio = parseFloat(span.getAttribute('data-bs-precio'));
         const Cantidad_comprada = span.textContent.trim();
 
         // Agregar los datos al arreglo
-        datos.push({ Id_UsuarioProducto, Id_Usuario, Cantidad_comprada, Precio});
+        datos.push({ Id_UsuarioProducto, Id_REQHDR, Id_Usuario, Cantidad_comprada, Precio});
     });
 
     // Ahora puedes usar el arreglo `datos` para lo que necesites
@@ -187,7 +191,7 @@ function guardarPrecios(e) {
         url: '/REQHDRs/distribuirCompras',
         type: 'POST',
         contentType: 'application/json',
-        data: JSON.stringify({ usuariosProductos }),
+        data: JSON.stringify({ usuariosProductos, idsREQHDRS_Resumen, idsUsuariosProductos_Resumen }),
         beforeSend: function () {
             // Código a ejecutar antes de enviar la petición AJAX
             e.innerText = "Guardando..."
@@ -205,7 +209,7 @@ function guardarPrecios(e) {
 
                     if (indiceCoincidente !== -1) {
                         // Si se encontró un elemento coincidente
-                        document.getElementById("provedor-distribuido-" + idUsuario).innerText = usuariosProductos[indiceCoincidente].Cantidad_comprada; // Asignar el valor al atributo Cantidad_comprada del elemento coincidente
+                        document.querySelector(".provedor-distribuido-" + idUsuario + "-" + document.querySelector('.hidden-rqhdr').value).innerText = usuariosProductos[indiceCoincidente].Cantidad_comprada; // Asignar el valor al atributo Cantidad_comprada del elemento coincidente
                     }
                 });
                 calcularTotal();
@@ -225,23 +229,32 @@ function guardarPrecios(e) {
 }
 
 function calcularTotal() {
-    let total = 0.0;
+    let totalPorColumna = {};
 
     // Obtener todas las filas de la tabla
     const filas = document.querySelectorAll('.table tbody tr');
 
     // Iterar sobre cada fila
     filas.forEach(fila => {
-        // Obtener el precio y la cantidad distribuida de la fila actual
-        if (fila.querySelector('.precio-ultimo') && fila.querySelector('.cantidad-distribuida span')) {
-            const precio = parseFloat(fila.querySelector('.precio-ultimo').innerText);
-            const cantidadDistribuida = parseFloat(fila.querySelector('.cantidad-distribuida span').innerText);
+        // Obtener todas las celdas con la clase "seleccionar-precio" de la fila actual
+        const celdas = fila.querySelectorAll('.seleccionar-precio');
 
-            // Calcular el producto del precio y la cantidad distribuida y agregarlo al total
-            total += precio * cantidadDistribuida;
-        }
+        // Iterar sobre cada celda
+        celdas.forEach((celda, index) => {
+            // Verificar si la celda tiene un span con clase "text-danger"
+            const esCeldaValida = !celda.querySelector('.text-danger');
+
+            if (esCeldaValida) {
+                // Obtener el precio y la cantidad distribuida de la celda actual
+                const precio = parseFloat(celda.querySelector('.precio-ultimo').innerText);
+                const cantidadDistribuida = parseFloat(celda.querySelector('.cantidad-distribuida span').innerText);
+
+                // Calcular el producto del precio y la cantidad distribuida y agregarlo al total de la columna correspondiente
+                totalPorColumna[index] = (totalPorColumna[index] || 0) + (precio * cantidadDistribuida);
+            }
+        });
     });
 
-    document.querySelector('.total-suma').innerText = "$"+ total.toFixed(3); // Redondear el total a 4 decimales
+    document.querySelector('.total-suma').innerText = "$" + Object.values(totalPorColumna).reduce((acc, val) => acc + val, 0); // Redondear el total a 4 decimales
 }
 

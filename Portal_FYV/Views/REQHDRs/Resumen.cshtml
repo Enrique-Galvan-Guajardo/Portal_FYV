@@ -99,7 +99,7 @@
         case "Compras":
 
             <div class="table-responsive rounded rounded-2 border">
-                <table class="table table-striped mb-0">
+                <table class="table table-striped mb-0" data-ids="@(String.Join("-", Model.Item1.Select(x => x.Id_REQHDR).ToArray()))" data-idsusps="@(String.Join("-", Model.Item3.Select(x => x.Id_UsuarioProducto).ToArray()))">
                     <thead class="table-dark">
                         <tr>
                             <th>Producto</th>
@@ -117,14 +117,45 @@
                             <tr id="@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto.Descripcion).Select(x => x.Id_REQHDR.ToString()).ToArray())">
                                 <td>
                                     <div>
-                                        @producto.Descripcion
+                                        @producto.Descripcion 
+                                        @{ 
+                                            switch (producto.REQHDR.Sucursal)
+                                            {
+                                                case "JUA":
+                                                    <span class="badge rounded-pill text-bg-primary p-2 m-1">@producto.REQHDR.Sucursal</span>
+                                                    break;
+                                                case "GUA":
+                                                    <span class="badge rounded-pill text-bg-secondary p-2 m-1">@producto.REQHDR.Sucursal</span>
+                                                    break;
+                                                case "OFE":
+                                                    <span class="badge rounded-pill text-bg-success p-2 m-1">@producto.REQHDR.Sucursal</span>
+                                                    break;
+                                                case "BAL":
+                                                    <span class="badge rounded-pill text-bg-danger p-2 m-1">@producto.REQHDR.Sucursal</span>
+                                                    break;
+                                                case "GTO":
+                                                    <span class="badge rounded-pill text-bg-warning p-2 m-1">@producto.REQHDR.Sucursal</span>
+                                                    break;
+                                                case "CDI":
+                                                    <span class="badge rounded-pill text-bg-info p-2 m-1">@producto.REQHDR.Sucursal</span>
+                                                    break;
+                                                case "JAR":
+                                                    <span class="badge rounded-pill text-bg-light p-2 m-1">@producto.REQHDR.Sucursal</span>
+                                                    break;
+                                                case "AMG":
+                                                    <span class="badge rounded-pill text-bg-dark p-2 m-1">@producto.REQHDR.Sucursal</span>
+                                                    break;
+                                                default:
+                                                    break;
+                                            }
+                                        }
                                         <br />
                                         <small class="text-muted">Cantidad: <span id="cantidad-@producto.Id_REQHDR">@(producto.Cantidad_validada > 0 ? producto.Cantidad_validada : 0 )</span></small>
                                     </div>
                                 </td>
                                 @foreach (var item in Model.Item3.Select(x => x.Id_Usuario).Distinct())
                                 {
-                                    Portal_FYV.Models.UsuariosProductos usuarioproducto = Model.Item3.Any(x => x.Producto.Descripcion == producto.Descripcion && x.Id_Usuario == item) ? Model.Item3.Where(x => x.Producto.Descripcion == producto.Descripcion && x.Id_Usuario == item).FirstOrDefault() : new Portal_FYV.Models.UsuariosProductos();
+                                    Portal_FYV.Models.UsuariosProductos usuarioproducto = Model.Item3.Any(x => x.Producto.Descripcion == producto.Descripcion && x.Id_Usuario == item && x.Id_REQHDR == producto.Id_REQHDR) ? Model.Item3.Where(x => x.Producto.Descripcion == producto.Descripcion && x.Id_Usuario == item && x.Id_REQHDR == producto.Id_REQHDR).FirstOrDefault() : new Portal_FYV.Models.UsuariosProductos();
                                     decimal ultimoPrecio = usuarioproducto.Precio >= 0 ? usuarioproducto.Precio : 0;
                                     <td class="seleccionar-precio">
                                         @if (ultimoPrecio != 0)
@@ -133,9 +164,10 @@
                                             <br />
                                             <small class="text-muted cantidad-distribuida">
                                                 Cantidad:
-                                                <span id="provedor-distribuido-@usuarioproducto.Id_Usuario"
+                                                <span class="provedor-distribuido-@(usuarioproducto.Id_Usuario + "-" + producto.Id_REQHDR)"
                                                       data-bs-idprov="@usuarioproducto.Id_Usuario"
                                                       data-bs-idusprod="@usuarioproducto.Id_UsuarioProducto"
+                                                      data-bs-idrhdr="@producto.Id_REQHDR"
                                                       data-bs-precio="@usuarioproducto.Precio">
                                                     @(usuarioproducto.Cantidad_comprada > 0 ? usuarioproducto.Cantidad_comprada : 0)
                                                 </span>
@@ -151,6 +183,7 @@
                                     <button class="btn btn-sm btn-primary my-2"
                                             data-bs-toggle="modal"
                                             data-bs-target="#seleccionar-precio-modal"
+                                            data-bs-idrhdr="@producto.Id_REQHDR"
                                             data-bs-prod="@producto.Descripcion"
                                             data-bs-cant="@(producto.Cantidad_validada > 0 ? producto.Cantidad_validada : 0)"
                                             data-bs-provs="@String.Join("-", Model.Item3.Select(x => x.Id_Usuario).Distinct().ToArray())">
@@ -174,6 +207,7 @@
                             <h3 class="text-muted d-flex flex-column text-center" id="seleccionar-cantidad-modal-Label">
                                 Cantidad
                                 <span class="text-primary"></span>
+                                <input type="hidden" class="hidden-rqhdr" value="" />
                             </h3>
                             <div class="table-responsive rounded rounded-2 border mt-5">
                                 <table class="table table-striped mb-0">
