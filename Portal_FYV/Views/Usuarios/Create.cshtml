@@ -6,8 +6,7 @@
 
 <div class="bg-white">
     <h2>Crear registro de usuario</h2>
-
-    @using (Ajax.BeginForm("Create", "Usuarios", FormMethod.Post, null))
+    @using (Html.BeginForm("Create", "Usuarios", FormMethod.Post, null))
     {
         @Html.AntiForgeryToken()
 

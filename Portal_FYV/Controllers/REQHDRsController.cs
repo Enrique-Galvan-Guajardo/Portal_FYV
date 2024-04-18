@@ -463,9 +463,31 @@ namespace Portal_FYV.Controllers
                 {
                     REQHDR r = db.REQHDRs.Find(rh.Id_REQHDR);
                     r.Fecha_lim_proveedor = rh.Fecha_lim_proveedor;
-                    r.Fecha_lim_recepcion = rh.Fecha_lim_recepcion;
+                    //r.Fecha_lim_recepcion = rh.Fecha_lim_recepcion;
                     db.Entry(r).State = EntityState.Modified;
                     //db.REQHDRs.Add(r);
+                }
+
+                db.SaveChanges();
+
+                return Json(new { Success = true, value = "", Message = "Fechas actualizadas correctamente.", Message_data = "", Message_Classes = "alert-success", Message_concat = false });
+            }
+            catch (Exception)
+            {
+                return Json(new { Success = false, value = "", Message = "Error al registrar fechas.", Message_data = "", Message_Classes = "alert-danger", Message_concat = false });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult updateDatesOrden(OrdenCompra_Web orden)
+        {
+            try
+            {
+                List<OrdenCompra_Web> ordenes = db.OrdenCompras_Web.Where(x => x.REQHDRS == orden.REQHDRS).ToList();
+                foreach (var or in ordenes)
+                {
+                    or.Fecha_limite = orden.Fecha_limite;
+                    db.Entry(or).State = EntityState.Modified;
                 }
 
                 db.SaveChanges();

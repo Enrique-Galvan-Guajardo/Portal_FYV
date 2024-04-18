@@ -97,7 +97,7 @@ namespace Portal_FYV.Controllers
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id_Usuario,Username,Nombre,Correo,Contrasena,Sucursal,Id_Estatus,Fecha_Aprov,Id_Rol,Razon_social,RFC,Pais,Estado,Ciudad,Colonia,Localidad,Codigo_postal,Calle,Numero,Proveeedor_no_mks,Contacto_nombre1,Contacto_nombre2,Contacto_nombre3,Contacto_correo1,Contacto_correo2,Contacto_correo3,Contacto_tel1,Contacto_tel2,Contacto_tel3")] Usuario usuario)
+        public ActionResult Create([Bind(Include = "Id_Usuario,Username,Nombre,Correo,Contrasena,Sucursal,Id_Estatus,Fecha_Aprov,Id_Rol,Razon_social,RFC,Pais,Estado,Ciudad,Colonia,Localidad,Codigo_postal,Calle,Numero,Proveeedor_no_mks,Contacto_nombre1,Contacto_nombre2,Contacto_nombre3,Contacto_correo1,Contacto_correo2,Contacto_correo3,Contacto_tel1,Contacto_tel2,Contacto_tel3,Prorroga")] Usuario usuario)
         {
             if (!db.Usuarios.Any(x => (x.Nombre == usuario.Correo || x.Correo == usuario.Correo) && x.Contrasena == usuario.Contrasena) && ModelState.IsValid)
             {
@@ -150,7 +150,7 @@ namespace Portal_FYV.Controllers
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id_Usuario,Username,Nombre,Correo,Contrasena,Sucursal,Id_Estatus,Fecha_Aprov,Id_Rol,Razon_social,RFC,Pais,Estado,Ciudad,Colonia,Localidad,Codigo_postal,Calle,Numero,Proveeedor_no_mks,Contacto_nombre1,Contacto_nombre2,Contacto_nombre3,Contacto_correo1,Contacto_correo2,Contacto_correo3,Contacto_tel1,Contacto_tel2,Contacto_tel3,permitir_Fru,permitir_Sec,permitir_Veg")] Usuario usuario)
+        public ActionResult Edit([Bind(Include = "Id_Usuario,Username,Nombre,Correo,Contrasena,Sucursal,Id_Estatus,Fecha_Aprov,Id_Rol,Razon_social,RFC,Pais,Estado,Ciudad,Colonia,Localidad,Codigo_postal,Calle,Numero,Proveeedor_no_mks,Contacto_nombre1,Contacto_nombre2,Contacto_nombre3,Contacto_correo1,Contacto_correo2,Contacto_correo3,Contacto_tel1,Contacto_tel2,Contacto_tel3,permitir_Fru,permitir_Sec,permitir_Veg,Prorroga")] Usuario usuario)
         {
             if (ModelState.IsValid)
             {

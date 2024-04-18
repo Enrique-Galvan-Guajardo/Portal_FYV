@@ -102,12 +102,11 @@
                                 {
                                 <span class="badge rounded-pill text-bg-dark p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
                                 }
-                                Fechas límites:
+                                Fecha límite para proveedor:
                             </summary>
                             <div class="col-md-10">
                                 <div>
-                                    Proveedores: @(Convert.ToDateTime(Model.Item1.Where(x => x.Sucursal == sucursal && x.Estatus != 0).Select(x => x.Fecha_lim_proveedor).FirstOrDefault()).ToString("D")) <br />
-                                    Recepción: @(Convert.ToDateTime(Model.Item1.Where(x => x.Sucursal == sucursal && x.Estatus != 0).Select(x => x.Fecha_lim_recepcion).FirstOrDefault()).ToString("D"))
+                                    Capturar antes de @(Convert.ToDateTime(Model.Item1.Where(x => x.Sucursal == sucursal && x.Estatus != 0).Select(x => x.Fecha_lim_proveedor).FirstOrDefault()).ToString("D")) <br />
                                 </div>
                             </div>
                         </details>
@@ -117,9 +116,9 @@
         </div>
 
         <div class="form-group col-12 col-sm-6">
-            <label class="control-label col-md-12 fw-bold m-0">Establecer fechas límite:</label>
+            <label class="control-label col-md-12 fw-bold m-0">Establecer fecha límite:</label>
             <div class="col-md-10">
-                <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#FechasModal">Mostrar</button>
+                <button class="btn btn-sm btn-primary my-3" data-bs-toggle="modal" data-bs-target="#FechasModal">Mostrar</button>
             </div>
         </div>
     </div>
@@ -407,22 +406,15 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="FechasModalLabel">Establecer fechas límite</h1>
+                <h1 class="modal-title fs-5" id="FechasModalLabel">Establecer fecha límite</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row col-12 col-sm-12 mx-0">
                     <div class="form-group col-12 col-sm-6">
-                        <label class="control-label col-md-12 fw-bold m-0">Fecha límite proveedores:</label>
+                        <label class="control-label col-md-12 fw-bold m-0 my-1">Fecha límite proveedores:</label>
                         <div class="col-md-10">
                             <input type="date" class="form-control" name="Fecha_limite_provs" id="Fecha_limite_provs" value="@(dateTime.ToString("yyyy-MM-dd"))" />
-                        </div>
-                    </div>
-
-                    <div class="form-group col-12 col-sm-6">
-                        <label class="control-label col-md-12 fw-bold m-0">Fecha límite recepción:</label>
-                        <div class="col-md-10">
-                            <input type="date" class="form-control" name="Fecha_limite_recepcion" id="Fecha_limite_recepcion" value="@(dateTime.ToString("yyyy-MM-dd"))" />
                         </div>
                     </div>
                 </div>
@@ -434,13 +426,12 @@
                     function updateLimitDates() {
                         let ids = document.getElementById('Id_REQHDRs').value.split(',')
                         REQHDRs = [];
-
                         ids.forEach(Id_REQHDR => {
                             // Crear un objeto y añadirlo al arreglo
                             let rs = {
                                 "Id_REQHDR": parseInt(Id_REQHDR),
                                 "Fecha_lim_proveedor": document.getElementById('Fecha_limite_provs').value,
-                                "Fecha_lim_recepcion": document.getElementById('Fecha_limite_recepcion').value
+                                //"Fecha_lim_recepcion": document.getElementById('Fecha_limite_recepcion').value
                             };
 
                             REQHDRs.push(rs);

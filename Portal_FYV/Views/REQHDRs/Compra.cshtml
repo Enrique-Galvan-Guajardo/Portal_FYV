@@ -4,6 +4,8 @@
     ViewBag.Title = "Compra";
     int Id_Usuario = Convert.ToInt32(Session["Id_Usuario"]);
     string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+
+    DateTime dateTime = DateTime.Now.AddDays(1);
 }
 
 <div class="bg-white productos-compra">
@@ -46,37 +48,49 @@
                     {
                         if (sucursal == "JUA")
                         {
-                            <span class="badge rounded-pill text-bg-primary p-2 m-1">@sucursal</span>
+                            <span class="badge rounded-pill text-bg-primary p-2 m-1">@sucursal - @(Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+
                         }
                         else if (sucursal == "GUA")
                         {
-                            <span class="badge rounded-pill text-bg-secondary p-2 m-1">@sucursal</span>
+                            <span class="badge rounded-pill text-bg-secondary p-2 m-1">@sucursal - @(Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
                         }
                         else if (sucursal == "OFE")
                         {
-                            <span class="badge rounded-pill text-bg-success p-2 m-1">@sucursal</span>
+                            <span class="badge rounded-pill text-bg-success p-2 m-1">@sucursal - @(Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
                         }
                         else if (sucursal == "BAL")
                         {
-                            <span class="badge rounded-pill text-bg-danger p-2 m-1">@sucursal</span>
+                            <span class="badge rounded-pill text-bg-danger p-2 m-1">@sucursal - @(Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
                         }
                         else if (sucursal == "GTO")
                         {
-                            <span class="badge rounded-pill text-bg-warning p-2 m-1">@sucursal</span>
+                            <span class="badge rounded-pill text-bg-warning p-2 m-1">@sucursal - @(Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
                         }
                         else if (sucursal == "CDI")
                         {
-                            <span class="badge rounded-pill text-bg-info p-2 m-1">@sucursal</span>
+                            <span class="badge rounded-pill text-bg-info p-2 m-1">@sucursal - @(Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
                         }
                         else if (sucursal == "JAR")
                         {
-                            <span class="badge rounded-pill text-bg-light p-2 m-1">@sucursal</span>
+                            <span class="badge rounded-pill text-bg-light p-2 m-1">@sucursal - @(Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
                         }
                         else if (sucursal == "AMG")
                         {
-                            <span class="badge rounded-pill text-bg-dark p-2 m-1">@sucursal</span>
+                            <span class="badge rounded-pill text-bg-dark p-2 m-1">@sucursal - @(Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item2.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
                         }
                     }
+                </div>
+                <div class="my-2">
+                    <label class="control-label col-md-12 fw-bold m-0">Establecer fecha límite:</label>
+                    <div class="col-md-10">
+                        <button class="btn btn-sm btn-primary my-3" data-bs-toggle="modal" data-bs-target="#FechasModal">Mostrar</button>
+                    </div>
+                    <div>
+                        Creado en @(Convert.ToDateTime(Model.Item1.FirstOrDefault().Fecha_creacion).ToString("D"))
+                        <br />
+                        Capturar antes de @(Convert.ToDateTime(Model.Item1.FirstOrDefault().Fecha_limite).ToString("D"))
+                    </div>
                 </div>
             </div>
         </div>
@@ -89,6 +103,10 @@
                     <!--Monto Total Productos-->
                 </div>
             </div>
+        </div>
+
+        <div class="form-group col-12 col-sm-6 ms-auto">
+            
         </div>
     </div>
 
@@ -109,7 +127,7 @@
                         Proveedor
                     </th>
                     <th>
-                        Id_Merksys
+                        Id Merksys
                     </th>
                     <th>
                         Producto
@@ -190,7 +208,7 @@
                             @Html.DisplayFor(modelItem => item.Cantidad_validada)
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Precio)
+                            @Math.Round(Convert.ToDecimal(item.Precio), 3)
                         </td>
                         <td>
                             @item.Fecha_creacion.ToString("M")
@@ -232,5 +250,55 @@
                 }
             </tbody>
         </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="FechasModal" tabindex="-1" aria-labelledby="FechasModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="FechasModalLabel">Establecer fecha límite</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row col-12 col-sm-12 mx-0">
+                    <div class="form-group col-12 col-sm-6">
+                        <label for="Fecha_limite_recep" class="control-label col-md-12 fw-bold m-0 my-1">Fecha límite recepción:</label>
+                        <div class="col-md-10">
+                            <input type="date" class="form-control" name="Fecha_limite_recep" id="Fecha_limite_recep" value="@(dateTime.ToString("yyyy-MM-dd"))" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="updateLimitDates()">Guardar</button>
+                <script>
+                    function updateLimitDates() {
+                        orden = {
+                            "REQHDRS": document.getElementById('Id_REQHDRs').value,
+                            "Fecha_limite": document.getElementById('Fecha_limite_recep').value
+                        }
+                        // Enviar el arreglo de objetos al controlador utilizando AJAX
+                        $.ajax({
+                            url: '/REQHDRs/updateDatesOrden',
+                            type: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify(orden),
+                            success: function (response) {
+                                // Manejar la respuesta del servidor si es necesario
+                                console.log('Datos enviados correctamente');
+                                console.log(response);
+                            },
+                            error: function (xhr, status, error) {
+                                // Manejar errores si ocurrieron durante la solicitud AJAX
+                                console.error('Error al enviar datos:', error);
+                            }
+                        });
+                    }
+                </script>
+            </div>
+        </div>
     </div>
 </div>
