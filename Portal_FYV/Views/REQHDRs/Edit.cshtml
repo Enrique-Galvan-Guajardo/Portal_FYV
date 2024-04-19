@@ -7,7 +7,7 @@
 <div class="bg-white">
     <h2>Editar registro de REQHDR</h2>
 
-    @using (Ajax.BeginForm("Edit", "REQHDRs", FormMethod.Post, null))
+    @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 

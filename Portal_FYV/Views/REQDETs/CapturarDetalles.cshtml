@@ -5,7 +5,7 @@
 }
 
 <script src="~/Scripts/REQDETsController.js"></script>
-<div class="bg-white capturarDetalles datasets" data-sucursal="@Session["Id_Usuario"]" data-fru="@Model.permitir_Fru" data-sec="@Model.permitir_Sec" data-veg="@Model.permitir_Veg">
+<div class="bg-white capturarDetalles datasets" data-sucursal="@Session["Sucursal"]" data-fru="@Model.permitir_Fru" data-sec="@Model.permitir_Sec" data-veg="@Model.permitir_Veg">
     <h2>Capturar</h2>
 
     <div>
@@ -175,6 +175,6 @@
 
         // Obtiene el valor del atributo data-Sucursal utilizando la propiedad dataset
         const sucursal = elemento.dataset.sucursal;
-        getProducts(this.value, sucursal)
+        getProducts(document.getElementById('texto').value, sucursal)
     })
 </script>

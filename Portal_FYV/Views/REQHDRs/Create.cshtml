@@ -7,7 +7,7 @@
 <div class="bg-white">
     <h2>Crear registro de REQHDR</h2>
 
-    @using (Ajax.BeginForm("Create", "REQHDRs", FormMethod.Post, null))
+    @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
@@ -69,7 +69,7 @@
                     </div>
                 </div>
             </div>
-        
+
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
                     <input type="submit" value="Guardar" class="btn btn-lg btn-success" />

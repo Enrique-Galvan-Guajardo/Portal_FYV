@@ -8,7 +8,7 @@
     <h2>Crear registro de Catalogo Productos</h2>
 
 
-    @using (Ajax.BeginForm("Create", "CatalogoProductos", FormMethod.Post, null))
+    @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 

@@ -7,7 +7,7 @@
 <div class="bg-white">
     <h2>Crear registro de Rol</h2>
 
-    @using (Ajax.BeginForm("Create", "Roles", FormMethod.Post, null))
+    @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
         <div class="form-horizontal">

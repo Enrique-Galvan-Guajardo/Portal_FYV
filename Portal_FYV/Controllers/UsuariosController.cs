@@ -154,7 +154,7 @@ namespace Portal_FYV.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (usuario.Id_Estatus == 2)
+                if (usuario.Id_Estatus == 2 && usuario.Id_Estatus == 2)
                 {
                     UsuariosAltas ua = new UsuariosAltas();
                     ua.Id_UsuarioRegistra = usuario.Id_Usuario;

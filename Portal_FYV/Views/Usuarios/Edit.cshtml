@@ -7,7 +7,7 @@
 <div class="bg-white">
     <h2>Editar un registro de usuario</h2>
 
-    @using (Ajax.BeginForm("Edit", "Usuarios", FormMethod.Post, null))
+    @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 

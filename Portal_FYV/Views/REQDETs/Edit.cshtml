@@ -6,7 +6,7 @@
 <div class="bg-white">
     <h2>Editar registro de REQDET</h2>
 
-    @using (Ajax.BeginForm("Edit", "REQDETs", FormMethod.Post, null))
+    @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
