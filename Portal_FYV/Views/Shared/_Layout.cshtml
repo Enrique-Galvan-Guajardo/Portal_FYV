@@ -23,8 +23,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav gap-4 w-100">
-                    @{ 
+                    @{
                         string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+                        string sucursal = Session["Sucursal"] != null ? Session["Sucursal"].ToString() : "";
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle fs-5" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 Panel
@@ -63,9 +64,15 @@
                             </ul>
                         </li>
                     }
+                    @if (Session["Sucursal"] != null)
+                    {
+                        <li class="nav-item align-content-center">
+                            <a class="nav-link disabled" aria-disabled="true">Sucursal @sucursal</a>
+                        </li>
+                    }
                     @if (Session["Id_Usuario"] != null)
                     {
-                        <li class="nav-item ms-auto">
+                        <li class="nav-item align-content-center ms-auto">
                             <a class="btn btn-danger" href="@Url.Action("logout", "Usuarios")"><i class="bi bi-door-open me-2"></i>Cerrar sesión</a>
                         </li>
                     }
