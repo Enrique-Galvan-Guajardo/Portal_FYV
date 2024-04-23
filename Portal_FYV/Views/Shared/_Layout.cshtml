@@ -7,7 +7,7 @@
     <title>@ViewBag.Title - Portal Frutas y Verduras</title>
     <link href="~/Content/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="~/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/Scripts/toast_handler.js"></script>
     <script src="~/Scripts/routes.js"></script>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
@@ -76,6 +76,9 @@
 
     <div class="container">
         @RenderBody()
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11;">
+            <!-- Aquí se agregarán los toasts -->
+        </div>
         <hr />
         <footer>
             <p>&copy; @DateTime.Now.Year - Mi aplicación ASP.NET</p>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -48,13 +49,29 @@ namespace Portal_FYV.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id_Rol,Rol")] Roles roles)
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
             if (ModelState.IsValid)
             {
                 db.Roles.Add(roles);
                 db.SaveChanges();
+                if (rol == "Admin+")
+                {
+                    return Json(new { Success = true, Message = "Registro de rol creado.", Message_data = "", Message_Classes = "success", Message_concat = false });
+                }
+                else
+                {
+                    return RedirectToAction("Index");
+                }
             }
 
-            return View(roles);
+            if (rol == "Admin+")
+            {
+                return Json(new { Success = false, Message = "Información de rol incompleta.", Message_data = "", Message_Classes = "warning", Message_concat = false });
+            }
+            else
+            {
+                return View(roles);
+            }
         }
 
         // GET: Roles/Edit/5
@@ -79,13 +96,28 @@ namespace Portal_FYV.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id_Rol,Rol")] Roles roles)
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
             if (ModelState.IsValid)
             {
                 db.Entry(roles).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                if (rol == "Admin+")
+                {
+                    return Json(new { Success = true, Message = "Registro de rol actualizado.", Message_data = "", Message_Classes = "primary", Message_concat = false });
+                }
+                else
+                {
+                    return RedirectToAction("Index");
+                }
             }
-            return View(roles);
+            if (rol == "Admin+")
+            {
+                return Json(new { Success = false, Message = "Información de rol incompleta.", Message_data = "", Message_Classes = "warning", Message_concat = false });
+            }
+            else
+            {
+                return View(roles);
+            }
         }
 
         // GET: Roles/Delete/5

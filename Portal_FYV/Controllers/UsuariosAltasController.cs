@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Linq;
 using System.Net;
 using System.Web;
@@ -51,15 +52,32 @@ namespace Portal_FYV.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id_UsuarioAlta,Id_UsuarioRegistra,Id_UsuarioAprueba,Fecha")] UsuariosAltas usuariosAltas)
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
             if (ModelState.IsValid)
             {
                 db.UsuariosAltas.Add(usuariosAltas);
                 db.SaveChanges();
+                if (rol == "Admin+")
+                {
+                    return Json(new { Success = true, Message = "Alta de usuario creada.", Message_data = "", Message_Classes = "success", Message_concat = false });
+                }
+                else
+                {
+                    return RedirectToAction("Index");
+                }
             }
 
             ViewBag.Id_UsuarioRegistra = new SelectList(db.Usuarios, "Id_Usuario", "Username", usuariosAltas.Id_UsuarioRegistra);
             ViewBag.Id_UsuarioAprueba = new SelectList(db.Usuarios, "Id_Usuario", "Username", usuariosAltas.Id_UsuarioAprueba);
-            return View(usuariosAltas);
+            
+            if (rol == "Admin+")
+            {
+                return Json(new { Success = false, Message = "Información de validación incompleta.", Message_data = "", Message_Classes = "warning", Message_concat = false });
+            }
+            else
+            {
+                return View(usuariosAltas);
+            }
         }
 
         // GET: UsuariosAltas/Edit/5
@@ -86,15 +104,31 @@ namespace Portal_FYV.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id_UsuarioAlta,Id_UsuarioRegistra,Id_UsuarioAprueba,Fecha")] UsuariosAltas usuariosAltas)
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
             if (ModelState.IsValid)
             {
                 db.Entry(usuariosAltas).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                if (rol == "Admin+")
+                {
+                    return Json(new { Success = true, Message = "Alta de usuario actualizada.", Message_data = "", Message_Classes = "primary", Message_concat = false });
+                }
+                else
+                {
+                    return RedirectToAction("Index");
+                }
             }
             ViewBag.Id_UsuarioRegistra = new SelectList(db.Usuarios, "Id_Usuario", "Username", usuariosAltas.Id_UsuarioRegistra);
             ViewBag.Id_UsuarioAprueba = new SelectList(db.Usuarios, "Id_Usuario", "Username", usuariosAltas.Id_UsuarioAprueba);
-            return View(usuariosAltas);
+
+            if (rol == "Admin+")
+            {
+                return Json(new { Success = false, Message = "Información de validación incompleta.", Message_data = "", Message_Classes = "warning", Message_concat = false });
+            }
+            else
+            {
+                return View(usuariosAltas);
+            }
         }
 
         // GET: UsuariosAltas/Delete/5

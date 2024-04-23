@@ -99,33 +99,52 @@ namespace Portal_FYV.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id_Usuario,Username,Nombre,Correo,Contrasena,Sucursal,Id_Estatus,Fecha_Aprov,Id_Rol,Razon_social,RFC,Pais,Estado,Ciudad,Colonia,Localidad,Codigo_postal,Calle,Numero,Proveeedor_no_mks,Contacto_nombre1,Contacto_nombre2,Contacto_nombre3,Contacto_correo1,Contacto_correo2,Contacto_correo3,Contacto_tel1,Contacto_tel2,Contacto_tel3,Prorroga")] Usuario usuario)
         {
-            if (!db.Usuarios.Any(x => (x.Nombre == usuario.Correo || x.Correo == usuario.Correo) && x.Contrasena == usuario.Contrasena) && ModelState.IsValid)
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+            try
             {
-                if (usuario.Id_Estatus == 2)
+                if (!db.Usuarios.Any(x => (x.Nombre == usuario.Correo || x.Correo == usuario.Correo) && x.Contrasena == usuario.Contrasena) && ModelState.IsValid)
                 {
-                    UsuariosAltas ua = new UsuariosAltas();
-                    ua.Id_UsuarioRegistra = usuario.Id_Usuario;
-                    ua.Id_UsuarioAprueba = Convert.ToInt32(Session["Id_Usuario"]);
-                    ua.Fecha = DateTime.Now;
-                    usuario.Fecha_Aprov = ua.Fecha;
-                    db.UsuariosAltas.Add(ua);
+                    if (usuario.Id_Estatus == 2)
+                    {
+                        UsuariosAltas ua = new UsuariosAltas();
+                        ua.Id_UsuarioRegistra = usuario.Id_Usuario;
+                        ua.Id_UsuarioAprueba = Convert.ToInt32(Session["Id_Usuario"]);
+                        ua.Fecha = DateTime.Now;
+                        usuario.Fecha_Aprov = ua.Fecha;
+                        db.UsuariosAltas.Add(ua);
+                    }
+
+                    usuario.Id_Rol = Session["Id_Usuario"] == null ? 5 : usuario.Id_Rol;
+
+                    db.Usuarios.Add(usuario);
+                    db.SaveChanges();
+
+                    if (rol == "Admin+")
+                    {
+                        return Json(new { Success = true, Message = "Usuario creado.", Message_data = "", Message_Classes = "success", Message_concat = false });
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                
                 }
 
-                usuario.Id_Rol = Session["Id_Usuario"] == null ? 5 : usuario.Id_Rol;
-
-                db.Usuarios.Add(usuario);
-                db.SaveChanges();
-                
-                if (Session["Id_Usuario"] == null)
+                ViewBag.Id_Estatus = new SelectList(db.Estatus, "Id_Estatus", "Name", usuario.Id_Estatus);
+                ViewBag.Id_Rol = new SelectList(db.Roles, "Id_Rol", "Rol", usuario.Id_Rol);
+                if (rol == "Admin+")
                 {
-                    return RedirectToAction("Index", "Home");
+                    return Json(new { Success = true, Message = "Información de usuario incompleta o ya existente.", Message_data = "", Message_Classes = "warning", Message_concat = false });
                 }
-                
+                else
+                {
+                    return View(usuario);
+                }
             }
-
-            ViewBag.Id_Estatus = new SelectList(db.Estatus, "Id_Estatus", "Name", usuario.Id_Estatus);
-            ViewBag.Id_Rol = new SelectList(db.Roles, "Id_Rol", "Rol", usuario.Id_Rol);
-            return View(usuario);
+            catch (Exception)
+            {
+                return Json(new { Success = false, Message = "Error al procesar información de usuario.", Message_data = "", Message_Classes = "danger", Message_concat = false });
+            }
         }
 
         // GET: Usuarios/Edit/5
@@ -152,29 +171,57 @@ namespace Portal_FYV.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id_Usuario,Username,Nombre,Correo,Contrasena,Sucursal,Id_Estatus,Fecha_Aprov,Id_Rol,Razon_social,RFC,Pais,Estado,Ciudad,Colonia,Localidad,Codigo_postal,Calle,Numero,Proveeedor_no_mks,Contacto_nombre1,Contacto_nombre2,Contacto_nombre3,Contacto_correo1,Contacto_correo2,Contacto_correo3,Contacto_tel1,Contacto_tel2,Contacto_tel3,permitir_Fru,permitir_Sec,permitir_Veg,Prorroga")] Usuario usuario)
         {
-            if (ModelState.IsValid)
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+            try
             {
-                if (usuario.Id_Estatus == 2 && usuario.Id_Estatus == 2)
-                {
-                    UsuariosAltas ua = new UsuariosAltas();
-                    ua.Id_UsuarioRegistra = usuario.Id_Usuario;
-                    ua.Id_UsuarioAprueba = Convert.ToInt32(Session["Id_Usuario"]);
-                    ua.Fecha = DateTime.Now;
-                    usuario.Fecha_Aprov = ua.Fecha;
-                    db.UsuariosAltas.Add(ua);
-                }
-                else if(usuario.Id_Estatus == 1)
-                {
-                    usuario.Fecha_Aprov = null;
-                }
-                db.Entry(usuario).State = EntityState.Modified;
-                db.SaveChanges();
 
-                return RedirectToAction("Index");
+                if (ModelState.IsValid)
+                {
+                    if (usuario.Id_Estatus == 2)
+                    {
+                        if (!db.UsuariosAltas.Any(x => x.Id_UsuarioRegistra == usuario.Id_Usuario))
+                        {
+                            UsuariosAltas ua = new UsuariosAltas();
+                            ua.Id_UsuarioRegistra = usuario.Id_Usuario;
+                            ua.Id_UsuarioAprueba = Convert.ToInt32(Session["Id_Usuario"]);
+                            ua.Fecha = DateTime.Now;
+                            usuario.Fecha_Aprov = ua.Fecha;
+                            db.UsuariosAltas.Add(ua);
+                        }
+                    }
+                    else if (usuario.Id_Estatus == 1)
+                    {
+                        usuario.Fecha_Aprov = null;
+                    }
+                    db.Entry(usuario).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    if (rol == "Admin+")
+                    {
+                        return Json(new { Success = true, Message = "Información de usuario editada.", Message_data = "", Message_Classes = "primary", Message_concat = false });
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+
+                }
+                ViewBag.Id_Estatus = new SelectList(db.Estatus, "Id_Estatus", "Name", usuario.Id_Estatus);
+                ViewBag.Id_Rol = new SelectList(db.Roles, "Id_Rol", "Rol", usuario.Id_Rol);
+                
+                if (rol == "Admin+")
+                {
+                    return Json(new { Success = true, Message = "Información de usuario incompleta.", Message_data = "", Message_Classes = "warning", Message_concat = false });
+                }
+                else
+                {
+                    return View(usuario);
+                }
             }
-            ViewBag.Id_Estatus = new SelectList(db.Estatus, "Id_Estatus", "Name", usuario.Id_Estatus);
-            ViewBag.Id_Rol = new SelectList(db.Roles, "Id_Rol", "Rol", usuario.Id_Rol);
-            return View(usuario);
+            catch (Exception)
+            {
+                return Json(new { Success = false, Message = "Error al procesar información de usuario.", Message_data = "", Message_Classes = "danger", Message_concat = false });
+            }
         }
 
         // GET: Usuarios/Delete/5

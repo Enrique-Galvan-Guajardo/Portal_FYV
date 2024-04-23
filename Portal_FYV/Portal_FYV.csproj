@@ -2286,6 +2286,7 @@
     <Content Include="Scripts\Resumen_comprador.js" />
     <Content Include="Scripts\Resumen_proveedor.js" />
     <Content Include="Scripts\routes.js" />
+    <Content Include="Scripts\toast_handler.js" />
     <Content Include="Scripts\UsersController.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">

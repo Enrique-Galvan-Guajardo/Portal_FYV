@@ -35,6 +35,39 @@
         </div>
     }
 
+    <script>
+        // Al hacer clic en un botón o enviar un formulario
+        $('form').submit(function(event) {
+            event.preventDefault(); // Prevenir el envío estándar del formulario
+
+            // Convertir los datos del formulario en un objeto
+            var formData = {};
+            $.each($(this).serializeArray(), function(index, field) {
+                // Verificar si el campo es un checkbox
+                if ($('[name="' + field.name + '"]').is(':checkbox')) {
+                    formData[field.name] = $('[name="' + field.name + '"]').is(':checked');
+                } else {
+                    formData[field.name] = field.value;
+                }
+            });
+
+            // Enviar el objeto por AJAX
+            $.ajax({
+                url: '@Url.Action("Edit", "Roles")',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    // Manejar la respuesta
+                    console.log(response);
+                    toastFill(response)
+                },
+                error: function(error) {
+                    // Manejar errores
+                    console.error('Error:', error);
+                }
+            });
+        });
+    </script>
     <div>
         @Html.ActionLink("Regresar", "Index", new { area = "" }, new { @class = "btn btn-link" })
     </div>

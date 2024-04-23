@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Security;
 using Portal_FYV.Models;
 
 namespace Portal_FYV.Controllers
@@ -69,11 +71,24 @@ namespace Portal_FYV.Controllers
         public ActionResult Create([Bind(Include = "Id_Producto,Nombre,Descripcion,Clave_externa,Clave_interna," +
             "Codigo_barras,Imagen_ruta,Embalaje,Unidad,Fecha_Creacion,Fecha_Modificacion,Id_Proveedor")] Producto producto)
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
             if (ModelState.IsValid)
             {
                 db.Productos.Add(producto);
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                if (rol == "Admin+")
+                {
+                    return Json(new { Success = true, Message = "Registro de producto creado.", Message_data = "", Message_Classes = "success", Message_concat = false });
+                }
+                else
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+            if (rol == "Admin+")
+            {
+                return Json(new { Success = false, Message = "Información de producto incompleta.", Message_data = "", Message_Classes = "warning", Message_concat = false });
             }
             else
             {
@@ -114,13 +129,26 @@ namespace Portal_FYV.Controllers
         public ActionResult Edit([Bind(Include = "Id_Producto,Nombre,Descripcion,Clave_externa,Clave_interna," +
             "Codigo_barras,Imagen_ruta,Embalaje,Unidad,Fecha_Creacion,Fecha_Modificacion,Id_Proveedor")] Producto producto)
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
 
             if (ModelState.IsValid)
             {
                 producto.Fecha_Modificacion = DateTime.Now;
                 db.Entry(producto).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("Index");
+                if (rol == "Admin+")
+                {
+                    return Json(new { Success = true, Message = "Registro de producto actualizado.", Message_data = "", Message_Classes = "primary", Message_concat = false });
+                }
+                else
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+            if (rol == "Admin+")
+            {
+                return Json(new { Success = false, Message = "Información de producto incompleta.", Message_data = "", Message_Classes = "warning", Message_concat = false });
             }
             else
             {

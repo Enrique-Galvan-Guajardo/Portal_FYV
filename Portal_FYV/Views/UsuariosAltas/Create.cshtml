@@ -17,7 +17,7 @@
             <div class="row mx-0 mb-5">
                 <div class="col-12 col-sm-6">
                     <div class="form-group">
-                        @Html.LabelFor(model => model.Id_UsuarioRegistra, "Id_UsuarioRegistra", htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.LabelFor(model => model.Id_UsuarioRegistra, "Usuario registrado:", htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
                             @Html.DropDownList("Id_UsuarioRegistra", null, htmlAttributes: new { @class = "form-control" })
                             @Html.ValidationMessageFor(model => model.Id_UsuarioRegistra, "", new { @class = "text-danger" })
@@ -25,7 +25,7 @@
                     </div>
 
                     <div class="form-group">
-                        @Html.LabelFor(model => model.Id_UsuarioAprueba, "Id_UsuarioAprueba", htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.LabelFor(model => model.Id_UsuarioAprueba, "Validador:", htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
                             @Html.DropDownList("Id_UsuarioAprueba", null, htmlAttributes: new { @class = "form-control" })
                             @Html.ValidationMessageFor(model => model.Id_UsuarioAprueba, "", new { @class = "text-danger" })
@@ -34,7 +34,7 @@
                 </div>
                 <div class="col-12 col-sm-6">
                     <div class="form-group">
-                        @Html.LabelFor(model => model.Fecha, htmlAttributes: new { @class = "control-label col-md-2" })
+                        @Html.LabelFor(model => model.Fecha, "Fecha:", htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
                             @Html.EditorFor(model => model.Fecha, new { htmlAttributes = new { @class = "form-control", @type = "date" } })
                             @Html.ValidationMessageFor(model => model.Fecha, "", new { @class = "text-danger" })
@@ -50,7 +50,41 @@
             </div>
         </div>
     }
-
+    
+    <script>
+        // Al hacer clic en un botón o enviar un formulario
+        $('form').submit(function(event) {
+            event.preventDefault(); // Prevenir el envío estándar del formulario
+    
+            // Convertir los datos del formulario en un objeto
+            var formData = {};
+            $.each($(this).serializeArray(), function(index, field) {
+                // Verificar si el campo es un checkbox
+                if ($('[name="' + field.name + '"]').is(':checkbox')) {
+                    formData[field.name] = $('[name="' + field.name + '"]').is(':checked');
+                } else {
+                    formData[field.name] = field.value;
+                }
+            });
+    
+            // Enviar el objeto por AJAX
+            $.ajax({
+                url: '@Url.Action("Create", "UsuariosAltas")',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    // Manejar la respuesta
+                    console.log(response);
+                    toastFill(response)
+                },
+                error: function(error) {
+                    // Manejar errores
+                    console.error('Error:', error);
+                }
+            });
+        });
+    </script>
+    
     <div>
         @Html.ActionLink("Regresar", "Index", new { area = "" }, new { @class = "btn btn-link" })
     </div>
