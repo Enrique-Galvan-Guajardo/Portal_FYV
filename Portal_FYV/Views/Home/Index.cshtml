@@ -39,7 +39,13 @@
         <div class="card-body">
             <div class="tab-content" id="nav-tabContent">
                 <div class="tab-pane fade show active" id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" tabindex="0">
-
+                    @if (!string.IsNullOrEmpty(Request.QueryString["Message"]))
+                    {
+                        <div class="alert alert-@Html.Raw(Server.UrlDecode(Request.QueryString["Message_Classes"])) alert-dismissible fade show" role="alert">
+                            @Html.Raw(Server.UrlDecode(Request.QueryString["Message"]))
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
                     @using (Html.BeginForm("logIn", "Usuarios", FormMethod.Post))
                     {
                         <p>
@@ -55,8 +61,8 @@
                         </div>
                         <button type="submit" id="login-form-submit" class="btn btn-primary">Acceder</button>
                     }
-
                 </div>
+
                 <div class="tab-pane fade" id="nav-signup" role="tabpanel" aria-labelledby="nav-signup-tab" tabindex="0">
                     @using (Html.BeginForm("CreateAccount", "Usuarios", FormMethod.Post, new { @class = "w-100" }))
                     {
@@ -229,7 +235,8 @@
         </div>
     </div>
 }
-else {
+else
+{
 
     //Cualquiera excepto Proveedores
     if (rol != "Proveedores")
@@ -313,7 +320,7 @@ else {
                                 </div>
                             </div>
                         </div>
-                        
+
                     }
                 </div>
 
@@ -347,7 +354,7 @@ else {
                             productosDescripciones = productos != null ? productos.Select(x => x.Descripcion).Distinct().ToArray() : null;
                             productosIds = productos != null ? productos.Select(x => x.Id_Producto).Distinct().ToArray() : null;
                             precios = ViewBag.totalPrecios != null ? ViewBag.totalPrecios : new List<Portal_FYV.Models.UsuariosProductos>();
-                            
+
                             uspr = precios.Where(x => x.Precio > 0 && x.Cantidad_comprada > 0).ToList();
                             break;
                         case "Proveedores":
@@ -408,7 +415,7 @@ else {
                                     {
                                         foreach (var item in rEQHDRs_Mes)
                                         {
-                                            
+
                                             <div data-idreqhdr="@item.Id_REQHDR" class="list-group-item list-group-item-action">
                                                 <div>
                                                     @{
@@ -422,7 +429,7 @@ else {
                                                                 <b class="text-primary text-opacity-75">Solicitud #@item.Id_REQHDR Sucursal @item.Sucursal de @fechaval.ToString("f")</b>
                                                                 break;
                                                             case "Proveedores":
-                                                                
+
                                                                 <b class="text-primary text-opacity-75">Solicitud #@item.Id_REQHDR de @fechaval.ToString("f")</b>
                                                                 break;
                                                             default:
@@ -653,3 +660,4 @@ else {
         }
     </script>
 }
+

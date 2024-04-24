@@ -141,8 +141,13 @@ function saveREQDETS() {
         data: JSON.stringify(rs),
         success: function (response) {
             // Manejar la respuesta del servidor si es necesario
-            console.log('Datos enviados correctamente');
+            //console.log('Datos enviados correctamente');
             console.log(response);
+            toastFill(response);
+
+            if ($('#productosSeleccionados')) {
+                document.getElementById('productosSeleccionados').querySelector('tbody').innerHTML = "";
+            }
         },
         error: function (xhr, status, error) {
             // Manejar errores si ocurrieron durante la solicitud AJAX

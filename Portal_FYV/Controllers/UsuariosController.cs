@@ -50,22 +50,26 @@ namespace Portal_FYV.Controllers
             //Terminamos la sesión
             Session.Abandon();
             //Redirigimos al Login
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home", new { Message = "Sesión finalizada.", Message_Classes = "warning" });
         }
 
         // POST: Usuarios/CreateAccount
         [HttpPost]
         public ActionResult CreateAccount([Bind(Include = "Contrasena,Correo")] Usuario usuario)
         {
-            if (!db.Usuarios.Any(x => (x.Nombre == usuario.Correo || x.Correo == usuario.Correo) && x.Contrasena == usuario.Contrasena) && ModelState.IsValid)
+            if (!db.Usuarios.Any(x => x.Nombre == usuario.Correo || x.Correo == usuario.Correo) && ModelState.IsValid)
             {
                 usuario.Username = usuario.Correo.Split('@')[0];
                 db.Usuarios.Add(usuario);
                 db.SaveChanges();
 
                 //Session["Id_Usuario"] = usuario.Id_Usuario;
+                return RedirectToAction("Index", "Home", new { Message = "Usuario creado exitosamente, ya puedes iniciar sesión.", Message_Classes = "success" });
             }
-            return RedirectToAction("CapturarDetalles", "REQDETs");
+            else
+            {
+                return RedirectToAction("Index", "Home", new { Message = "Usuario/correo ya existente.", Message_Classes = "warning" });
+            }
         }
         // GET: Usuarios/Details/5
         public ActionResult Details(int? id)
@@ -125,9 +129,9 @@ namespace Portal_FYV.Controllers
                     }
                     else
                     {
-                        return RedirectToAction("Index", "Home");
+                        return RedirectToAction("Index", "Home", new { Message = "Usuario creado exitosamente, ya puedes iniciar sesión.", Message_Classes = "success" });
                     }
-                
+
                 }
 
                 ViewBag.Id_Estatus = new SelectList(db.Estatus, "Id_Estatus", "Name", usuario.Id_Estatus);

@@ -96,6 +96,10 @@ namespace Portal_FYV.Controllers
 
                 // Consultar la base de datos para verificar si existe un REQHDR con la fecha de hoy
                 bool existeRegistroHoy = db.REQHDRs.Any(r => DbFunctions.TruncateTime(r.Fecha_creacion) == fechaActual);
+                if (rs == null)
+                {
+                    return Json(new { Success = false, Message = "La solicitud no se ha podido guardar debido a que no se han seleccionado productos.", Message_data = "", Message_Classes = "warning", Message_concat = false });
+                }
 
                 if (!existeRegistroHoy || us.Prorroga == "-1") {
                     REQHDR rh = new REQHDR();
@@ -118,18 +122,18 @@ namespace Portal_FYV.Controllers
 
                     db.REQDETs.AddRange(rs);
                     db.SaveChanges();
-            
-                    return new HttpStatusCodeResult(HttpStatusCode.OK);
+
+                    return Json(new { Success = true, Message = "Solicitud generada. Los elementos de la lista han sido capturados.", Message_data = "", Message_Classes = "success", Message_concat = false });
                 }
                 else
                 {
-                    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                    return Json(new { Success = false, Message = "Ya se ha capturado una solicitud para el día de hoy, no se permite añadir otra.", Message_data = "", Message_Classes = "warning", Message_concat = false });
                 }
             }
             catch (Exception)
             {
 
-                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
+                return Json(new { Success = false, Message = "Error al guardar la solicitud.", Message_data = "", Message_Classes = "warning", Message_concat = false });
             }
         }
 
