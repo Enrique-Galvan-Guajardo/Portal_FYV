@@ -13,7 +13,7 @@
 <div class="bg-white">
     <h2>Crear registro de productos</h2>
 
-    @using (Html.BeginForm())
+    @using (Html.BeginForm("Create", "Productos", FormMethod.Post))
     {
         @Html.AntiForgeryToken()
 
@@ -92,6 +92,14 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Item1.Stock, "Stock: ", htmlAttributes: new { @class = "control-label col-md-2" })
+                        <div class="col-md-10">
+                            @Html.EditorFor(model => model.Item1.Stock, new { htmlAttributes = new { @class = "form-control", Name = "Stock" } })
+                            @Html.ValidationMessageFor(model => model.Item1.Stock, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
                     <div class="form-group @( rol == "Proveedores" ? "d-none" : "")">
                         @Html.LabelFor(model => model.Item1.Fecha_Creacion, "Fecha de creación:", htmlAttributes: new { @class = "control-label col-md-2" })
                         <div class="col-md-10">
@@ -118,40 +126,44 @@
             </div>
         </div>
     }
+    @{ 
+        if (rol == "Admin+")
+        {
+            <script>
+                // Al hacer clic en un botón o enviar un formulario
+                $('form').submit(function(event) {
+                    event.preventDefault(); // Prevenir el envío estándar del formulario
 
-    <script>
-        // Al hacer clic en un botón o enviar un formulario
-        $('form').submit(function(event) {
-            event.preventDefault(); // Prevenir el envío estándar del formulario
+                    // Convertir los datos del formulario en un objeto
+                    var formData = {};
+                    $.each($(this).serializeArray(), function(index, field) {
+                        // Verificar si el campo es un checkbox
+                        if ($('[name="' + field.name + '"]').is(':checkbox')) {
+                            formData[field.name] = $('[name="' + field.name + '"]').is(':checked');
+                        } else {
+                            formData[field.name] = field.value;
+                        }
+                    });
 
-            // Convertir los datos del formulario en un objeto
-            var formData = {};
-            $.each($(this).serializeArray(), function(index, field) {
-                // Verificar si el campo es un checkbox
-                if ($('[name="' + field.name + '"]').is(':checkbox')) {
-                    formData[field.name] = $('[name="' + field.name + '"]').is(':checked');
-                } else {
-                    formData[field.name] = field.value;
-                }
-            });
-
-            // Enviar el objeto por AJAX
-            $.ajax({
-                url: '@Url.Action("Create", "Productos")',
-                type: 'POST',
-                data: formData,
-                success: function (response) {
-                    // Manejar la respuesta
-                    console.log(response);
-                    toastFill(response)
-                },
-                error: function(error) {
-                    // Manejar errores
-                    console.error('Error:', error);
-                }
-            });
-        });
-    </script>
+                    // Enviar el objeto por AJAX
+                    $.ajax({
+                        url: '@Url.Action("Create", "Productos")',
+                        type: 'POST',
+                        data: formData,
+                        success: function (response) {
+                            // Manejar la respuesta
+                            console.log(response);
+                            toastFill(response)
+                        },
+                        error: function(error) {
+                            // Manejar errores
+                            console.error('Error:', error);
+                        }
+                    });
+                });
+            </script>
+        }
+    }
     <div>
         @Html.ActionLink("Regresar", "Index", new { area = "" }, new { @class = "btn btn-link" })
     </div>

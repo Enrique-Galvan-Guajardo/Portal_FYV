@@ -191,7 +191,7 @@
                                                             </div>
                                                             <div class="d-flex flex-column gap-3">
                                                                 <span class="cantidad_@id_rd">&nbsp;@(cantidadValidada != null ? cantidadValidada : 0)</span>
-                                                                <input type="number" class="form-control text-box single-line" name="cantidad_Validada" id="cantidad_Validada_@id_rd" value="@(cantidadValidada != null ? cantidadValidada : 0)" />
+                                                                <input type="number" min="0" class="form-control text-box single-line" name="cantidad_Validada" id="cantidad_Validada_@id_rd" value="@(cantidadValidada != null ? cantidadValidada : 0)" />
                                                             </div>
                                                         </div>
                                                         <div class="ms-auto d-flex gap-2">
@@ -271,7 +271,7 @@
     </div>
 
     <div class="d-grid gap-2 my-3 col-6 mx-auto">
-        <button class="btn btn-primary btn-lg" data-bs-target="#agregarProducto" data-bs-toggle="modal" type="button"><i class="bi bi-plus-square-dotted me-2"></i>Añadir nuevo registro</button>
+        <button class="btn btn-primary btn-lg" data-bs-target="#agregarProducto" data-bs-toggle="modal" type="button" onclick="showProducts()"><i class="bi bi-plus-square-dotted me-2"></i>Añadir nuevo registro</button>
     </div>
 
 </div>
@@ -280,18 +280,33 @@
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="agregarProductoLabel">Elegir Producto</h1>
+                <div class="d-block">
+                    <h1 class="modal-title fs-5" id="agregarProductoLabel">Elegir Producto</h1>
+                    <div class="row gap-2 mt-3 col-10 col-sm-12 mx-0">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-search"></i></span>
+                            <input type="search" class="form-control" placeholder="Buscar" id="searchProduct">
+                        </div>
+                        <div class="d-flex gap-3 align-items-center py-2" style="overflow-x: auto;">
+                            <span class="text-muted fw-medium">Filtrar por:</span>
+                            <input type="radio" class="btn-check" name="options-base" id="option-todo" autocomplete="off" data-tipo="NA" checked>
+                            <label class="btn btn-outline-primary" for="option-todo">Todo</label>
+                            <input type="radio" class="btn-check" name="options-base" id="option-frutas" autocomplete="off" data-tipo="FRUT">
+                            <label class="btn btn-outline-primary" for="option-frutas">Frutas</label>
+                            <input type="radio" class="btn-check" name="options-base" id="option-secos" autocomplete="off" data-tipo="PRSE">
+                            <label class="btn btn-outline-primary" for="option-secos">Secos</label>
+                            <input type="radio" class="btn-check" name="options-base" id="option-verduras" autocomplete="off" data-tipo="VERD">
+                            <label class="btn btn-outline-primary" for="option-verduras">Verduras</label>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label for="select_Id_REQHDR" class="form-label">Selecciona una orden creada:</label>
+                        @Html.DropDownList("select_Id_REQHDR", reqhdrsList, htmlAttributes: new { @class = "form-control" })
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <div class="input-group my-4 mx-auto justify-content-center">
-                        @Html.DropDownList("select_Id_REQHDR", reqhdrsList, htmlAttributes: new { @class = "form-control" })
-
-                        <input id="texto" name="texto" type="text" class="form-control" placeholder="Buscar...">
-                        <button class="btn btn-outline-primary" type="button" id="buscar"><i class="bi bi-search me-2"></i>Buscar</button>
-                    </div>
-                </div>
                 <div class="table-responsive rounded rounded-2 border">
                     <table class="table table-striped my-0" id="tablaProductos">
                         <thead class="table-dark">
@@ -312,6 +327,14 @@
                         </tbody>
                     </table>
                 </div>
+                <div id="spinner">
+                    <div class="d-flex justify-content-center py-3 bg-light">
+                        <div class="spinner-border text-secondary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                            <span class="visually-hidden" role="status">Cargando...</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="modal-footer">
             </div>
@@ -328,33 +351,33 @@
             <div class="modal-body">
                 <div>
                     <div class="col-12 col-md-12">
-                        <div class="row m-0">
 
+                        <div class="row m-0 d-none">
                             <div class="form-group col-12 col-md-3">
                                 <label for="Fecha_ultima_compra" class="control-label">Fecha Ultima Compra:</label>
                                 <div class="col-md-10">
-                                    <input class="form-control" type="date" name="Fecha_ultima_compra" id="Fecha_ultima_compra" />
+                                    <input class="form-control" disabled type="date" name="Fecha_ultima_compra" id="Fecha_ultima_compra" />
                                 </div>
                             </div>
 
                             <div class="form-group col-12 col-md-3">
                                 <label for="Cantidad_ultima_compra" class="control-label">Cantidad Ultima Compra:</label>
                                 <div class="col-md-10">
-                                    <input class="form-control" type="number" name="Cantidad_ultima_compra" id="Cantidad_ultima_compra" />
+                                    <input class="form-control" disabled type="number" min="0" name="Cantidad_ultima_compra" id="Cantidad_ultima_compra" />
                                 </div>
                             </div>
 
                             <div class="form-group col-12 col-md-3">
                                 <label for="Fecha_existencia" class="control-label">Fecha Existencia:</label>
                                 <div class="col-md-10">
-                                    <input class="form-control" type="date" name="Fecha_existencia" id="Fecha_existencia" />
+                                    <input class="form-control" disabled type="date" name="Fecha_existencia" id="Fecha_existencia" />
                                 </div>
                             </div>
 
                             <div class="form-group col-12 col-md-3">
                                 <label for="Clave_articulo" class="control-label">Clave Artículo:</label>
                                 <div class="col-md-10">
-                                    <input class="form-control" type="text" name="Clave_articulo" id="Clave_articulo" />
+                                    <input class="form-control" disabled type="text" name="Clave_articulo" id="Clave_articulo" />
                                 </div>
                             </div>
 
@@ -362,28 +385,28 @@
 
                         <div class="row m-0">
 
-                            <div class="form-group col-12 col-md-3">
+                            <div class="form-group col-12 col-md-3 d-none">
                                 <label for="Descripcion" class="control-label">Descripción:</label>
                                 <div class="col-md-10">
-                                    <input class="form-control" type="text" name="Descripcion" id="Descripcion" />
+                                    <input class="form-control" disabled type="text" name="Descripcion" id="Descripcion" />
                                 </div>
                             </div>
 
-                            <div class="form-group col-12 col-md-3">
+                            <div class="form-group col-12 col-md-3 d-none">
                                 <label for="Existencia" class="control-label">Existencia:</label>
                                 <div class="col-md-10">
-                                    <input class="form-control" type="number" name="Existencia" id="Existencia" />
+                                    <input class="form-control" disabled type="number" min="0" name="Existencia" id="Existencia" />
                                 </div>
                             </div>
 
-                            <div class="form-group col-12 col-md-3">
+                            <div class="form-group col-12 col-md-6">
                                 <label for="Cantidad_solicitada" class="control-label">Cantidad Solicitada:</label>
                                 <div class="col-md-10">
-                                    <input class="form-control" type="number" name="Cantidad_solicitada" id="Cantidad_solicitada" />
+                                    <input class="form-control" type="number" min="0" name="Cantidad_solicitada" id="Cantidad_solicitada" />
                                 </div>
                             </div>
 
-                            <div class="form-group col-12 col-md-3">
+                            <div class="form-group col-12 col-md-6">
                                 <label for="Id_Embalaje" class="control-label col-md-2">Embalaje:</label>
                                 <div class="col-md-10">
                                     @Html.DropDownList("Id_Embalaje", Model.Item4, htmlAttributes: new { @class = "form-control" })
@@ -395,7 +418,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" data-bs-target="#agregarProducto" data-bs-toggle="modal">Regresar</button>
-                <button class="btn btn-primary" onclick="saveREQDET()" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-plus-circle me-2"></i>Agregar</button>
+                <button class="btn btn-primary" data-bs-target="#agregarProducto" data-bs-toggle="modal" onclick="saveREQDET()" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-plus-circle me-2"></i>Agregar</button>
             </div>
         </div>
     </div>
@@ -447,6 +470,7 @@
                                 // Manejar la respuesta del servidor si es necesario
                                 console.log('Datos enviados correctamente');
                                 console.log(response);
+                                toastFill(response)
                             },
                             error: function (xhr, status, error) {
                                 // Manejar errores si ocurrieron durante la solicitud AJAX

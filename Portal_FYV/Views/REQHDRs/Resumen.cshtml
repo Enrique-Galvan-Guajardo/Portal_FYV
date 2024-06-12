@@ -80,7 +80,7 @@
                 </div>
             </div>
         </div>
-    
+
         <div class="form-group col-12 col-sm-6 ms-auto">
             <label class="control-label col-md-12 fw-bold m-0">Monto total:</label>
             <div class="col-md-10">
@@ -99,7 +99,7 @@
         case "Compras":
 
             <div class="table-responsive rounded rounded-2 border">
-                <table class="table table-striped mb-0" data-ids="@(String.Join("-", Model.Item1.Select(x => x.Id_REQHDR).ToArray()))" data-idsusps="@(String.Join("-", Model.Item3.Select(x => x.Id_UsuarioProducto).ToArray()))">
+                <table class="table table-striped mb-0">
                     <thead class="table-dark">
                         <tr>
                             <th>Producto</th>
@@ -110,91 +110,198 @@
                             <th></th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach (var producto in Model.Item2)
-                        {
 
-                            <tr id="@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto.Descripcion).Select(x => x.Id_REQHDR.ToString()).ToArray())">
+                    <tbody>
+                        @foreach (var producto in Model.Item2.Select(x => x.Descripcion).Distinct())
+                        {
+                            decimal ultimoPrecio = 0;
+                            decimal ultimoStock = 0;
+                            decimal cantidadProducto = 0;
+                            int id_prov = 0;
+                            string proveedor = "";
+                            int[] ids_up;
+                            <tr data-ids="@(String.Join("-", Model.Item2.Where(x => x.Descripcion == producto).Select(x => x.Id_REQHDR).ToArray()))">
                                 <td>
                                     <div>
-                                        @producto.Descripcion 
-                                        @{ 
-                                            switch (producto.REQHDR.Sucursal)
-                                            {
-                                                case "JUA":
-                                                    <span class="badge rounded-pill text-bg-primary p-2 m-1">@producto.REQHDR.Sucursal</span>
-                                                    break;
-                                                case "GUA":
-                                                    <span class="badge rounded-pill text-bg-secondary p-2 m-1">@producto.REQHDR.Sucursal</span>
-                                                    break;
-                                                case "OFE":
-                                                    <span class="badge rounded-pill text-bg-success p-2 m-1">@producto.REQHDR.Sucursal</span>
-                                                    break;
-                                                case "BAL":
-                                                    <span class="badge rounded-pill text-bg-danger p-2 m-1">@producto.REQHDR.Sucursal</span>
-                                                    break;
-                                                case "GTO":
-                                                    <span class="badge rounded-pill text-bg-warning p-2 m-1">@producto.REQHDR.Sucursal</span>
-                                                    break;
-                                                case "CDI":
-                                                    <span class="badge rounded-pill text-bg-info p-2 m-1">@producto.REQHDR.Sucursal</span>
-                                                    break;
-                                                case "JAR":
-                                                    <span class="badge rounded-pill text-bg-light p-2 m-1">@producto.REQHDR.Sucursal</span>
-                                                    break;
-                                                case "AMG":
-                                                    <span class="badge rounded-pill text-bg-dark p-2 m-1">@producto.REQHDR.Sucursal</span>
-                                                    break;
-                                                default:
-                                                    break;
-                                            }
+                                        <div>@producto</div>
+                                        @{
+                                            //decimal ultimoPrecio = Model.Item3.Any(x => x.Producto.Descripcion == producto) ? Model.Item3.Where(x => x.Producto.Descripcion == producto).Sum(x => x.Precio) : 0;
+                                            cantidadProducto = Model.Item2.Any(x => x.Descripcion == producto) ? Model.Item2.Where(x => x.Descripcion == producto).Sum(x => Convert.ToDecimal(x.Cantidad_validada)) : 0;
                                         }
-                                        <br />
-                                        <small class="text-muted">Cantidad: <span id="cantidad-@producto.Id_REQHDR">@(producto.Cantidad_validada > 0 ? producto.Cantidad_validada : 0 )</span></small>
+                                        <div class="text-muted"><small>Cantidad: <span>@cantidadProducto</span></small></div>
+                                        <div>
+                                            @if (cantidadProducto != 0)
+                                            {
+                                                foreach (var item in Model.Item2.Where(x => x.Descripcion == producto))
+                                                {
+                                                    <input type="hidden"
+                                                           class="cantidades-validadas-sucursal"
+                                                           data-descripcion="@item.Descripcion"
+                                                           data-idrhdr="@item.Id_REQHDR"
+                                                           id="validado-@item.Descripcion-@item.Id_REQHDR" 
+                                                           value="@item.Cantidad_validada" />
+                                                }
+                                            }
+                                        </div>
                                     </div>
                                 </td>
+                                <!--Al definir la cantidad a comprar para el límite del proveedor, generar una lista de objetos para la tabla UsuariosProductos, ya que, al tener el campo de Cantidad comprada, podremos definir para cada sucursal (que son los rehdrs) la cantidad que piden de manera distribuida, entonces queda la duda, aquí aparte de definir la cantidad a comprar por proveedor, también aprovecharemos para distribuir cantidades entre sucursales? -->
                                 @foreach (var item in Model.Item3.Select(x => x.Id_Usuario).Distinct())
                                 {
-                                    Portal_FYV.Models.UsuariosProductos usuarioproducto = Model.Item3.Any(x => x.Producto.Descripcion == producto.Descripcion && x.Id_Usuario == item && x.Id_REQHDR == producto.Id_REQHDR) ? Model.Item3.Where(x => x.Producto.Descripcion == producto.Descripcion && x.Id_Usuario == item && x.Id_REQHDR == producto.Id_REQHDR).FirstOrDefault() : new Portal_FYV.Models.UsuariosProductos();
-                                    decimal ultimoPrecio = usuarioproducto.Precio >= 0 ? usuarioproducto.Precio : 0;
-                                    <td class="seleccionar-precio">
+                                    Portal_FYV.Models.UsuariosProductos usuarioproducto = Model.Item3.Any(x => x.Producto.Descripcion == producto && x.Id_Usuario == item) ? Model.Item3.Where(x => x.Producto.Descripcion == producto && x.Id_Usuario == item).FirstOrDefault() : new Portal_FYV.Models.UsuariosProductos();
+                                    ultimoPrecio = usuarioproducto.Precio >= 0 ? usuarioproducto.Precio : 0;
+                                    ultimoStock = usuarioproducto.Producto != null ? usuarioproducto.Producto.Stock : 0;
+                                    id_prov = usuarioproducto.Usuario != null ? usuarioproducto.Usuario.Id_Usuario : 0;
+                                    proveedor = usuarioproducto.Usuario != null ? usuarioproducto.Usuario.Nombre : "";
+                                    ids_up = usuarioproducto != null ? Model.Item3.Where(x => x.Producto.Descripcion == producto && x.Id_Usuario == item).Select(x => x.Id_UsuarioProducto).ToArray() : null;
+                                    <td>
                                         @if (ultimoPrecio != 0)
                                         {
-                                            <label class="control-label mb-2" id="label-@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto.Descripcion).Select(x => x.Id_REQDET.ToString()).ToArray())">Precio: $ <span class="text-muted precio-ultimo">@ultimoPrecio</span></label>
+                                            <label class="control-label mb-2">Precio: $ <span class="text-muted precio-ultimo">@ultimoPrecio</span></label>
                                             <br />
                                             <small class="text-muted cantidad-distribuida">
-                                                Cantidad:
-                                                <span class="provedor-distribuido-@(usuarioproducto.Id_Usuario + "-" + producto.Id_REQHDR)"
-                                                      data-bs-idprov="@usuarioproducto.Id_Usuario"
-                                                      data-bs-idusprod="@usuarioproducto.Id_UsuarioProducto"
-                                                      data-bs-idrhdr="@producto.Id_REQHDR"
-                                                      data-bs-precio="@usuarioproducto.Precio">
-                                                    @(usuarioproducto.Cantidad_comprada > 0 ? usuarioproducto.Cantidad_comprada : 0)
-                                                </span>
+                                                Disponible:
+                                                <span class="stocks"
+                                                      data-precio="@ultimoPrecio"
+                                                      data-provedor="@proveedor"
+                                                      data-id-proveedor="@id_prov"
+                                                      data-stock="@ultimoStock"
+                                                      data-id-up="@String.Join(",", ids_up)">@ultimoStock</span>
+                                            </small>
+                                            <br />
+                                            <small class="text-info-emphasis cantidad-solicitada">
+                                                Solicitado:
+                                                <span class="solicitado">0</span>
                                             </small>
                                         }
                                         else
                                         {
-                                            <label class="control-label mb-2" id="label-@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto.Descripcion).Select(x => x.Id_REQDET.ToString()).ToArray())"><span class="text-danger precio-ultimo">No asignado</span></label>
+                                            <label class="control-label mb-2"><span class="text-danger precio-ultimo">No asignado</span></label>
                                         }
                                     </td>
                                 }
-                                <td>
-                                    <button class="btn btn-sm btn-primary my-2"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#seleccionar-precio-modal"
-                                            data-bs-idrhdr="@producto.Id_REQHDR"
-                                            data-bs-prod="@producto.Descripcion"
-                                            data-bs-cant="@(producto.Cantidad_validada > 0 ? producto.Cantidad_validada : 0)"
-                                            data-bs-provs="@String.Join("-", Model.Item3.Select(x => x.Id_Usuario).Distinct().ToArray())">
-                                        Capturar
-                                    </button>
+
+                                <td class="text-end">
+                                    <div>
+                                        <button data-cantidad="@cantidadProducto" class="btn btn-sm btn-primary my-2" data-bs-toggle="modal" data-bs-target="#cantidadesModal" onclick="setData(this)">Capturar</button>
+                                    </div>
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
+
+            <!-- Modal -->
+            <div class="modal fade"  data-bs-backdrop="static" data-bs-keyboard="false" id="cantidadesModal" tabindex="-1" aria-labelledby="cantidadesModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="cantidadesModalLabel">Cantidades por proveedor</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="d-flex justify-content-evenly">
+                                <h3 class="text-muted d-flex flex-column text-center">
+                                    Total a solicitar<span id="cantidad-total-solicitar" class="text-primary"></span>
+                                </h3>
+                                <h3 class="text-muted d-flex flex-column text-center">
+                                    Producto<span id="producto-solicitar" class="text-info"></span>
+                                </h3>
+                                <h3 class="text-muted d-flex flex-column text-center">
+                                    Total a distribuir<span id="cantidad-total-distribuir" class="text-body-tertiary"></span>
+                                </h3>
+                            </div>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="table-tab" data-bs-toggle="tab" data-bs-target="#table-tab-pane" type="button" role="tab" aria-controls="table-tab-pane" aria-selected="true">Solicitudes</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="distribucion-tab" data-bs-toggle="tab" data-bs-target="#distribucion-tab-pane" type="button" role="tab" aria-controls="distribucion-tab-pane" aria-selected="false">Distribución</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="table-tab-pane" role="tabpanel" aria-labelledby="table-tab" tabindex="0">
+                                    <div class="table-responsive rounded rounded-2 border mt-1">
+                                        <table class="table table-striped mb-0">
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    @foreach (var item in Model.Item3.Select(x => x.Id_Usuario).Distinct())
+                                                    {
+                                                        <th>@Model.Item3.FirstOrDefault(x => x.Id_Usuario == item).Usuario.Nombre</th>
+                                                    }
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    @foreach (var item in Model.Item3.Select(x => x.Id_Usuario).Distinct())
+                                                    {
+                                                        <td id="id_prov_@item">
+                                                            <div class="mb-3 d-flex flex-column">
+                                                                Cantidad disponible:
+                                                                <span class="text-muted tag-disp" id="tag-disp-@item">0</span>
+                                                            </div>
+                                                            <div>
+                                                                <input type="hidden" class="ids_up_sucursal" value="@Model.Item3.FirstOrDefault(x => x.Id_Usuario == item).Id_REQHDR" />
+                                                                <input type="hidden" class="prov_name" value="@Model.Item3.FirstOrDefault(x => x.Id_Usuario == item).Usuario.Nombre" />
+                                                                <label for="input-@item" class="form-label">Cantidad a solicitar:</label>
+                                                                <input class="form-control input-cantidad" oninput="validarInput(this)" 
+                                                                       type="number" 
+                                                                       placeholder="0" 
+                                                                       id="input-@item" 
+                                                                       name="input-@item" max="9999" min="0">
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="distribucion-tab-pane" role="tabpanel" aria-labelledby="distribucion-tab" tabindex="0">
+                                    <div class="table-responsive rounded rounded-2 border mt-1">
+                                        <table class="table table-striped mb-0">
+                                            <thead class="table-dark">
+                                                <tr>
+                                                    @foreach (var item in Model.Item1.Select(x => x.Sucursal))
+                                                    {
+                                                        <th>@item</th>
+                                                    }
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    @foreach (var item in Model.Item1.Select(x => x.Sucursal))
+                                                    {
+                                                        <td class="@item">
+                                                            <div style="width: 150px;" data-idrhdr="@Model.Item1.FirstOrDefault(x => x.Sucursal == item).Id_REQHDR">
+                                                                <label for="input-dist-@item" class="form-label">Cantidad a enviar:</label>
+                                                                <input class="form-control input-dist" oninput="validarDist(this)" type="number" placeholder="0" id="input-dist-@item" name="input-dist-@item" max="9999" min="0">
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div class="d-flex justify-content-center">
+                                            <div class="form-check form-switch my-3">
+                                                <input class="form-check-input" type="checkbox" role="switch" id="activar-dist" onchange="habilitarGuardado(this)">
+                                                <label class="form-check-label" for="activar-dist">Distribución terminada</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="guardar-solicitudes" onclick="guardarOrdenCompra(this)" class="btn btn-primary" disabled>Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal -->
             <!-- Modal -->
             <div class="modal fade" id="seleccionar-precio-modal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="seleccionar-precio-modal-Label" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
@@ -278,16 +385,24 @@
                                 </td>
                                 <td>@(Model.Item4.Any(x => x.Descripcion == producto) ? Model.Item4.FirstOrDefault(x => x.Descripcion == producto).Unidades : "NA")</td>
                                 <td>@( new HtmlString(cantidad == 0 ? "<span class=\"text-danger\">No asignada</span>" : "<span class=\"text-primary\">" + cantidad.ToString() + "</span>"))</td>
-                                <td>
-                                    <div>
+                                <td style="min-width: 22rem;">
+                                    <div class="d-flex flex-column gap-1">
                                         @if (cantidad != 0)
                                         {
-                                            decimal ultimoPrecio = Model.Item3.Any(x => x.Producto.Descripcion == producto) ? Model.Item3.Where(x => x.Producto.Descripcion == producto).OrderByDescending(x => x.Id_UsuarioProducto).FirstOrDefault().Precio : 0;
+                                            Portal_FYV.Models.UsuariosProductos up = Model.Item3.Any(x => x.Producto.Descripcion == producto) ? Model.Item3.Where(x => x.Producto.Descripcion == producto).OrderByDescending(x => x.Id_UsuarioProducto).FirstOrDefault() : new Portal_FYV.Models.UsuariosProductos();
+                                            decimal ultimoPrecio = up.Precio > 0 ? up.Precio : 0;
+                                            decimal stock = up.Producto != null ? up.Producto.Stock : 0;
+                                            decimal idProducto = up.Producto != null ? up.Producto.Id_Producto : 0;
                                             <label class="control-label mb-2" id="label-@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto).Select(x => x.Id_REQDET.ToString()).ToArray())" for="precio-@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto).Select(x => x.Id_REQDET.ToString()).ToArray())">Precio anterior: $ <span class="text-muted precio-ultimo">@ultimoPrecio</span></label>
                                             <div class="input-group">
-                                                <span class="input-group-text">$</span>
-                                                <input id="precio-@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto).Select(x => x.Id_REQDET.ToString()).ToArray())" type="number" placeholder="Nuevo precio" class="form-control" value="@ultimoPrecio">
+                                                <span title="Nuevo precio para @producto" class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                                                <input id="precio-@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto).Select(x => x.Id_REQDET.ToString()).ToArray())" type="number" placeholder="Nuevo precio para @producto" class="form-control" value="@ultimoPrecio" min="0">
                                                 <button class="btn btn-outline-success" data-descripcion="@producto" onclick="guardarPrecio('@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto).Select(x => x.Id_REQDET.ToString()).ToArray())', '@producto', @Id_Usuario, this)" type="button" id="button-addon-@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto).Select(x => x.Id_REQDET.ToString()).ToArray())">Asignar</button>
+                                            </div>
+                                            <div class="input-group">
+                                                <span title="Stock disponible para @producto" class="input-group-text"><i class="bi bi-box-seam"></i></span>
+                                                <input id="stock-@idProducto" type="number" placeholder="Stock disponible para @producto" class="form-control" value="@stock" min="0">
+                                                <button class="btn btn-outline-info" type="button" onclick="actualizarStock(@idProducto, this)">Actualizar</button>
                                             </div>
                                         }
                                     </div>

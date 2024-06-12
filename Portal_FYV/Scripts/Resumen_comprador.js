@@ -258,3 +258,499 @@ function calcularTotal() {
     document.querySelector('.total-suma').innerText = "$" + Object.values(totalPorColumna).reduce((acc, val) => acc + val, 0); // Redondear el total a 4 decimales
 }
 
+
+//Hacer que el botón esté deshabilitado si la suma de las cantidades no dan el total solicitado
+//Si no dan la cantidad, que se habilite con un checkbox en una pestaña adicional arriba de la tabla para confirmar cantidades a distribuir entre sucursales
+
+function setData(button) {
+    // Obtener la fila que contiene el botón
+    var row = button.closest('tr');
+    document.getElementById('cantidad-total-solicitar').innerText = button.dataset.cantidad;
+    document.getElementById('cantidad-total-distribuir').innerText = 0;
+    document.getElementById('producto-solicitar').innerText = row.querySelector('div > div:first-child').innerText;
+
+    // Seleccionar todos los elementos span con clase 'stocks' dentro de esa fila
+    var stocksElements = row.querySelectorAll('span.stocks');
+
+    // Crear un array para almacenar los objetos con los datos
+    var dataObjects = [];
+
+    document.querySelectorAll('.tag-disp').forEach(function (tag) {
+        tag.innerText = 0;
+    })
+    // Recorrer cada elemento y obtener sus datasets
+    stocksElements.forEach(function (stocksElement) {
+        var dataObject = {
+            precio: parseFloat(stocksElement.dataset.precio),
+            provedor: stocksElement.dataset.provedor,
+            idUp: stocksElement.dataset.idUp.split(',').map(Number),
+            idProveedor: parseInt(stocksElement.dataset.idProveedor), // Nuevo dataset agregado
+            stock: parseFloat(stocksElement.dataset.stock) // Nuevo dataset agregado
+        };
+
+        document.getElementById('tag-disp-' + dataObject.idProveedor).innerText = dataObject.stock;
+        document.getElementById('input-' + dataObject.idProveedor).innerText = dataObject.stock;
+        // Añadir el objeto al array
+        dataObjects.push(dataObject);
+    });
+    console.log(dataObjects)
+}
+
+function validarInput(input) {
+    // Obtener el total permitido
+    var totalSolicitar = parseFloat(document.getElementById('cantidad-total-solicitar').textContent);
+    
+    // Obtener todos los inputs de cantidad
+    var inputs = document.querySelectorAll('.input-cantidad');
+
+    // Obtener la cantidad disponible para el input actual
+    var cantidadDisponible = parseFloat(input.closest('td').querySelector('.tag-disp').textContent);
+
+    var sumaTotal = 0;
+    var valorActual = parseFloat(input.value) || 0;
+
+    // Verificar si el valor del input actual excede la cantidad disponible
+    if (valorActual > cantidadDisponible) {
+        toastFill({ Message_Classes: "warning", Message: "La cantidad solicitada excede la cantidad disponible de " + cantidadDisponible})
+        input.value = cantidadDisponible;
+        valorActual = cantidadDisponible;
+    }
+
+    // Calcular la suma de todos los inputs
+    inputs.forEach(function (input) {
+        var valor = parseFloat(input.value) || 0;
+        sumaTotal += valor;
+        document.getElementById('cantidad-total-distribuir').innerText = sumaTotal
+    });
+
+    // Verificar si la suma total excede el límite permitido
+    if (sumaTotal > totalSolicitar) {
+        toastFill({ Message_Classes: "warning", Message: "La suma total de las cantidades solicitadas excede el límite permitido de " + totalSolicitar })
+        document.getElementById('cantidad-total-distribuir').innerText = parseFloat(document.getElementById('cantidad-total-distribuir').innerText) - input.value
+        input.value = 0;
+    }
+
+
+    // Habilitar o deshabilitar el botón guardar-solicitudes basado en la suma total
+    var botonGuardar = document.getElementById('guardar-solicitudes');
+    if (sumaTotal === totalSolicitar) {
+        botonGuardar.disabled = false;
+        document.getElementById('cantidad-total-distribuir').className = "text-success"
+        //document.getElementById('distribucion-tab').className = "nav-link d-none"
+        let distribucionCols = document.getElementById('distribucion-tab-pane').querySelectorAll('td')
+        distribucionCols.forEach(function (td) {
+            td.querySelector('input').disabled = true
+        });
+    } else {
+        botonGuardar.disabled = true;
+        document.getElementById('cantidad-total-distribuir').className = "text-body-tertiary"
+        let distribucionCols = document.getElementById('distribucion-tab-pane').querySelectorAll('td')
+        //document.getElementById('distribucion-tab').className = "nav-link"
+        distribucionCols.forEach(function (td) {
+            td.querySelector('input').disabled = false
+        });
+    }
+
+    var dists = document.querySelectorAll('.input-dist');
+    dists.forEach(function (input) {
+        input.value = 0;
+    });
+
+    let cantidades_validadas = []
+    // Obtener el total permitido a distribuir desde el elemento con id 'cantidad-total-distribuir'
+    var totalDistribuir = parseFloat(document.getElementById('cantidad-total-distribuir').textContent);
+
+    if (totalSolicitar == totalDistribuir) {
+        document.querySelectorAll('.cantidades-validadas-sucursal').forEach(function (input) {
+            if (input.dataset.descripcion == document.getElementById('producto-solicitar').innerText) {
+                Cantidad_validada = parseFloat(input.value)
+                cantidades_validadas.push(Cantidad_validada)
+            }
+        })
+
+        let distribucionCols = document.getElementById('distribucion-tab-pane').querySelectorAll('td')
+        distribucionCols.forEach(function (td, i) {
+            td.querySelector('input').value = parseFloat(cantidades_validadas[i])
+        });
+    }
+
+}
+function validarDist(input) {
+    
+    // Obtener todos los inputs de cantidad
+    var dists = document.querySelectorAll('.input-dist');
+    var cantidades = document.querySelectorAll('.input-cantidad');
+
+    // Calcular la suma de todos los inputs
+    var sumaTotal = 0;
+    var sumaDisponible = 0;
+    cantidades.forEach(function (input) {
+        var valor = parseFloat(input.value) || 0;
+        sumaTotal += valor;
+    });
+    dists.forEach(function (input) {
+        var valor = parseFloat(input.value) || 0;
+        sumaDisponible += valor;
+    });
+
+    //console.log(totalDistribuir)
+    //console.log(sumaTotal - sumaDisponible)
+    let residuo = (parseFloat(sumaTotal) - parseFloat(sumaDisponible)).toFixed(4)
+
+    if (residuo >= 0) {
+        document.getElementById('cantidad-total-distribuir').textContent = residuo;
+    } else {
+        if (residuo < 0) {
+            input.value = 0;
+            document.getElementById('cantidad-total-distribuir').textContent = sumaTotal
+        } else {
+            input.value += residuo
+            document.getElementById('cantidad-total-distribuir').textContent = residuo
+        }
+    }
+
+
+    var botonGuardar = document.getElementById('guardar-solicitudes');
+    if (residuo == 0) {
+        botonGuardar.disabled = false;
+        document.getElementById('cantidad-total-distribuir').className = "text-success"
+    } else {
+        botonGuardar.disabled = true;
+        document.getElementById('cantidad-total-distribuir').className = "text-body-tertiary"
+    }
+    /*
+    */
+}
+
+function habilitarGuardado(checkbox) {
+    var botonGuardar = document.getElementById('guardar-solicitudes');
+    if (checkbox.checked) {
+        botonGuardar.disabled = false;
+        document.getElementById('cantidad-total-distribuir').className = "text-success"
+    } else {
+        botonGuardar.disabled = true;
+        document.getElementById('cantidad-total-distribuir').className = "text-body-tertiary"
+    }
+}
+
+function guardarOrdenCompra(button) {
+    let tabPaneDistribucion = []
+    let tabPaneSolicitud = []
+
+    let solicitudCols = document.getElementById('table-tab-pane').querySelectorAll('td')
+    let distribucionCols = document.getElementById('distribucion-tab-pane').querySelectorAll('td')
+    solicitudCols.forEach(function (td) {
+        let Cantidad_solicitada = parseFloat(td.querySelector('input.form-control').value) || 0
+        let Id_Proveedor = parseInt(td.querySelector('input.form-control').id.split('-')[1])
+        let Id_REQHDR = parseInt(td.querySelector('input.ids_up_sucursal').value)
+        let Proveedor = td.querySelector('input.prov_name').value
+        let Cantidad_disponible = parseFloat(td.querySelector('span.tag-disp').innerText)
+        
+        let SolicitudObjeto = {
+            Id_REQHDR,
+            Id_Proveedor,
+            Proveedor,
+            Cantidad_disponible,
+            Cantidad_solicitada,
+            Producto: document.getElementById('producto-solicitar').innerText
+        }
+        tabPaneSolicitud.push(SolicitudObjeto);
+    });
+    distribucionCols.forEach(function (td) {
+        let Sucursal = td.className
+        switch (Sucursal) {
+            case "JUA":
+                Sucursal = 'Juarez'
+                break;
+            case "GUA":
+                Sucursal = 'Guanza'
+                break;
+            case "OFE":
+                Sucursal = 'Ofertas'
+                break;
+            case "BAL":
+                Sucursal = 'Balcones'
+                break;
+            case "GTO":
+                Sucursal = 'Guanajuato'
+                break;
+            case "CDI":
+                Sucursal = 'Cedis'
+                break;
+            case "JAR":
+                Sucursal = 'Jarachina'
+                break;
+            case "AMG":
+                Sucursal = 'Almaguer'
+                break;
+            default:
+                Sucursal = 'NA'
+                break;
+        }
+        let Id_REQHDR = parseInt(td.querySelector('div').dataset.idrhdr)
+        let Cantidad_distribuida = parseFloat(td.querySelector('input').value)
+        let Cantidad_validada = ""
+        document.querySelectorAll('.cantidades-validadas-sucursal').forEach(function (input) {
+            if (input.dataset.descripcion == document.getElementById('producto-solicitar').innerText &&
+                input.dataset.idrhdr == Id_REQHDR) {
+                Cantidad_validada = parseFloat(input.value)
+            }
+        })
+        let DistribucionObjeto = {
+            Sucursal,
+            Id_REQHDR,
+            Cantidad_distribuida,
+            Cantidad_validada,
+            Producto: document.getElementById('producto-solicitar').innerText
+        }
+        tabPaneDistribucion.push(DistribucionObjeto)
+    });
+
+    console.table(tabPaneSolicitud)
+    console.table(tabPaneDistribucion)
+    console.table(JSON.stringify(tabPaneSolicitud))
+    console.table(JSON.stringify(tabPaneDistribucion))
+
+    //array.forEach.forEach(function (input) { });
+
+
+    let proveedores = []
+    proveedores = generarOrdenesDeCompra(tabPaneSolicitud, tabPaneDistribucion);
+    console.log(JSON.stringify(proveedores));
+    console.log(JSON.stringify(proveedores));
+    console.log(proveedores);
+
+    if (proveedores.length > 0) {
+
+        //Ajax
+        button.disabled = true;
+        // Enviar el arreglo de objetos al controlador utilizando AJAX
+        $.ajax({
+            url: '/REQHDRs/guardarDistribucion',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ proveedores }),
+            beforeSend: function () {
+                // Código a ejecutar antes de enviar la petición AJAX
+                button.innerText = "Guardando..."
+                // Puedes mostrar un indicador de carga, deshabilitar botones, etc.
+            },
+            success: function (response) {
+                // Manejar la respuesta del servidor si es necesario
+                console.log('Datos enviados correctamente');
+                console.log(response);
+
+                toastFill(response)
+
+                // Esperar 1 segundo (1000 milisegundos) y luego mostrar el texto
+                setTimeout(function () {
+                    button.innerText = "Guardar"
+                    button.disabled = false;
+                }, 2000); // 1000 milisegundos = 1 segundo
+            },
+            error: function (xhr, status, error) {
+                // Manejar errores si ocurrieron durante la solicitud AJAX
+                console.error('Error al enviar datos:', error);
+            }
+        });
+    }
+    /**
+    let modal = button.closest('.modal-content')
+    let product = modal.querySelector('.modal-body #producto-solicitar').innerText
+
+    let modal_rows = document.getElementById('table-tab-pane').querySelectorAll('table tbody > tr')
+    let distribution_rows = document.getElementById('distribucion-tab-pane').querySelectorAll('table tbody > tr')
+    let sucs = distribution_rows.closest('.table').querySelectorAll('thead th')
+    let table_rows = document.querySelectorAll('.productos-consolidacion table tbody > tr')
+    let cantidades_validadas_sucursal = table_rows.querySelectorAll('.cantidades-validadas-sucursal')
+
+
+    let ordenCompra = {
+        REQHDRS: "", //REQHDRS que hicieron la solicitud (ejemplo "2005-2006" concatenados como texto)
+        Proveedor: "", //Proveedor (o proveedores) seleccionado para surtir la solicitud <nombre>
+        Producto: "", //Producto de la solicitud <nombre>
+        //Cantidad_solicitada: 0, //Cantidad total solicitada (originalmente) <sumatoria>
+        Precio: 0, //Precio de compra final por todos los productos comprados <multiplicación>
+        Cantidad_validada: 0, //Cantidad total validada de productos <sumatoria>
+        Fecha_creacion: Date.now(), //Fecha actual <datetime>
+        Juarez: 0, //Cuánto se distribuirá para Juarez
+        Villas: 0,//Cuánto se distribuirá para Villas
+        Almaguer: 0,//Cuánto se distribuirá para Almaguer
+        Jarachina: 0,//...
+        Balcones: 0,
+        Cedis: 0,
+        Guanza: 0,
+        Ofertas: 0,
+        Guanajuato: 0
+    }
+     */
+    /* 
+    modal_rows.querySelectorAll('.input-cantidad').forEach(function (input) {
+        var valor = parseFloat(input.value) || 0;
+        if (valor > 0) {
+            let drows = {}
+            table_rows.forEach(function (row) {
+                if (row.querySelector('td div > div:first-child').innerText == product) {
+                    distribution_rows.forEach(function (drow) {
+                        let Sucursal_name = ""
+                        switch (drow.className) {
+                            case "JUA":
+                                Sucursal_name = 'Juarez'
+                                break;
+                            case "GUA":
+                                Sucursal_name = 'Guanza'
+                                break;
+                            case "OFE":
+                                Sucursal_name = 'Ofertas'
+                                break;
+                            case "BAL":
+                                Sucursal_name = 'Balcones'
+                                break;
+                            case "GTO":
+                                Sucursal_name = 'Guanajuato'
+                                break;
+                            case "CDI":
+                                Sucursal_name = 'Cedis'
+                                break;
+                            case "JAR":
+                                Sucursal_name = 'Jarachina'
+                                break;
+                            case "AMG":
+                                Sucursal_name = 'Almaguer'
+                                break;
+                            default:
+                                Sucursal_name = 'NA'
+                                break;
+                        }
+                        drows.push({
+                            Sucursal: Sucursal_name,
+                            Id_REQHDR: drow.children[0].dataset.idrhdr,
+                            Cantidad_distribuir: drow.querySelector('input').value > 0 ? drow.querySelector('input').value : 0,
+                            Cantidad_validada: row.getElementById('validado-' + product + '-' + drow.children[0].dataset.idrhdr).value
+                        })
+                    })
+
+
+                }
+            })
+            drows.forEach(function (d) {
+                proveedores.push({
+                    Producto: product,
+                    REQHDRS: drows.Id_REQHDR.join('-'),
+                    Proveedor: input.closest('div').querySelector('.prov_name').value,
+                    [d.Sucursal]: d.Cantidad_validada
+                })
+            })
+        }
+    });      
+
+    let ordenesCompra = {} //Guardar uno por uno los objetos generados con el formatio anterior para enviarlos como lista al controlador
+    */
+
+
+
+}
+
+function generarOrdenesDeCompra(tabPaneSolicitud, tabPaneDistribucion) {
+    let proveedores = [];
+    const fechaActual = new Date().toISOString().replace('T', ' ').substring(0, 23);
+
+    // Filtrar proveedores con Cantidad_solicitada mayor a 0
+    let proveedoresValidos = tabPaneSolicitud.filter(solicitud => solicitud.Cantidad_solicitada > 0);
+
+    // Ordenar proveedores por Cantidad_disponible en orden descendente
+    proveedoresValidos.sort((a, b) => b.Cantidad_disponible - a.Cantidad_disponible);
+
+    let totalSolicitado = tabPaneDistribucion.reduce((suma, distribucion) => suma + distribucion.Cantidad_validada, 0);
+    let totalDistribuido = 0;
+
+    for (let i = 0; i < proveedoresValidos.length; i++) {
+        let proveedor = proveedoresValidos[i];
+        let distribucionesMismoProducto = tabPaneDistribucion.filter(distribucion => distribucion.Producto === proveedor.Producto);
+
+        let cantidadRestante = proveedor.Cantidad_solicitada;
+
+        let ordenCompra = {
+            REQHDRS: distribucionesMismoProducto.map(d => d.Id_REQHDR).join('-'),
+            Proveedor: proveedor.Proveedor,
+            Producto: proveedor.Producto,
+            Precio: 0,
+            Cantidad_validada: 0,
+            Fecha_creacion: fechaActual,
+            Juarez: 0,
+            Villas: 0,
+            Almaguer: 0,
+            Jarachina: 0,
+            Balcones: 0,
+            Cedis: 0,
+            Guanza: 0,
+            Ofertas: 0,
+            Guanajuato: 0
+        };
+
+        for (let j = 0; j < distribucionesMismoProducto.length; j++) {
+            let distribucion = distribucionesMismoProducto[j];
+            let cantidadADistribuir = Math.min(cantidadRestante, distribucion.Cantidad_validada);
+
+            if (cantidadADistribuir > 0) {
+                cantidadRestante -= cantidadADistribuir;
+                distribucion.Cantidad_validada -= cantidadADistribuir;
+                totalDistribuido += cantidadADistribuir;
+
+                ordenCompra.Cantidad_validada += cantidadADistribuir;
+
+                switch (distribucion.Sucursal) {
+                    case 'Juarez':
+                        ordenCompra.Juarez += cantidadADistribuir;
+                        break;
+                    case 'Villas':
+                        ordenCompra.Villas += cantidadADistribuir;
+                        break;
+                    case 'Almaguer':
+                        ordenCompra.Almaguer += cantidadADistribuir;
+                        break;
+                    case 'Jarachina':
+                        ordenCompra.Jarachina += cantidadADistribuir;
+                        break;
+                    case 'Balcones':
+                        ordenCompra.Balcones += cantidadADistribuir;
+                        break;
+                    case 'Cedis':
+                        ordenCompra.Cedis += cantidadADistribuir;
+                        break;
+                    case 'Guanza':
+                        ordenCompra.Guanza += cantidadADistribuir;
+                        break;
+                    case 'Ofertas':
+                        ordenCompra.Ofertas += cantidadADistribuir;
+                        break;
+                    case 'Guanajuato':
+                        ordenCompra.Guanajuato += cantidadADistribuir;
+                        break;
+                    default:
+                        console.error(`Sucursal desconocida: ${distribucion.Sucursal}`);
+                }
+            }
+        }
+
+        if (ordenCompra.Cantidad_validada > 0) {
+            proveedores.push(ordenCompra);
+        }
+    }
+
+    return proveedores;
+}
+/* 
+// Ejemplo de uso
+const tabPaneSolicitud = [
+    { "Id_REQHDR": 2025, "Id_Proveedor": 42, "Proveedor": "Proveedor de salchichas", "Cantidad_disponible": 13, "Cantidad_solicitada": 13, "Producto": "MANGO ORO" },
+    { "Id_REQHDR": 2026, "Id_Proveedor": 1037, "Proveedor": "papas", "Cantidad_disponible": 12, "Cantidad_solicitada": 0, "Producto": "MANGO ORO" }
+];
+
+const tabPaneDistribucion = [
+    { "Sucursal": "Juarez", "Id_REQHDR": 2025, "Cantidad_distribuida": 8, "Cantidad_validada": 8, "Producto": "MANGO ORO" },
+    { "Sucursal": "Jarachina", "Id_REQHDR": 2026, "Cantidad_distribuida": 5, "Cantidad_validada": 5, "Producto": "MANGO ORO" }
+];
+
+const proveedores = generarOrdenCompra(tabPaneSolicitud, tabPaneDistribucion);
+*/

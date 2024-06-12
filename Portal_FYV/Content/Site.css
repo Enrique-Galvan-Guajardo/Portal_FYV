@@ -37,7 +37,7 @@ textarea {
             }
             td{
                 padding-inline: 3rem;
-                .btn, form{
+                .btn:not(.btn-outline-info), form{
                     width: 5rem;
                 }
 

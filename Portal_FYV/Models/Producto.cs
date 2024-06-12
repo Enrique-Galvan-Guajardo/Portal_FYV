@@ -44,6 +44,7 @@ namespace Portal_FYV.Models
         public DateTime Fecha_Creacion { get; set; }
 
         public DateTime Fecha_Modificacion { get; set; }
+        public decimal Stock { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UsuariosProductos> UsuariosProductos { get; set; }

@@ -11,3 +11,4 @@ const getLocalidades = env + "region/estado/localidades?estado="
 
 //Products API
 const getProductSearch = env + "fyv/busqueda?art="
+const getAllProducts = "https://200.188.143.250:1313/api/fyv/busquedaAll?clave_sucursal="

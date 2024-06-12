@@ -86,7 +86,7 @@ namespace Portal_FYV.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateREQDETS(List<REQDET> rs)
+        public ActionResult CreateREQDETS(List<REQDET> rs, string sucursal)
         {
             Usuario us = db.Usuarios.Find(Convert.ToInt32(Session["Id_Usuario"]));
             try
@@ -95,7 +95,7 @@ namespace Portal_FYV.Controllers
                 DateTime fechaActual = DateTime.Now.Date;
 
                 // Consultar la base de datos para verificar si existe un REQHDR con la fecha de hoy
-                bool existeRegistroHoy = db.REQHDRs.Any(r => DbFunctions.TruncateTime(r.Fecha_creacion) == fechaActual);
+                bool existeRegistroHoy = db.REQHDRs.Any(r => DbFunctions.TruncateTime(r.Fecha_creacion) == fechaActual && r.Sucursal == sucursal);
                 if (rs == null)
                 {
                     return Json(new { Success = false, Message = "La solicitud no se ha podido guardar debido a que no se han seleccionado productos.", Message_data = "", Message_Classes = "warning", Message_concat = false });
@@ -104,8 +104,9 @@ namespace Portal_FYV.Controllers
                 if (!existeRegistroHoy || us.Prorroga == "-1") {
                     REQHDR rh = new REQHDR();
 
-                    rh.Sucursal = us.Sucursal;
+                    rh.Sucursal = sucursal;
                     rh.Fecha_creacion = DateTime.Now;
+                    rh.Fecha_validacion = DateTime.Now.AddDays(1);
                     rh.Id_Creador = us.Id_Usuario;
                     rh.Estatus = 1;
                     db.REQHDRs.Add(rh);

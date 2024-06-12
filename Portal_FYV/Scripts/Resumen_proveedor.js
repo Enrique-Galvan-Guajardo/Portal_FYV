@@ -39,6 +39,7 @@ function guardarPrecio(Id_REQDET, producto, Id_Usuario, e) {
             // Manejar la respuesta del servidor si es necesario
             console.log('Datos enviados correctamente');
             console.log(response);
+            toastFill(response)
             tag.querySelector('span').innerText = precio.Precio;
 
             sumarPrecios()
@@ -55,4 +56,43 @@ function guardarPrecio(Id_REQDET, producto, Id_Usuario, e) {
     });
     /*
     */
+}
+
+
+
+function actualizarStock(Id_Producto, e) {
+    let stockValue = document.getElementById('stock-' + Id_Producto).value;
+
+    let producto = {
+        "Id_Producto": Id_Producto,
+        "Stock": parseFloat(stockValue)
+    };
+
+    if (stockValue > 0 && Id_Producto > 0) {
+        e.disabled = true;
+        // Enviar el arreglo de objetos al controlador utilizando AJAX
+        console.log(producto)
+        $.ajax({
+            url: '/Productos/actualizarStock',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ producto }),
+            success: function (response) {
+                // Manejar la respuesta del servidor si es necesario
+                if (response.Success) {
+                    toastFill(response)
+                    setTimeout(function () {
+                        e.disabled = false;
+
+                    }, 2000);
+                }
+            },
+            error: function (xhr, status, error) {
+                // Manejar errores si ocurrieron durante la solicitud AJAX
+                console.error('Error al enviar datos:', error);
+            }
+        });
+        /* 
+        */
+    }
 }

@@ -130,6 +130,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\CatalogoProductosController.cs" />
+    <Compile Include="Controllers\EmbalajesController.cs" />
     <Compile Include="Controllers\EstatusController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
@@ -2347,6 +2348,11 @@
     <Content Include="Views\REQHDRs\Consolidation.cshtml" />
     <Content Include="Views\REQHDRs\Resumen.cshtml" />
     <Content Include="Views\REQHDRs\Compra.cshtml" />
+    <Content Include="Views\Embalajes\Create.cshtml" />
+    <Content Include="Views\Embalajes\Delete.cshtml" />
+    <Content Include="Views\Embalajes\Details.cshtml" />
+    <Content Include="Views\Embalajes\Edit.cshtml" />
+    <Content Include="Views\Embalajes\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

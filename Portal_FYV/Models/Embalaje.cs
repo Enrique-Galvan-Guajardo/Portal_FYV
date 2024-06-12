@@ -20,6 +20,13 @@ namespace Portal_FYV.Models
         [Required]
         public string Tipo_Embalaje { get; set; }
 
+        [Column(TypeName = "money")]
+        public decimal valor_um { get; set; }
+        
+        [Required]
+        [StringLength(3)]
+        public string um { get; set; }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<REQDET> REQDETs { get; set; }
     }

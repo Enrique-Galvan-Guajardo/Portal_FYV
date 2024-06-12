@@ -14,6 +14,7 @@ namespace Portal_FYV.Models
         {
             REQDETs = new HashSet<REQDET>();
             Fecha_lim_proveedor = DateTime.Now;
+            //Asignar fecha validación
         }
 
         [Key]
@@ -29,7 +30,7 @@ namespace Portal_FYV.Models
 
         public int Estatus { get; set; }
 
-        public DateTime? Fecha_validacion { get; set; }
+        public DateTime Fecha_validacion { get; set; }
 
         public int? Id_Validador { get; set; }
 

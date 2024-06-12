@@ -6,18 +6,47 @@
 
 <script src="~/Scripts/REQDETsController.js"></script>
 <div class="bg-white capturarDetalles datasets" data-sucursal="@Session["Sucursal"]" data-fru="@Model.permitir_Fru" data-sec="@Model.permitir_Sec" data-veg="@Model.permitir_Veg">
-    <h2>Capturar</h2>
-
+    <div class="d-flex flex-column gap-2 mb-4">
+        <h2>Capturar productos para la solicitud</h2>
+        <div class="d-flex gap-3">
+            <span class="text-muted fw-medium">Categorías disponibles:</span>
+            @{
+                if (Model.permitir_Fru)
+                {
+                    <span class="badge rounded-pill text-bg-primary py-2 align-content-center">Frutas</span>
+                }
+                if (Model.permitir_Sec)
+                {
+                    <span class="badge rounded-pill text-bg-primary py-2 align-content-center">Secos</span>
+                }
+                if (Model.permitir_Veg)
+                {
+                    <span class="badge rounded-pill text-bg-primary py-2 align-content-center">Verduras</span>
+                }
+            }
+        </div>
+    </div>
     <div>
-        <div class="d-flex justify-content-between mb-3">
-            <div class="form-group">
+        <div class="row justify-content-between mx-auto mb-3">
+            <div class="form-group col-12 col-md-6">
                 <div class="input-group">
-                    <input id="texto" name="texto" type="text" class="form-control" placeholder="Buscar...">
-                    <button class="btn btn-outline-primary" type="button" id="buscar" data-bs-target="#agregarProducto" data-bs-toggle="modal"><i class="bi bi-search me-2"></i>Buscar</button>
+                    <button class="btn btn-outline-primary" type="button" id="buscar" data-bs-target="#agregarProducto" data-bs-toggle="modal"><i class="bi bi-table me-2"></i>Ver productos</button>
+                    <select class="form-select" id="sucursal">
+                        <option value="JUA">Juarez</option>
+                        <option value="GUA">Guanza</option>
+                        <option value="OFE">Ofertas</option>
+                        <option value="BAL">Balcones</option>
+                        <option value="GTO">Guanajuato</option>
+                        <option value="JAR">Jarachina</option>
+                        <option value="AMG">Almaguer</option>
+                    </select>
+                    <input id="texto" name="texto" type="search" class="form-control d-none" placeholder="Buscar...">
                 </div>
             </div>
-            <div class="form-group">
-                <button type="button" class="btn btn-success" onclick="saveREQDETS()"><i class="bi bi-floppy me-2"></i>Guardar</button>
+            <div class="form-group col-12 col-md-6">
+                <div class="input-group justify-content-end">
+                    <button type="button" class="btn btn-success" onclick="saveREQDETS()"><i class="bi bi-floppy me-2"></i>Guardar</button>
+                </div>
             </div>
         </div>
         <div class="table-responsive rounded rounded-2 border">
@@ -54,7 +83,26 @@
         <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="agregarProductoLabel">Elegir Producto</h1>
+                    <div class="d-block">
+                        <h1 class="modal-title fs-5" id="agregarProductoLabel">Elegir Producto</h1>
+                        <div class="row gap-2 mt-3 col-10 col-sm-12 mx-0">
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="search" class="form-control" placeholder="Buscar" id="searchProduct">
+                            </div>
+                            <div class="d-flex gap-3 align-items-center py-2" style="overflow-x: auto;">
+                                <span class="text-muted fw-medium">Filtrar por:</span>
+                                <input type="radio" class="btn-check" name="options-base" id="option-todo" autocomplete="off" data-tipo="NA" checked>
+                                <label class="btn btn-outline-primary" for="option-todo">Todo</label>
+                                <input type="radio" class="btn-check" name="options-base" id="option-frutas" autocomplete="off" data-tipo="FRUT">
+                                <label class="btn btn-outline-primary" for="option-frutas">Frutas</label>
+                                <input type="radio" class="btn-check" name="options-base" id="option-secos" autocomplete="off" data-tipo="PRSE">
+                                <label class="btn btn-outline-primary" for="option-secos">Secos</label>
+                                <input type="radio" class="btn-check" name="options-base" id="option-verduras" autocomplete="off" data-tipo="VERD">
+                                <label class="btn btn-outline-primary" for="option-verduras">Verduras</label>
+                            </div>
+                        </div>
+                    </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -77,9 +125,19 @@
                             <tbody class="table-group-divider">
                             </tbody>
                         </table>
+
+                        <div id="spinner">
+                            <div class="d-flex justify-content-center py-3 bg-light">
+                                <div class="spinner-border text-secondary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                    <span class="visually-hidden" role="status">Cargando...</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">
+
                 </div>
             </div>
         </div>
@@ -99,28 +157,28 @@
                                 <div class="form-group col-12 col-md-3">
                                     <label for="Fecha_ultima_compra" class="control-label">Fecha Ultima Compra:</label>
                                     <div class="col-md-10">
-                                        <input class="form-control" type="date" name="Fecha_ultima_compra" id="Fecha_ultima_compra" />
+                                        <input class="form-control" disabled type="date" name="Fecha_ultima_compra" id="Fecha_ultima_compra" />
                                     </div>
                                 </div>
 
                                 <div class="form-group col-12 col-md-3">
                                     <label for="Cantidad_ultima_compra" class="control-label">Cantidad Ultima Compra:</label>
                                     <div class="col-md-10">
-                                        <input class="form-control" type="number" name="Cantidad_ultima_compra" id="Cantidad_ultima_compra" />
+                                        <input class="form-control" disabled type="number" min="0" name="Cantidad_ultima_compra" id="Cantidad_ultima_compra" />
                                     </div>
                                 </div>
 
                                 <div class="form-group col-12 col-md-3">
                                     <label for="Fecha_existencia" class="control-label">Fecha Existencia:</label>
                                     <div class="col-md-10">
-                                        <input class="form-control" type="date" name="Fecha_existencia" id="Fecha_existencia" />
+                                        <input class="form-control" disabled type="date" name="Fecha_existencia" id="Fecha_existencia" />
                                     </div>
                                 </div>
 
                                 <div class="form-group col-12 col-md-3">
                                     <label for="Clave_articulo" class="control-label">Clave Artículo:</label>
                                     <div class="col-md-10">
-                                        <input class="form-control" type="text" name="Clave_articulo" id="Clave_articulo" />
+                                        <input class="form-control" disabled type="text" name="Clave_articulo" id="Clave_articulo" />
                                     </div>
                                 </div>
 
@@ -131,21 +189,21 @@
                                 <div class="form-group col-12 col-md-3">
                                     <label for="Descripcion" class="control-label">Descripción:</label>
                                     <div class="col-md-10">
-                                        <input class="form-control" type="text" name="Descripcion" id="Descripcion" />
+                                        <input class="form-control" disabled type="text" name="Descripcion" id="Descripcion" />
                                     </div>
                                 </div>
 
                                 <div class="form-group col-12 col-md-3">
                                     <label for="Existencia" class="control-label">Existencia:</label>
                                     <div class="col-md-10">
-                                        <input class="form-control" type="number" name="Existencia" id="Existencia" />
+                                        <input class="form-control" disabled type="number" min="0" name="Existencia" id="Existencia" />
                                     </div>
                                 </div>
 
                                 <div class="form-group col-12 col-md-3">
                                     <label for="Cantidad_solicitada" class="control-label">Cantidad Solicitada:</label>
                                     <div class="col-md-10">
-                                        <input class="form-control" type="number" name="Cantidad_solicitada" id="Cantidad_solicitada" />
+                                        <input class="form-control" type="number" min="0" name="Cantidad_solicitada" id="Cantidad_solicitada" />
                                     </div>
                                 </div>
 
@@ -160,8 +218,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-bs-target="#agregarProducto" data-bs-toggle="modal">Regresar</button>
-                    <button class="btn btn-primary" onclick="imprimirEnTabla('productosSeleccionados')" data-bs-dismiss="modal" aria-label="Close"><i class="bi bi-plus-circle me-2"></i>Agregar</button>
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Cerrar</button>
+                    <button class="btn btn-primary" onclick="imprimirEnTabla('productosSeleccionados')" data-bs-target="#agregarProducto" data-bs-toggle="modal"><i class="bi bi-plus-circle me-2"></i>Agregar</button>
                 </div>
             </div>
         </div>
@@ -172,7 +230,8 @@
     document.querySelector('#buscar').addEventListener('click', function () {
         // Selecciona el elemento por su ID (reemplaza 'elementoId' con el ID real del elemento)
         const elemento = document.querySelector('.capturarDetalles');
-
+        $(document.getElementById('tablaProductos')).slideUp();
+        $(document.getElementById('spinner')).slideDown();
         // Obtiene el valor del atributo data-Sucursal utilizando la propiedad dataset
         const sucursal = elemento.dataset.sucursal;
         getProducts(document.getElementById('texto').value, sucursal)

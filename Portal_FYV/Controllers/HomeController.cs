@@ -68,6 +68,7 @@ namespace Portal_FYV.Controllers
                     case "Proveedores":
                         
                         rEQHDRs = db.REQHDRs.Where(r => r.Fecha_creacion >= fechaInicioMes && r.Fecha_creacion <= fechaFinMes && r.Estatus == 2).ToList();
+                        //rEQHDRs = db.REQHDRs.Where(r => r.Estatus == 2).ToList();
                         ids_reqhdrs = rEQHDRs.Select(r => r.Id_REQHDR).ToArray();
 
                         rEQDETs = db.REQDETs.Where(r => ids_reqhdrs.Contains(r.Id_REQHDR)).ToList();

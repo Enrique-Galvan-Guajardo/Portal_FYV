@@ -25,7 +25,7 @@ namespace Portal_FYV.Controllers
         [HttpPost]
         public ActionResult logIn(string user_session, string user_password)
         {
-            if (db.Usuarios.Any(x => (x.Username == user_session || x.Correo == user_session) && x.Contrasena == user_password))
+            if (db.Usuarios.Any(x => (x.Username == user_session || x.Correo == user_session) && x.Contrasena == user_password && x.Estatus.Id_Estatus == 2))
             {
                 Usuario usuario = db.Usuarios.FirstOrDefault(x => (x.Username == user_session || x.Correo == user_session) && x.Contrasena == user_password);
                 
@@ -101,7 +101,7 @@ namespace Portal_FYV.Controllers
         // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id_Usuario,Username,Nombre,Correo,Contrasena,Sucursal,Id_Estatus,Fecha_Aprov,Id_Rol,Razon_social,RFC,Pais,Estado,Ciudad,Colonia,Localidad,Codigo_postal,Calle,Numero,Proveeedor_no_mks,Contacto_nombre1,Contacto_nombre2,Contacto_nombre3,Contacto_correo1,Contacto_correo2,Contacto_correo3,Contacto_tel1,Contacto_tel2,Contacto_tel3,Prorroga")] Usuario usuario)
+        public ActionResult Create([Bind(Include = "Id_Usuario,Username,Nombre,Correo,Contrasena,Sucursal,Id_Estatus,Fecha_Aprov,Id_Rol,Razon_social,RFC,Pais,Estado,Ciudad,Colonia,Localidad,Codigo_postal,Calle,Numero,Proveeedor_no_mks,Contacto_nombre1,Contacto_nombre2,Contacto_nombre3,Contacto_correo1,Contacto_correo2,Contacto_correo3,Contacto_tel1,Contacto_tel2,Contacto_tel3,permitir_Fru,permitir_Sec,permitir_Veg,Prorroga")] Usuario usuario)
         {
             string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
             try

@@ -69,7 +69,7 @@ namespace Portal_FYV.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id_Producto,Nombre,Descripcion,Clave_externa,Clave_interna," +
-            "Codigo_barras,Imagen_ruta,Embalaje,Unidad,Fecha_Creacion,Fecha_Modificacion,Id_Proveedor")] Producto producto)
+            "Codigo_barras,Imagen_ruta,Embalaje,Unidad,Fecha_Creacion,Fecha_Modificacion,Id_Proveedor,Stock")] Producto producto)
         {
             string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
             if (ModelState.IsValid)
@@ -153,6 +153,26 @@ namespace Portal_FYV.Controllers
             else
             {
                 return View(producto);
+            }
+        }
+
+        [HttpPost]
+        [Route("Productos/actualizarStock")]
+        public ActionResult actualizarStock(Producto producto)
+        {
+            try
+            {
+                Producto p = db.Productos.Find(producto.Id_Producto);
+                p.Stock = producto.Stock;
+                db.Entry(p).State = EntityState.Modified;
+                db.SaveChanges();
+
+                return Json(new { Success = true, Message = "Stock de producto actualizado.", Message_data = "", Message_Classes = "primary", Message_concat = false });
+            }
+            catch (Exception)
+            {
+
+                return Json(new { Success = false, Message = "Error al actualizar stock de producto.", Message_data = "", Message_Classes = "danger", Message_concat = false });
             }
         }
 

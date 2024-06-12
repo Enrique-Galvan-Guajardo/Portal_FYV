@@ -51,7 +51,7 @@ namespace Portal_FYV.Controllers
         }
 
         // GET: REQHDRs/Resumen/5
-        public ActionResult Resumen(List<int> selectedIds)
+        public ActionResult Resumen(DateTime searchDate)
         {
             string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
             string sucursal = Session["Sucursal"] != null ? Session["Sucursal"].ToString() : "";
@@ -65,6 +65,15 @@ namespace Portal_FYV.Controllers
             
             string[] descripciones;
             int[] ids_productos;
+
+            // Ajusta la fecha para eliminar la parte de la hora
+            DateTime searchDateOnly = searchDate.Date;
+
+            // Realiza la consulta comparando solo las fechas
+            int[] selectedIds = db.REQHDRs
+                .Where(x => DbFunctions.TruncateTime(x.Fecha_validacion) == searchDateOnly)
+                .Select(x => x.Id_REQHDR)
+                .ToArray();
 
             List<CatalogoProducto> catalogo = new List<CatalogoProducto>();
             List<UsuariosProductos> usuariosProductos = new List<UsuariosProductos>();
@@ -139,7 +148,7 @@ namespace Portal_FYV.Controllers
                     {
                         return HttpNotFound();
                     }
-
+                    //Para que existan resultados, debe haber registros de proveedores con precio hacia el respectivo producto de los REQHDRS en cuestión
                     usuariosProductos = db.UsuariosProductos.Where(x => ids_productos.Contains(x.Id_Producto) && selectedIds.Contains(x.Id_REQHDR) && x.Id_Usuario == usuario.Id_Usuario).ToList();
 
                     // Crear un Tuple que contenga ambos modelos y la lista de embalajes
@@ -286,6 +295,124 @@ namespace Portal_FYV.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult guardarDistribucion(List<OrdenCompra_Web> proveedores)
+        {
+            try
+            {
+                foreach (var item in proveedores)
+                {
+                    OrdenCompra_Web orden = new OrdenCompra_Web();
+
+                    if (db.OrdenCompras_Web.Any(x => x.REQHDRS == item.REQHDRS && x.Proveedor == item.Proveedor && x.Producto == item.Producto))
+                    {
+                        orden = db.OrdenCompras_Web.FirstOrDefault(x => x.REQHDRS == item.REQHDRS && x.Proveedor == item.Proveedor && x.Producto == item.Producto);
+                        orden.Juarez = item.Juarez;
+                        orden.Villas = item.Villas;
+                        orden.Almaguer = item.Almaguer;
+                        orden.Jarachina = item.Jarachina;
+                        orden.Balcones = item.Balcones;
+                        orden.Cedis = item.Cedis;
+                        orden.Guanza = item.Guanza;
+                        orden.Ofertas = item.Ofertas;
+                        orden.Guanajuato = item.Guanajuato;
+                        orden.Cantidad_validada = item.Cantidad_validada;
+                        orden.Cantidad_solicitada = recuperarSolicitado(item);
+                        orden.Precio = recuperarPrecio(item);
+                        db.Entry(orden).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        orden = item;
+                        orden.Creador = db.Usuarios.FirstOrDefault(x => x.Nombre == item.Proveedor).Correo;
+                        orden.Precio = recuperarPrecio(item);
+                        db.OrdenCompras_Web.Add(orden);
+                    }
+
+                    db.SaveChanges();
+                }
+                return Json(new
+                {
+                    Success = true,
+                    value = "",
+                    Message = "Orden agregada correctamente.",
+                    Message_data = "",
+                    Message_Classes = "success",
+                    Message_concat = false
+                });
+            }
+            catch (Exception)
+            {
+                return Json(new
+                {
+                    Success = false,
+                    value = "",
+                    Message = "Problema en guardar la orden.",
+                    Message_data = "",
+                    Message_Classes = "danger",
+                    Message_concat = false
+                });
+            }
+
+        }
+
+        public string recuperarPrecio(OrdenCompra_Web item)
+        {
+            UsuariosProductos up = new UsuariosProductos();
+            string reqhdrsString = item.REQHDRS;  // Suponiendo que item.REQHDRS es el string a convertir
+            int[] reqhdrs = reqhdrsString
+                .Split('-')  // Divide el string en subcadenas separadas por '-'
+                .Select(int.Parse)  // Convierte cada subcadena en un entero
+                .ToArray();  // Convierte el resultado en un arreglo
+            up = db.UsuariosProductos.FirstOrDefault(x => x.Producto.Descripcion == item.Producto && x.Usuario.Nombre == item.Proveedor && reqhdrs.Contains(x.Id_REQHDR));
+            return (Math.Round(Convert.ToDecimal(item.Cantidad_validada) * up.Precio, 4)).ToString("F4");
+        }
+
+        public string recuperarSolicitado(OrdenCompra_Web item)
+        {
+            List<string> sucursal = new List<string> { "NA" };
+
+            if (Convert.ToDecimal(item.Juarez) > 0)
+            {
+                sucursal.Add("JUA");
+            }
+
+            if (Convert.ToDecimal(item.Guanza) > 0)
+            {
+                sucursal.Add("GUA");
+            }
+            if (Convert.ToDecimal(item.Ofertas) > 0)
+            {
+                sucursal.Add("OFE");
+            }
+            if (Convert.ToDecimal(item.Balcones) > 0)
+            {
+                sucursal.Add("BAL");
+            }
+            if (Convert.ToDecimal(item.Guanajuato) > 0)
+            {
+                sucursal.Add("GTO");
+            }
+            if (Convert.ToDecimal(item.Jarachina) > 0)
+            {
+                sucursal.Add("JAR");
+            }
+            if (Convert.ToDecimal(item.Almaguer) > 0)
+            {
+                sucursal.Add("AMG");
+            }
+
+            // Si necesitas convertir la lista de nuevo a un array:
+            string[] sucursalArray = sucursal.ToArray();
+
+            string[] idsreqhdrs = item.REQHDRS.Split('-');
+
+            decimal res = db.REQDETs.Any(x => idsreqhdrs.Contains(x.Id_REQHDR.ToString()) && sucursalArray.Contains(x.REQHDR.Sucursal) && x.Descripcion == item.Producto) ? db.REQDETs.Where(x => idsreqhdrs.Contains(x.Id_REQHDR.ToString()) && sucursalArray.Contains(x.REQHDR.Sucursal) && x.Descripcion == item.Producto).Sum(y => y.Cantidad_solicitada) : 0;
+
+            
+            return (Math.Round(res).ToString("F4"));
+        }
+
         public OrdenCompra_Web asignarCantidadSucursal(OrdenCompra_Web oc, UsuariosProductos us)
         {
             REQHDR rEQHDR = db.REQHDRs.Find(us.Id_REQHDR);
@@ -409,16 +536,16 @@ namespace Portal_FYV.Controllers
                 {
                     db.UsuariosProductos.AddRange(usuariosProductos);
                     db.SaveChanges();
-                    return Json(new { Success = true, value = new { precio.Id_Producto, precio.Id_Usuario, precio.Precio}, Message = "Precio agregado correctamente.", Message_data = "", Message_Classes = "alert-success", Message_concat = false });
+                    return Json(new { Success = true, value = new { precio.Id_Producto, precio.Id_Usuario, precio.Precio}, Message = "Precio agregado correctamente.", Message_data = "", Message_Classes = "success", Message_concat = false });
                 }else
                 {
-                    return Json(new { Success = false, value = "", Message = "Fecha límite para proveedor superada, no se han actualizado los campos.", Message_data = "", Message_Classes = "alert-success", Message_concat = false });
+                    return Json(new { Success = false, value = "", Message = "Fecha límite para proveedor superada, no se han actualizado los campos.", Message_data = "", Message_Classes = "warning", Message_concat = false });
                 }
 
             }
             catch (Exception)
             {
-                return Json(new { Success = false, value = new { precio.Id_Producto, precio.Id_Usuario, precio.Precio }, Message = "Error al registrar precio.", Message_data = "", Message_Classes = "alert-danger", Message_concat = false });
+                return Json(new { Success = false, value = new { precio.Id_Producto, precio.Id_Usuario, precio.Precio }, Message = "Error al registrar precio.", Message_data = "", Message_Classes = "danger", Message_concat = false });
             }
         }
 
@@ -435,7 +562,7 @@ namespace Portal_FYV.Controllers
             
             List<REQDET> rEQDETs = db.REQDETs.Where(x => req_Array.Contains(x.Id_REQHDR)).ToList();
 
-            if (rEQHDRs.Count() == 0)
+            if (rEQHDRs.Count() == 0 || rEQHDRs.Count() == rEQHDRs.Where(x => x.Estatus == 2).Count())
             {
                 return HttpNotFound();
             }
@@ -470,11 +597,11 @@ namespace Portal_FYV.Controllers
 
                 db.SaveChanges();
 
-                return Json(new { Success = true, value = "", Message = "Fechas actualizadas correctamente.", Message_data = "", Message_Classes = "alert-success", Message_concat = false });
+                return Json(new { Success = true, value = "", Message = "Fechas actualizadas correctamente.", Message_data = "", Message_Classes = "success", Message_concat = false });
             }
             catch (Exception)
             {
-                return Json(new { Success = false, value = "", Message = "Error al registrar fechas.", Message_data = "", Message_Classes = "alert-danger", Message_concat = false });
+                return Json(new { Success = false, value = "", Message = "Error al registrar fechas.", Message_data = "", Message_Classes = "danger", Message_concat = false });
             }
         }
 
@@ -492,11 +619,11 @@ namespace Portal_FYV.Controllers
 
                 db.SaveChanges();
 
-                return Json(new { Success = true, value = "", Message = "Fechas actualizadas correctamente.", Message_data = "", Message_Classes = "alert-success", Message_concat = false });
+                return Json(new { Success = true, value = "", Message = "Fechas actualizadas correctamente.", Message_data = "", Message_Classes = "success", Message_concat = false });
             }
             catch (Exception)
             {
-                return Json(new { Success = false, value = "", Message = "Error al registrar fechas.", Message_data = "", Message_Classes = "alert-danger", Message_concat = false });
+                return Json(new { Success = false, value = "", Message = "Error al registrar fechas.", Message_data = "", Message_Classes = "danger", Message_concat = false });
             }
         }
         // GET: REQHDRs/Create

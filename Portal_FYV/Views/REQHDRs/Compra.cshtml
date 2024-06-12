@@ -290,6 +290,7 @@
                                 // Manejar la respuesta del servidor si es necesario
                                 console.log('Datos enviados correctamente');
                                 console.log(response);
+                                toastFill(response)
                             },
                             error: function (xhr, status, error) {
                                 // Manejar errores si ocurrieron durante la solicitud AJAX

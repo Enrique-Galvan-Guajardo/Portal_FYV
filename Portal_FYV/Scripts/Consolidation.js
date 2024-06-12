@@ -1,13 +1,20 @@
 ﻿
+/*
 document.querySelector('#buscar').addEventListener('click', function () {
     // Selecciona el elemento por su ID (reemplaza 'elementoId' con el ID real del elemento)
-    const elemento = document.querySelector('.validar-consolidacion');
+    
+    $(document.getElementById('tablaProductos')).slideUp();
+    $(document.getElementById('spinner')).slideDown();
+    showProducts();
+})
+*/
 
+function showProducts() {
+    const elemento = document.querySelector('.validar-consolidacion');
     // Obtiene el valor del atributo data-Sucursal utilizando la propiedad dataset
     const sucursal = elemento.dataset.sucursal;
-    getProducts(document.querySelector('input#texto').value, sucursal)
-})
-
+    getProducts(null, sucursal)
+}
 function saveREQDET() {
     let rEQDET = {}
 
@@ -31,6 +38,7 @@ function saveREQDET() {
         contentType: 'application/json',
         data: JSON.stringify({ rEQDET }),
         success: function (response) {
+            
             // Manejar la respuesta del servidor si es necesario
             console.log('Datos enviados correctamente');
             console.log(response.value);
@@ -65,7 +73,7 @@ function saveREQDET() {
                                         </div>
                                         <div class="d-flex flex-column gap-3">
                                             <span class="cantidad_${reqdet.Id_REQDET}">&nbsp;${reqdet.Cantidad_solicitada}</span>
-                                            <input type="number" class="form-control text-box single-line" name="cantidad_Validada_${reqdet.Id_REQDET}" id="cantidad_Validada_${reqdet.Id_REQDET}" value="${reqdet.Cantidad_validada}">
+                                            <input type="number" min="0" class="form-control text-box single-line" name="cantidad_Validada_${reqdet.Id_REQDET}" id="cantidad_Validada_${reqdet.Id_REQDET}" value="${reqdet.Cantidad_validada}">
                                         </div>
                                     </div>
                                     <div class="ms-auto d-flex gap-2">
@@ -145,7 +153,7 @@ function saveREQDET() {
                                                                         </div>
                                                                         <div class="d-flex flex-column gap-3">
                                                                             <span class="cantidad_${reqdet.Id_REQDET}">&nbsp;${reqdet.Cantidad_solicitada}</span>
-                                                                            <input type="number" class="form-control text-box single-line" name="cantidad_Validada_${reqdet.Id_REQDET}" id="cantidad_Validada_${reqdet.Id_REQDET}" value="${reqdet.Cantidad_validada}">
+                                                                            <input type="number" min="0" class="form-control text-box single-line" name="cantidad_Validada_${reqdet.Id_REQDET}" id="cantidad_Validada_${reqdet.Id_REQDET}" value="${reqdet.Cantidad_validada}">
                                                                         </div>
                                                                     </div>
                                                                     <div class="ms-auto d-flex gap-2">
@@ -182,6 +190,10 @@ function saveREQDET() {
                 tabla.innerHTML += tr
             }
             sumarUltimosTd()
+            $(document.getElementById('tablaProductos')).slideDown();
+            $(document.getElementById('spinner')).slideUp();
+            document.getElementById('Cantidad_solicitada').value = 0
+            document.getElementById('Id_Embalaje').value = 1
         },
         error: function (xhr, status, error) {
             // Manejar errores si ocurrieron durante la solicitud AJAX
