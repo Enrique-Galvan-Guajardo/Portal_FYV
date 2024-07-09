@@ -19,7 +19,7 @@ namespace Portal_FYV.Controllers
         // GET: CatalogoProductos
         public ActionResult Index()
         {
-            return View(db.CatalogoProductos.ToList());
+            return View(db.CatalogoProductos.OrderByDescending(x => x.Descripcion).ToList());
         }
 
         // GET: CatalogoProductos/Details/5

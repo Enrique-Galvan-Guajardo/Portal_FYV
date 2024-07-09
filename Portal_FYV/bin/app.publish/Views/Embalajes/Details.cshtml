@@ -1,0 +1,42 @@
+﻿@model Portal_FYV.Models.Embalaje
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Embalaje</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Tipo_Embalaje)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Tipo_Embalaje)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.valor_um)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.valor_um)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.um)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.um)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id_Embalaje }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -16,16 +16,10 @@
                     Id
                 </th>
                 <th>
-                    Estatus
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Roles.Rol)
+                    @Html.DisplayNameFor(model => model.Nombre)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Username)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Nombre)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Correo)
@@ -34,13 +28,16 @@
                     @Html.DisplayNameFor(model => model.Contrasena)
                 </th>
                 <th>
+                    @Html.DisplayNameFor(model => model.Roles.Rol)
+                </th>
+                <th>
                     @Html.DisplayNameFor(model => model.Sucursal)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Fecha_Aprov)
+                    Fecha de Aprobación
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Razon_social)
+                    Razón Social
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.RFC)
@@ -61,7 +58,7 @@
                     @Html.DisplayNameFor(model => model.Localidad)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Codigo_postal)
+                    Código Postal
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Calle)
@@ -73,31 +70,28 @@
                     @Html.DisplayNameFor(model => model.Proveeedor_no_mks)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Contacto_nombre1)
+                    Contactos
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Contacto_nombre2)
+                    Correos
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Contacto_nombre3)
+                    Teléfonos
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Contacto_correo1)
+                    Búsqueda de frutas
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Contacto_correo2)
+                    Búsqueda de secos
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Contacto_correo3)
+                    Búsqueda de vegetales
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Contacto_tel1)
+                    @Html.DisplayNameFor(model => model.Prorroga)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Contacto_tel2)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Contacto_tel3)
+                    Estatus
                 </th>
                 <th></th>
             </tr>
@@ -108,22 +102,19 @@
                     @Html.DisplayFor(modelItem => item.Id_Usuario)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Estatus.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Roles.Rol)
+                    @Html.DisplayFor(modelItem => item.Nombre)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Username)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Nombre)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Correo)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Contrasena)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Roles.Rol)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Sucursal)
@@ -164,32 +155,41 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Proveeedor_no_mks)
                 </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Contacto_nombre1)
+                <td class="text-muted" style="min-width: 200px;">
+                    @(item.Contacto_nombre1 == null ? "Sin contacto" : item.Contacto_nombre1)
+                    <hr />
+                    @(item.Contacto_nombre2 == null ? "Sin contacto" : item.Contacto_nombre2)
+                    <hr />
+                    @(item.Contacto_nombre3 == null ? "Sin contacto" : item.Contacto_nombre3)
+                </td>
+                <td class="text-muted" style="min-width: 200px;">
+                    @(item.Contacto_correo1 == null ? "Sin correo" : item.Contacto_correo1)
+                    <hr />
+                    @(item.Contacto_correo2 == null ? "Sin correo" : item.Contacto_correo2)
+                    <hr />
+                    @(item.Contacto_correo3 == null ? "Sin correo" : item.Contacto_correo3)
+                </td>
+                <td class="text-muted" style="min-width: 200px;">
+                    @(item.Contacto_tel1 == null ? "Sin teléfono" : item.Contacto_tel1)
+                    <hr />
+                    @(item.Contacto_tel2 == null ? "Sin teléfono" : item.Contacto_tel2)
+                    <hr />
+                    @(item.Contacto_tel3 == null ? "Sin teléfono" : item.Contacto_tel3)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Contacto_nombre2)
+                    @(item.permitir_Fru == true ? "Habilitado" : "Inhabilitado")
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Contacto_nombre3)
+                    @(item.permitir_Sec == true ? "Habilitado" : "Inhabilitado")
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Contacto_correo1)
+                    @(item.permitir_Veg == true ? "Habilitado" : "Inhabilitado")
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Contacto_correo2)
+                    @Html.DisplayFor(modelItem => item.Prorroga)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Contacto_correo3)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Contacto_tel1)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Contacto_tel2)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Contacto_tel3)
+                    @Html.DisplayFor(modelItem => item.Estatus.Name)
                 </td>
                 <td class="d-flex flex-column gap-3 align-items-end">
                     <button class="btn btn-info rounded-1" onclick="location.href='@Url.Action("Edit", "Usuarios", new { id = item.Id_Usuario })'"><i class="bi bi-pencil"></i></button>

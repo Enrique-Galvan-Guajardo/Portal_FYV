@@ -23,11 +23,11 @@ namespace Portal_FYV.Controllers
             // Cargar la lista de embalajes
             if (idProv == 0)
             {
-                return View(db.Productos.ToList());
+                return View(db.Productos.OrderByDescending(x => x.Descripcion).ToList());
             }
             else
             {
-                return View(db.Productos.Where(x => x.Id_Proveedor == idProv).ToList());
+                return View(db.Productos.Where(x => x.Id_Proveedor == idProv).OrderByDescending(x => x.Descripcion).ToList());
             }
         }
 
@@ -53,12 +53,12 @@ namespace Portal_FYV.Controllers
             // Cargar la lista de embalajes
             var catalogo = db.CatalogoProductos.ToList();
             var productos = db.Productos.ToList();
-            var catalogoProductos = catalogo.Where(x => !productos.Any(y => y.Descripcion == x.Descripcion && y.Id_Proveedor == idProv)).ToList();
+            var catalogoProductos = catalogo.Where(x => !productos.Any(y => y.Descripcion == x.Descripcion && y.Id_Proveedor == idProv)).OrderBy(x => x.Descripcion).ToList();
 
             //var precioProductos = db.CatalogoProductos.ToList();
 
             // Crear un Tuple que contenga ambos modelos y la lista de embalajes
-            var modelos = new Tuple<Producto, SelectList, SelectList>( new Producto(), new SelectList(catalogoProductos, "Descripcion", "Descripcion"), new SelectList(db.Embalajes, "Tipo_Embalaje", "Tipo_Embalaje"));
+            var modelos = new Tuple<Producto, SelectList, SelectList>( new Producto(), new SelectList(catalogoProductos, "Descripcion", "Descripcion"), new SelectList(db.Embalajes.OrderBy(x => x.Tipo_Embalaje), "Tipo_Embalaje", "Tipo_Embalaje"));
 
             return View(modelos);
         }

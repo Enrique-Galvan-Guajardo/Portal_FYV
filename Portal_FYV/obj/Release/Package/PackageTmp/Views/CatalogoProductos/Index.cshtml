@@ -15,13 +15,13 @@
             <tr>
                 <th>Id</th>
                 <th>
+                    @Html.DisplayNameFor(model => model.Descripcion)
+                </th>
+                <th>
                     @Html.DisplayNameFor(model => model.Clave_numero)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Codigo_barras)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Descripcion)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Linea)
@@ -48,13 +48,13 @@
                         @Html.DisplayFor(modelItem => item.Id_Catalogo)
                     </td>
                     <td>
+                        @Html.DisplayFor(modelItem => item.Descripcion)
+                    </td>
+                    <td>
                         @Html.DisplayFor(modelItem => item.Clave_numero)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Codigo_barras)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Descripcion)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Linea)

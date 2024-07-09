@@ -7,14 +7,27 @@
     <title>@ViewBag.Title - Portal Frutas y Verduras</title>
     <link href="~/Content/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="~/Scripts/toast_handler.js"></script>
     <script src="~/Scripts/routes.js"></script>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
 <body class="bg-primary-subtle">
+    @{ 
+        string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+        string sucursal = Session["Sucursal"] != null ? Session["Sucursal"].ToString() : "";
+    }
     <nav class="navbar sticky-top navbar-expand-lg bg-body border-bottom border-3 border-white border-opacity-25 shadow">
         <div class="container-fluid">
-            <a class="navbar-brand" href="@((Session["Id_User"] != null) ? Url.Action("About", "Home") : Url.Action("Index", "Home"))"><img src="~/Content/media/logo-angosto.png" alt="Logo" width="150" height="auto"></a>
+            @switch (rol)
+            {
+                case "Requisiciones":
+                    <a class="navbar-brand" href="@Url.Action("CapturarDetalles", "REQDETs")"><img src="~/Content/media/logo-angosto.png" alt="Logo" width="150" height="auto"></a>
+                    break;
+                default:
+                    <a class="navbar-brand" href="@Url.Action("Index", "Home")"><img src="~/Content/media/logo-angosto.png" alt="Logo" width="150" height="auto"></a>
+                    break;
+            }
 
             <!--Menu-->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,34 +35,55 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav gap-4 w-100">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle fs-5" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Panel Admin
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>@Html.ActionLink("Estatus", "Index", "Estatus", new { area = "" }, new { @class = "dropdown-item" })</li>
-                            <li>@Html.ActionLink("Productos", "Index", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
-                            <li>@Html.ActionLink("Roles", "Index", "Roles", new { area = "" }, new { @class = "dropdown-item" })</li>
-                            <li>@Html.ActionLink("Usuarios", "Index", "Usuarios", new { area = "" }, new { @class = "dropdown-item" })</li>
-                            <li>@Html.ActionLink("UsuariosAltas", "Index", "UsuariosAltas", new { area = "" }, new { @class = "dropdown-item" })</li>
-                            <li>@Html.ActionLink("CatalogoProductos", "Index", "CatalogoProductos", new { area = "" }, new { @class = "dropdown-item" })</li>
-                            <li>@Html.ActionLink("Lista de REQHDRs", "Index", "REQHDRs", new { area = "" }, new { @class = "dropdown-item" })</li>
-                            <li>@Html.ActionLink("Lista de REQDETs", "Index", "REQDETs", new { area = "" }, new { @class = "dropdown-item" })</li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle fs-5" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Panel
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Option</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </li>
-                    @if (Session["Id_User"] != null)
+                    @{
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle fs-5" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Panel
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><h6 class="dropdown-header">@rol</h6></li>
+                                @switch (rol)
+                                {
+                                    case "Admin+":
+                                    case "Admin":
+                                        <li>@Html.ActionLink("CatalogoProductos", "Index", "CatalogoProductos", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                        <li>@Html.ActionLink("Embalajes", "Index", "Embalajes", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                        <li>@Html.ActionLink("Estatus", "Index", "Estatus", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                        <li>@Html.ActionLink("Lista de REQDETs", "Index", "REQDETs", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                        <li>@Html.ActionLink("Lista de REQHDRs", "Index", "REQHDRs", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                        <li>@Html.ActionLink("Productos", "Index", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                        <li>@Html.ActionLink("Roles", "Index", "Roles", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                        <li>@Html.ActionLink("Usuarios", "Index", "Usuarios", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                        <li>@Html.ActionLink("UsuariosAltas", "Index", "UsuariosAltas", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="@Url.Action("CapturarDetalles", "REQDETs")">Capturar solicitud</a></li>
+                                        break;
+
+                                    case "Compras":
+                                        <li><a class="dropdown-item" href="#">Opciones no disponibles</a></li>
+                                        break;
+                                    case "Requisiciones":
+                                        <li><a class="dropdown-item" href="@Url.Action("CapturarDetalles", "REQDETs")">Capturar solicitud</a></li>
+                                        break;
+                                    case "Proveedores":
+                                        <li>@Html.ActionLink("Productos", "Index", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                        break;
+                                    default:
+                                        <li><a class="dropdown-item" href="#">Inicia sesión para ver opciones</a></li>
+                                        break;
+                                }
+                            </ul>
+                        </li>
+                    }
+                    @if (Session["Sucursal"] != null)
                     {
-                        <li class="nav-item ms-auto">
+                        <li class="nav-item align-content-center">
+                            <a class="nav-link disabled" aria-disabled="true">Sucursal @sucursal</a>
+                        </li>
+                    }
+                    @if (Session["Id_Usuario"] != null)
+                    {
+                        <li class="nav-item align-content-center ms-auto">
                             <a class="btn btn-danger" href="@Url.Action("logout", "Usuarios")"><i class="bi bi-door-open me-2"></i>Cerrar sesión</a>
                         </li>
                     }
@@ -60,9 +94,12 @@
 
     <div class="container">
         @RenderBody()
+        <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11;">
+            <!-- Aquí se agregarán los toasts -->
+        </div>
         <hr />
         <footer>
-            <p>&copy; @DateTime.Now.Year - Mi aplicación ASP.NET</p>
+            <p>&copy; @DateTime.Now.Year - Frutas y Verduras (GUAJARDO)</p>
         </footer>
     </div>
     <script>
@@ -74,6 +111,8 @@
             }
         }
     </script>
+    <script src="~/Scripts/alert_handler.js"></script>
+
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)

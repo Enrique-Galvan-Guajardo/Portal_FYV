@@ -106,5 +106,12 @@ namespace Portal_FYV.Controllers
 
             return View();
         }
+        
+        public ActionResult Error()
+        {
+            ViewBag.Message = "Not found.";
+
+            return View();
+        }
     }
 }

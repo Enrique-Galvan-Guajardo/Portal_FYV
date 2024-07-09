@@ -20,7 +20,7 @@ namespace Portal_FYV.Controllers
         public ActionResult Index()
         {
             var rEQDETs = db.REQDETs.Include(r => r.REQHDR).Include(r => r.Embalaje);
-            return View(rEQDETs.ToList());
+            return View(rEQDETs.OrderByDescending(x => x.Id_REQDET).ToList());
         }
 
         // GET: REQDETs
@@ -39,7 +39,8 @@ namespace Portal_FYV.Controllers
                     ViewBag.Id_Embalaje = new SelectList(db.Embalajes, "Id_Embalaje", "Tipo_Embalaje");
                     return View(usuario);
                 default:
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Error", "Home");
+
             }
         }
 
@@ -100,7 +101,7 @@ namespace Portal_FYV.Controllers
                 {
                     return Json(new { Success = false, Message = "La solicitud no se ha podido guardar debido a que no se han seleccionado productos.", Message_data = "", Message_Classes = "warning", Message_concat = false });
                 }
-
+                //Si la prórroga es de -1, es para habilitar al usuario poder crear más solicitudes al día
                 if (!existeRegistroHoy || us.Prorroga == "-1") {
                     REQHDR rh = new REQHDR();
 

@@ -64,5 +64,9 @@
         public DateTime Fecha_limite { get; set; }
         [StringLength(45)]
         public string Id_Proveedor_Merksys { get; set; }
+        [StringLength(9)]
+        public string Id_Producto_Merksys { get; set; }
+        [StringLength(10)]
+        public string Estatus { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Net;
 using System.Security.Policy;
 using System.Web;
 using System.Web.Mvc;
+using Microsoft.Ajax.Utilities;
 using Portal_FYV.Models;
 
 namespace Portal_FYV.Controllers
@@ -19,7 +21,7 @@ namespace Portal_FYV.Controllers
         public ActionResult Index()
         {
             var rEQHDRs = db.REQHDRs.Include(r => r.Usuario).Include(r => r.Usuario1);
-            return View(rEQHDRs.ToList());
+            return View(rEQHDRs.OrderByDescending(x => x.Id_REQHDR).ToList());
         }
 
         // GET: REQHDRs/Details/5
@@ -93,9 +95,25 @@ namespace Portal_FYV.Controllers
 
                     rEQHDRs = db.REQHDRs.Where(x => selectedIds.Contains(x.Id_REQHDR)).ToList();
 
+                    /*
+                    
+                    Verificar si las mismas ordenes de las solicitudes están con estatus CARRITO_PR, para evitar modificaciones mientras están en proceso todas
+                    string REQHDRS = String.Join("-", rEQHDRs.Select(x => x.Id_REQHDR).Distinct());
+                    
+                    var ids_reqhdrs = REQHDRS.Split('-');
+
+                    var ordenCompra_Web = db.OrdenCompras_Web.Where(x => x.REQHDRS == REQHDRS || ids_reqhdrs.Contains(x.REQHDRS)).ToList();
+
+                    if (ordenCompra_Web.Count() == ordenCompra_Web.Where(x => x.Estatus == "CARRITO_PR").Count())
+                    {
+                        return RedirectToAction("Error", "Home");
+                    }
+                    
+                    */
+
                     rEQDETs = db.REQDETs.Where(x => selectedIds.Contains(x.Id_REQHDR)).ToList();
 
-                    descripciones = rEQDETs.Select(x => x.Descripcion).ToArray();
+                    descripciones = rEQDETs.Select(x => x.Descripcion.Trim()).ToArray();
 
                     productos = db.Productos.Where(x => descripciones.Contains(x.Descripcion)).ToList();
 
@@ -105,7 +123,7 @@ namespace Portal_FYV.Controllers
 
                     if (rEQDETs == null)
                     {
-                        return HttpNotFound();
+                        return RedirectToAction("Error", "Home");
                     }
 
                     int[] ids_proveedores = db.UsuariosProductos.Where(x => selectedIds.Contains(x.Id_REQHDR) && ids_productos.Contains(x.Id_Producto)).Select(x => x.Id_Usuario).Distinct().ToArray();
@@ -134,7 +152,7 @@ namespace Portal_FYV.Controllers
 
                     productos = db.Productos.Where(x => x.Id_Proveedor == usuario.Id_Usuario).ToList();
 
-                    descripciones = productos.Select(x => x.Descripcion).ToArray();
+                    descripciones = productos.Select(x => x.Descripcion.Trim()).ToArray();
                     ids_productos = productos.Select(x => x.Id_Producto).ToArray();
 
                     catalogo = db.CatalogoProductos.Where(x => descripciones.Contains(x.Descripcion)).ToList();
@@ -146,7 +164,7 @@ namespace Portal_FYV.Controllers
 
                     if (rEQDETs == null)
                     {
-                        return HttpNotFound();
+                        return RedirectToAction("Error", "Home");
                     }
                     //Para que existan resultados, debe haber registros de proveedores con precio hacia el respectivo producto de los REQHDRS en cuestión
                     usuariosProductos = db.UsuariosProductos.Where(x => ids_productos.Contains(x.Id_Producto) && selectedIds.Contains(x.Id_REQHDR) && x.Id_Usuario == usuario.Id_Usuario).ToList();
@@ -173,10 +191,16 @@ namespace Portal_FYV.Controllers
                 Usuario usuario = db.Usuarios.Find(id);
 
                 List<OrdenCompra_Web> ordenCompra_Web = new List<OrdenCompra_Web>();
+                // Obtener todas las órdenes de compra en memoria
+                var ordenesCompra_Web = db.OrdenCompras_Web.ToList();
 
-                ordenCompra_Web = db.OrdenCompras_Web.Where(x => x.REQHDRS == REQHDRS).ToList();
-
+                // Filtrar las órdenes de compra que contienen cualquier elemento de ids_reqhdrs
                 var ids_reqhdrs = REQHDRS.Split('-');
+                
+                ordenCompra_Web = ordenesCompra_Web
+                    .Where(x => x.REQHDRS.Split('-').Intersect(ids_reqhdrs).Any())
+                    .ToList();
+
                 if (ordenCompra_Web != null)
                 {
                     modelos = new Tuple<List<OrdenCompra_Web>, List<REQHDR>>(ordenCompra_Web, db.REQHDRs.Where(x => ids_reqhdrs.Contains(x.Id_REQHDR.ToString())).ToList());
@@ -184,13 +208,101 @@ namespace Portal_FYV.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Error", "Home");
                 }
 
             }
             catch (Exception)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        public ActionResult procesarOC(string REQHDRS, int mode)
+        {
+            try
+            {
+                List<OrdenCompra_Web> ordenCompra_Web = new List<OrdenCompra_Web>();
+
+                var ids_reqhdrs = REQHDRS.Split('-');
+
+                ordenCompra_Web = db.OrdenCompras_Web.Where(x => x.REQHDRS == REQHDRS || ids_reqhdrs.Contains(x.REQHDRS)).ToList();
+
+                if (ordenCompra_Web == null)
+                {
+                    return Json(new
+                    {
+                        Success = false,
+                        value = "",
+                        Message = "No se han enviado las solicitudes para procesar las ordenes de compra.",
+                        Message_data = "",
+                        Message_Classes = "warning",
+                        Message_concat = false
+                    });
+                }
+                
+                foreach (var oc in ordenCompra_Web)
+                {
+                    switch (mode)
+                    {
+                        case 1:
+                            oc.Estatus = "CARRITO_PR";
+                            break;
+                        case 2:
+                            oc.Estatus = "CANCELADO";
+                            break;
+                        default:
+                            break;
+                    }
+                    db.Entry(oc).State = EntityState.Modified;
+                }
+                
+                db.SaveChanges();
+                switch (mode)
+                {
+                    case 1:
+                        return Json(new
+                        {
+                            Success = true,
+                            value = "",
+                            Message = "Ordenes de compra aprobadas para procesarse.",
+                            Message_data = "",
+                            Message_Classes = "success",
+                            Message_concat = false
+                        });
+                    case 2:
+                        return Json(new
+                        {
+                            Success = true,
+                            value = "",
+                            Message = "Ordenes de compra canceladas.",
+                            Message_data = "",
+                            Message_Classes = "primary",
+                            Message_concat = false
+                        });
+                    default:
+                        return Json(new
+                        {
+                            Success = true,
+                            value = "",
+                            Message = "Método finalizado con éxito para ordenes de compra sin modo seleccionado.",
+                            Message_data = "",
+                            Message_Classes = "warning",
+                            Message_concat = false
+                        });
+                }
+            }
+            catch (Exception)
+            {
+                return Json(new
+                {
+                    Success = false,
+                    value = "",
+                    Message = "Error al procesar las ordenes de compra.",
+                    Message_data = "",
+                    Message_Classes = "danger",
+                    Message_concat = false
+                });
             }
         }
 
@@ -296,11 +408,75 @@ namespace Portal_FYV.Controllers
         }
 
         [HttpPost]
-        public ActionResult guardarDistribucion(List<OrdenCompra_Web> proveedores)
+        public ActionResult guardarDistribucion(List<OrdenCompra_Web> odc, List<resumenProveedor> usuariosProductos)
         {
+            int id = Convert.ToInt32(Session["Id_Usuario"]);
             try
             {
-                foreach (var item in proveedores)
+
+                if (odc == null || usuariosProductos == null)
+                {
+                    return Json(new
+                    {
+                        Success = false,
+                        value = "",
+                        Message = "No se han enviado valores para generar una orden de compra.",
+                        Message_data = "",
+                        Message_Classes = "warning",
+                        Message_concat = false
+                    });
+                }
+
+                string producto = odc.FirstOrDefault().Producto;
+                string[] ids = odc.SelectMany(x => x.REQHDRS.Split('-')).Distinct().ToArray();
+
+                // Obtén los registros de REQHDRs que necesitan ser eliminados
+                // Recupera los registros desde la base de datos (sin filtrar por 'ids' todavía)
+                var registros = db.OrdenCompras_Web
+                                  .Where(x => x.Producto == producto && x.Estatus == null)
+                                  .ToList();
+
+                // Filtra los registros en memoria usando Split y Contains
+                var registrosParaEliminar = registros
+                                            .Where(x => x.REQHDRS.Split('-').Intersect(ids).Any())
+                                            .ToList();
+
+                /*
+                if (registrosParaEliminar != null && registrosParaEliminar.Count == 0)
+                {
+                    return Json(new
+                    {
+                        Success = false,
+                        value = "",
+                        Message = "Ya hay ordenes en proceso para este producto, no puede alterar la selección realizada previamente.",
+                        Message_data = "",
+                        Message_Classes = "warning",
+                        Message_concat = false
+                    });
+                }
+                */
+
+                foreach (var item in usuariosProductos)
+                {
+                    UsuariosProductos up = new UsuariosProductos();
+                    up = db.UsuariosProductos.FirstOrDefault(x => x.Id_Usuario == item.Id_Proveedor && x.Id_REQHDR == item.Id_REQHDR && x.Producto.Descripcion.Trim() == item.Producto);
+
+                    if (up != null)
+                    {
+                        up.Cantidad_comprada = item.Cantidad_solicitada;
+                        db.Entry(up).State = EntityState.Modified;
+                    }
+                }
+                //Actualizo la cantidad solicitada para el proveedor cuyo producto se está solicitando por el comprador, ya que necesito saber cuánto se le está pidiendo y plasmarlo en Resumen
+
+                if (registrosParaEliminar.Count > 0)
+                {
+                    db.OrdenCompras_Web.RemoveRange(registrosParaEliminar);
+                }
+                
+                db.SaveChanges();
+
+                foreach (var item in odc)
                 {
                     OrdenCompra_Web orden = new OrdenCompra_Web();
 
@@ -324,8 +500,12 @@ namespace Portal_FYV.Controllers
                     else
                     {
                         orden = item;
-                        orden.Creador = db.Usuarios.FirstOrDefault(x => x.Nombre == item.Proveedor).Correo;
+                        orden.Id_Proveedor_Merksys = db.Usuarios.FirstOrDefault(x => x.Nombre == item.Proveedor).Proveeedor_no_mks;
+                        orden.Id_Producto_Merksys = db.Productos.FirstOrDefault(x => x.Descripcion.Trim() == item.Producto).Clave_interna;
+                        orden.Creador = db.Usuarios.Find(id).Correo;
+                        orden.Cantidad_solicitada = recuperarSolicitado(item);
                         orden.Precio = recuperarPrecio(item);
+                        orden.Estatus = "CARRITO";
                         db.OrdenCompras_Web.Add(orden);
                     }
 
@@ -360,12 +540,19 @@ namespace Portal_FYV.Controllers
         {
             UsuariosProductos up = new UsuariosProductos();
             string reqhdrsString = item.REQHDRS;  // Suponiendo que item.REQHDRS es el string a convertir
-            int[] reqhdrs = reqhdrsString
+            int[] reqhdrs = reqhdrsString 
                 .Split('-')  // Divide el string en subcadenas separadas por '-'
                 .Select(int.Parse)  // Convierte cada subcadena en un entero
                 .ToArray();  // Convierte el resultado en un arreglo
             up = db.UsuariosProductos.FirstOrDefault(x => x.Producto.Descripcion == item.Producto && x.Usuario.Nombre == item.Proveedor && reqhdrs.Contains(x.Id_REQHDR));
-            return (Math.Round(Convert.ToDecimal(item.Cantidad_validada) * up.Precio, 4)).ToString("F4");
+            if (up != null)
+            {
+                return (Math.Round(Convert.ToDecimal(item.Cantidad_validada) * up.Precio, 4)).ToString("F4");
+            }
+            else
+            {
+                return "0";
+            }
         }
 
         public string recuperarSolicitado(OrdenCompra_Web item)
@@ -564,7 +751,7 @@ namespace Portal_FYV.Controllers
 
             if (rEQHDRs.Count() == 0 || rEQHDRs.Count() == rEQHDRs.Where(x => x.Estatus == 2).Count())
             {
-                return HttpNotFound();
+                return RedirectToAction("Error", "Home");
             }
 
             int id = Convert.ToInt32(Session["Id_Usuario"]);
@@ -837,6 +1024,27 @@ namespace Portal_FYV.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+
+        public class resumenProveedor
+        {
+            public resumenProveedor()
+            {
+                Id_REQHDR = 0;
+                Id_Proveedor = 0;
+                Proveedor = "NA";
+                Cantidad_disponible = 0;
+                Cantidad_solicitada = 0;
+                Producto = "NA";
+            }
+            public int id { get; set; }
+            public int Id_REQHDR { get; set; }
+            public int Id_Proveedor { get; set; }
+            public string Proveedor { get; set; }
+            public decimal Cantidad_disponible { get; set; }
+            public decimal Cantidad_solicitada { get; set; }
+            public string Producto { get; set; }
         }
     }
 }

@@ -1,0 +1,93 @@
+﻿@model Portal_FYV.Models.Embalaje
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<div class="bg-white">
+    <h2>Crear registro de embajale</h2>
+
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="row mx-0 mb-5">
+        <div class="col-12 col-sm-6">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Tipo_Embalaje, "Tipo de Embalaje:", htmlAttributes: new { @class = "control-label" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Tipo_Embalaje, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Tipo_Embalaje, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.valor_um, "Valor de medida:", htmlAttributes: new { @class = "control-label" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.valor_um, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.valor_um, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.um, "Unidad de medida:", htmlAttributes: new { @class = "control-label" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.um, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.um, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Guardar" class="btn btn-lg btn-success" />
+        </div>
+    </div>
+</div>
+    }
+
+    <script>
+    // Al hacer clic en un botón o enviar un formulario
+    $('form').submit(function(event) {
+        event.preventDefault(); // Prevenir el envío estándar del formulario
+
+        // Convertir los datos del formulario en un objeto
+        var formData = {};
+        $.each($(this).serializeArray(), function(index, field) {
+            formData[field.name] = field.value;
+        });
+
+        // Enviar el objeto por AJAX
+        if (formData.Tipo_Embalaje != null && formData.um != null && formData.valor_um != null) {
+
+            $.ajax({
+                url: '@Url.Action("Create", "Embalajes")',
+                type: 'POST',
+                data: formData,
+                success: function (response) {
+                    // Manejar la respuesta
+                    console.log(response);
+                    toastFill(response)
+                },
+                error: function(error) {
+                    // Manejar errores
+                    console.error('Error:', error);
+                }
+            });
+        }
+    });
+    </script>
+
+    <div>
+        @Html.ActionLink("Regresar", "Index", new { area = "" }, new { @class = "btn btn-link" })
+    </div>
+
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

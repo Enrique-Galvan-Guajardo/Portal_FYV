@@ -17,7 +17,7 @@ namespace Portal_FYV.Controllers
         // GET: Embalajes
         public ActionResult Index()
         {
-            return View(db.Embalajes.ToList());
+            return View(db.Embalajes.OrderByDescending(x => x.Tipo_Embalaje).ToList());
         }
 
         // GET: Embalajes/Details/5

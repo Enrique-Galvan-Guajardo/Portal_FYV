@@ -1,5 +1,6 @@
 ﻿const local = ""
-const public = "http://192.168.1.76:8030/"
+const public = "http://192.168.1.120:8025/"
+const api = "http://200.188.143.250:1313"
 
 const env = public + "api/"
 
@@ -11,3 +12,4 @@ const getLocalidades = env + "region/estado/localidades?estado="
 
 //Products API
 const getProductSearch = env + "fyv/busqueda?art="
+const getAllProducts = api + "/api/fyv/busquedaAll?clave_sucursal="

@@ -1,0 +1,129 @@
+﻿@model IEnumerable<Portal_FYV.Models.REQDET>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<div class="bg-white">
+    <h2>Lista de REQDETs</h2>
+
+    <p>
+        @Html.ActionLink("Crear Nuevo", "Create", new { area = "" }, new { @class = "btn btn-success" })
+    </p>
+
+    <div class="table-responsive rounded rounded-2 border">
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.REQHDR.Sucursal)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Clave_articulo)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Descripcion)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cantidad_solicitada)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fecha_creacion)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Embalaje.Tipo_Embalaje)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cantidad_validada)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fecha_validacion)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id_Embalaje_validado)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Fecha_ultima_compra)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Cantidad_ultima_compra)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Ventas_ultima_semana)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Existencia)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Estatus)
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id_REQDET)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.REQHDR.Sucursal)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Clave_articulo)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Descripcion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cantidad_solicitada)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha_creacion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Embalaje.Tipo_Embalaje)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cantidad_validada)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha_validacion)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Id_Embalaje_validado)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha_ultima_compra)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cantidad_ultima_compra)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Ventas_ultima_semana)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Existencia)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Estatus)
+                    </td>
+                    <td class="d-flex flex-column gap-3 align-items-end">
+                        <button class="btn btn-info rounded-1" onclick="location.href='@Url.Action("Edit", "REQDETs", new { id = item.Id_REQDET })'"><i class="bi bi-pencil"></i></button>
+
+                        @using (Html.BeginForm("Delete", "REQDETs", new { id = item.Id_REQDET }, FormMethod.Post, new { @class = "m-0", id = "deleteForm_" + item.Id_REQDET }))
+                        {
+                            @Html.AntiForgeryToken()
+                            @Html.Hidden("id", item.Id_REQDET)
+                            <button class="btn btn-danger rounded-1 w-100" type="button" onclick="confirmDelete(@item.Id_REQDET, this)"><i class="bi bi-trash"></i></button>
+                        }
+                    </td>
+                </tr>
+            }
+
+        </table>
+
+    </div>
+</div>

@@ -2353,6 +2353,7 @@
     <Content Include="Views\Embalajes\Details.cshtml" />
     <Content Include="Views\Embalajes\Edit.cshtml" />
     <Content Include="Views\Embalajes\Index.cshtml" />
+    <Content Include="Views\Home\Error.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

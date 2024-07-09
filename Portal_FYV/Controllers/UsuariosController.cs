@@ -18,7 +18,7 @@ namespace Portal_FYV.Controllers
         public ActionResult Index()
         {
             var usuarios = db.Usuarios.Include(u => u.Estatus).Include(u => u.Roles);
-            return View(usuarios.ToList());
+            return View(usuarios.OrderByDescending(x => x.Nombre).ToList());
         }
         
         // POST: Usuarios/logIn
@@ -60,6 +60,7 @@ namespace Portal_FYV.Controllers
             if (!db.Usuarios.Any(x => x.Nombre == usuario.Correo || x.Correo == usuario.Correo) && ModelState.IsValid)
             {
                 usuario.Username = usuario.Correo.Split('@')[0];
+                usuario.Sucursal = "JUA";
                 db.Usuarios.Add(usuario);
                 db.SaveChanges();
 
