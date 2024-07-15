@@ -597,7 +597,7 @@ function guardarOrdenCompra(button) {
         });
     }
     /**
-
+     * 
     let modal = button.closest('.modal-content')
     let product = modal.querySelector('.modal-body #producto-solicitar').innerText
 
@@ -690,7 +690,55 @@ function guardarOrdenCompra(button) {
     let ordenesCompra = {} //Guardar uno por uno los objetos generados con el formatio anterior para enviarlos como lista al controlador
     */
 }
+function cancelarODC(button, Id_OrdenCompra) {
+    if (Id_OrdenCompra > 0) {
 
+        //Ajax
+        button.disabled = true;
+        // Enviar el arreglo de objetos al controlador utilizando AJAX
+        $.ajax({
+            url: '/REQHDRs/cancelarDistribucion',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ Id_OrdenCompra }),
+            beforeSend: function () {
+                // Código a ejecutar antes de enviar la petición AJAX
+                button.innerText = "Cancelando..."
+                // Puedes mostrar un indicador de carga, deshabilitar botones, etc.
+            },
+            success: function (response) {
+                // Manejar la respuesta del servidor si es necesario
+                console.log('Datos enviados correctamente');
+                console.log(response);
+                if (response.Success) {
+                    button.closest('tr').children[0].className = "bg-opacity-50 ";
+                    button.closest('tr').querySelectorAll('.solicitado').forEach(function (celd) {
+                        celd.innerText = "0.00";
+                    });
+                }
+                toastFill(response)
+                calcularTotal()
+                // Esperar 1 segundo (1000 milisegundos) y luego mostrar el texto
+                setTimeout(function () {
+                    button.innerText = "Capturar"
+                    button.className = "btn btn-sm btn-primary my-2"
+                    button.disabled = false;
+                    button.setAttribute('data-bs-toggle', 'modal');
+                    button.setAttribute('data-bs-target', '#cantidadesModal');
+                    button.setAttribute('onclick', 'setData(this)');
+                }, 2000); // 1000 milisegundos = 1 segundo
+            },
+            error: function (xhr, status, error) {
+                // Manejar errores si ocurrieron durante la solicitud AJAX
+                console.error('Error al enviar datos:', error);
+                setTimeout(function () {
+                    button.innerText = "Cancelar"
+                    button.disabled = false;
+                }, 2000); // 1000 milisegundos = 1 segundo
+            }
+        });
+    }
+}
 function generarOrdenesDeCompra(tabPaneSolicitud, tabPaneDistribucion) {
     let proveedores = [];
     const fechaActual = new Date().toISOString().replace('T', ' ').substring(0, 23);

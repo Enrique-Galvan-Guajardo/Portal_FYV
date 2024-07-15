@@ -9,6 +9,7 @@ using System.Security.Policy;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.Ajax.Utilities;
+using Microsoft.Win32;
 using Portal_FYV.Models;
 
 namespace Portal_FYV.Controllers
@@ -20,6 +21,12 @@ namespace Portal_FYV.Controllers
         // GET: REQHDRs
         public ActionResult Index()
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+
+            if (rol != "Admin+" && rol != "Admin")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var rEQHDRs = db.REQHDRs.Include(r => r.Usuario).Include(r => r.Usuario1);
             return View(rEQHDRs.OrderByDescending(x => x.Id_REQHDR).ToList());
         }
@@ -72,10 +79,7 @@ namespace Portal_FYV.Controllers
             DateTime searchDateOnly = searchDate.Date;
 
             // Realiza la consulta comparando solo las fechas
-            int[] selectedIds = db.REQHDRs
-                .Where(x => DbFunctions.TruncateTime(x.Fecha_validacion) == searchDateOnly)
-                .Select(x => x.Id_REQHDR)
-                .ToArray();
+            int[] selectedIds;
 
             List<CatalogoProducto> catalogo = new List<CatalogoProducto>();
             List<UsuariosProductos> usuariosProductos = new List<UsuariosProductos>();
@@ -87,7 +91,10 @@ namespace Portal_FYV.Controllers
                 case "Admin+":
                 case "Admin":
                 case "Compras":
-
+                    selectedIds = db.REQHDRs
+                    .Where(x => DbFunctions.TruncateTime(x.Fecha_creacion) == searchDateOnly)
+                    .Select(x => x.Id_REQHDR)
+                    .ToArray();
                     if (selectedIds == null)
                     {
                         return RedirectToAction("Index", "Home");
@@ -112,6 +119,31 @@ namespace Portal_FYV.Controllers
                     */
 
                     rEQDETs = db.REQDETs.Where(x => selectedIds.Contains(x.Id_REQHDR)).ToList();
+
+                    /*Validar que los reqhdrs de cada reqdet no estén procesandose en ordencompraweb*/
+                    /*Estatus | CARRITO = Agregados al carrito, CARRITO_PR = Agregados y posteriormente procesandose, CAMCELADO = Productos cancelados, TERM = Finalizados*/
+
+                    string[] descriptions_reqdets = rEQDETs.Select(x => x.Descripcion.Trim()).Distinct().ToArray();
+                    List<OrdenCompra_Web> ocw = db.OrdenCompras_Web.Where(x => descriptions_reqdets.Contains(x.Producto.Trim()) && x.Estatus == "CARRITO").OrderBy(x => x.Id_OrdenCompra).Distinct().ToList();
+                    List<string> ids_reqhdrs_temps = selectedIds.Select(x => x.ToString()).ToList();
+                    ocw = ocw.Where(x => x.REQHDRS.Split('-').Intersect(ids_reqhdrs_temps).Any()).ToList();
+                    ViewBag.ordenCompra = ocw;
+                    /*
+                    List<REQDET> delete_reqdets = new List<REQDET>();
+                    List<REQHDR> delete_reqhdrs = new List<REQHDR>();
+                    foreach (var reqdet in rEQDETs)
+                    {
+                        if (ocw.Any(x => x.Producto.Trim() == reqdet.Descripcion.Trim() && x.REQHDRS.Split('-').Contains(reqdet.Id_REQHDR.ToString())))
+                        {
+                            //Los que estén a punto de eliminarse se guardarán en una variable de lista temporal, para después eliminarlos de golpe del listado original
+                            delete_reqdets.Add(rEQDETs.FirstOrDefault(x => x.Descripcion.Trim() == reqdet.Descripcion.Trim() && x.Id_REQHDR == reqdet.Id_REQHDR));
+                            delete_reqhdrs.Add(rEQHDRs.FirstOrDefault(x => x.Id_REQHDR == reqdet.Id_REQHDR));
+                        }
+                    }
+
+                    rEQDETs = rEQDETs.Where(x => !delete_reqdets.Select(y => y.Id_REQDET).ToArray().Contains(x.Id_REQDET)).ToList();
+                    rEQHDRs = rEQHDRs.Where(x => !rEQDETs.Select(y => y.Id_REQHDR).ToArray().Contains(x.Id_REQHDR)).ToList();
+                     */
 
                     descripciones = rEQDETs.Select(x => x.Descripcion.Trim()).ToArray();
 
@@ -143,6 +175,10 @@ namespace Portal_FYV.Controllers
                     return View(modelos);
 
                 case "Proveedores":
+                    selectedIds = db.REQHDRs
+                    .Where(x => DbFunctions.TruncateTime(x.Fecha_validacion) == searchDateOnly)
+                    .Select(x => x.Id_REQHDR)
+                    .ToArray();
                     if (selectedIds == null)
                     {
                         return RedirectToAction("Index", "Home");
@@ -433,7 +469,7 @@ namespace Portal_FYV.Controllers
                 // Obtén los registros de REQHDRs que necesitan ser eliminados
                 // Recupera los registros desde la base de datos (sin filtrar por 'ids' todavía)
                 var registros = db.OrdenCompras_Web
-                                  .Where(x => x.Producto == producto && x.Estatus == null)
+                                  .Where(x => x.Producto == producto && x.Estatus == "CARRITO")
                                   .ToList();
 
                 // Filtra los registros en memoria usando Split y Contains
@@ -536,6 +572,40 @@ namespace Portal_FYV.Controllers
 
         }
 
+        [HttpPost]
+        public ActionResult cancelarDistribucion(int Id_OrdenCompra)
+        {
+            int id = Convert.ToInt32(Session["Id_Usuario"]);
+            try
+            {
+                OrdenCompra_Web ordenCompra = new OrdenCompra_Web();
+                ordenCompra = db.OrdenCompras_Web.Find(Id_OrdenCompra);
+                ordenCompra.Estatus = "CANCELADO";
+                db.Entry(ordenCompra).State = EntityState.Modified;
+                db.SaveChanges();
+                return Json(new
+                {
+                    Success = true,
+                    value = "",
+                    Message = "Orden cancelada correctamente.",
+                    Message_data = "",
+                    Message_Classes = "success",
+                    Message_concat = false
+                });
+            }
+            catch (Exception)
+            {
+                return Json(new
+                {
+                    Success = false,
+                    value = "",
+                    Message = "Problema al cancelar la orden.",
+                    Message_data = "",
+                    Message_Classes = "danger",
+                    Message_concat = false
+                });
+            }
+        }
         public string recuperarPrecio(OrdenCompra_Web item)
         {
             UsuariosProductos up = new UsuariosProductos();
@@ -694,14 +764,18 @@ namespace Portal_FYV.Controllers
         {
             try
             {
-                Producto productoR = db.Productos.FirstOrDefault( x => x.Descripcion == producto);
+                Producto productoR = db.Productos.FirstOrDefault( x => x.Descripcion.Trim() == producto);
                 List<UsuariosProductos> usuariosProductos = new List<UsuariosProductos>();
                 
                 bool check = true;
                 foreach (var item in db.REQDETs.Where(x => ids_REQHDRS.Contains(x.Id_REQHDR) && x.Descripcion == producto))
                 {
-                    
-                    if (Convert.ToDateTime(DateTime.Now).Date > Convert.ToDateTime(item.REQHDR.Fecha_lim_proveedor).Date && check)
+                    DateTime currentDate = DateTime.Now.Date; // Obtener la fecha actual sin la hora
+                    DateTime fechaLimiteProveedor = Convert.ToDateTime(item.REQHDR.Fecha_lim_proveedor).Date; // Convertir la fecha límite del proveedor a DateTime sin la hora
+
+                    int diferenciaDias = (fechaLimiteProveedor - currentDate).Days; // Calcular la diferencia en días
+
+                    if (diferenciaDias > 0 && check)
                     {
                         check = false;
                         break;
@@ -743,7 +817,7 @@ namespace Portal_FYV.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             endDate = endDate.AddDays(1);
-            List<REQHDR> rEQHDRs = db.REQHDRs.Where(x => x.Fecha_creacion >= startDate && x.Fecha_creacion < endDate).ToList();
+            List<REQHDR> rEQHDRs = db.REQHDRs.Where(x => (x.Fecha_creacion >= startDate && x.Fecha_creacion < endDate) && (x.Estatus == 1)).ToList();
             
             int[] req_Array = rEQHDRs.Select(x => x.Id_REQHDR).ToArray();
             

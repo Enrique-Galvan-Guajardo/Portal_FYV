@@ -19,6 +19,12 @@ namespace Portal_FYV.Controllers
         // GET: REQDETs
         public ActionResult Index()
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+
+            if (rol != "Admin+" && rol != "Admin")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var rEQDETs = db.REQDETs.Include(r => r.REQHDR).Include(r => r.Embalaje);
             return View(rEQDETs.OrderByDescending(x => x.Id_REQDET).ToList());
         }

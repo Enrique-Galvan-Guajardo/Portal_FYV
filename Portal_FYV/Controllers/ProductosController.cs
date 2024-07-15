@@ -19,6 +19,12 @@ namespace Portal_FYV.Controllers
         // GET: Productos
         public ActionResult Index()
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+
+            if (rol != "Admin+" && rol != "Admin" && rol != "Proveedores")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             int idProv = Session["Id_Usuario"] != null ? Convert.ToInt32(Session["Id_Usuario"]) : 0;
             // Cargar la lista de embalajes
             if (idProv == 0)

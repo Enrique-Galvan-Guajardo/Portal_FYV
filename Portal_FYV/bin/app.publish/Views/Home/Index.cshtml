@@ -299,7 +299,7 @@ else
                                                         int todayCountTrue = rEQHDRs.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == fechaval.ToString("d") && x.Estatus == 2).Count();
                                                         <a @if (todayCount == todayCountTrue) { <text> href="#" </text>  } else { <text> href="/REQHDRs/Consolidation/?startDate=@fechaEncoded&endDate=@fechaEncoded" </text>  }
                                                            class="list-group-item list-group-item-action" aria-current="true">
-                                                            <b class="@(todayCount == todayCountTrue ? "text-success" : "text-primary") text-opacity-75">@todayCount solicitudes en @fechaval.ToString("D")</b>
+                                                            <b class="@(todayCount == todayCountTrue ? "text-success" : "text-primary") text-opacity-75">@todayCount solicitudes en @fechaval.ToString("D", new System.Globalization.CultureInfo("es-ES"))</b>
                                                             <br />
                                                             <small class="text-muted">Aprobados: @todayCountTrue</small>
                                                         </a>
@@ -348,7 +348,7 @@ else
                                                         .ToList();
                                                         <div class="list-group-item list-group-item-action">
                                                             <a href="@Url.Action("Compra", "REQHDRs", new { REQHDRS = String.Join("-", arr_reqhdrs_dia_ind) })" class="text-decoration-none" aria-current="true">
-                                                                <b class="text-primary text-opacity-75">@arr_reqhdrs_dia.Count() orden en @Convert.ToDateTime(dia).ToString("D")</b>
+                                                                <b class="text-primary text-opacity-75">@arr_reqhdrs_dia.Count() orden en @Convert.ToDateTime(dia).ToString("D", new System.Globalization.CultureInfo("es-ES"))</b>
                                                             </a>
                                                             <details>
                                                                 <summary class="text-muted">
@@ -480,7 +480,7 @@ else
                                         <div class="list-group-item list-group-item-action">
                                             <div>
                                                 <a class="text-decoration-none" href="/REQHDRs/Resumen/?searchDate=@fechaEncoded">
-                                                    <b class="text-primary text-opacity-75">Solicitudes aprobadas en @Convert.ToDateTime(fecha).ToString("D")</b>
+                                                    <b class="text-primary text-opacity-75">Solicitudes aprobadas en @Convert.ToDateTime(fecha).ToString("D", new System.Globalization.CultureInfo("es-ES"))</b>
                                                 </a>
                                                 <details>
                                                     <summary class="text-muted">
@@ -560,7 +560,7 @@ else
                                             <div class="list-group-item list-group-item-action">
                                                 <div>
                                                     <a class="text-decoration-none" href="/REQHDRs/Resumen/?searchDate=@fechaEncoded">
-                                                        <b class="text-primary text-opacity-75">Solicitudes aprobadas en @Convert.ToDateTime(fecha).ToString("D")</b>
+                                                        <b class="text-primary text-opacity-75">Solicitudes aprobadas en @Convert.ToDateTime(fecha).ToString("D", new System.Globalization.CultureInfo("es-ES"))</b>
                                                     </a>
                                                     <details>
                                                         <summary class="text-muted">

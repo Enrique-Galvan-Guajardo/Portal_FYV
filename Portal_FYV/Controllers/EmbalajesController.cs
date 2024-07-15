@@ -17,6 +17,12 @@ namespace Portal_FYV.Controllers
         // GET: Embalajes
         public ActionResult Index()
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+
+            if (rol != "Admin+" && rol != "Admin")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View(db.Embalajes.OrderByDescending(x => x.Tipo_Embalaje).ToList());
         }
 

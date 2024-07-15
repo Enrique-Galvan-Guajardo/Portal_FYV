@@ -19,6 +19,12 @@ namespace Portal_FYV.Controllers
         // GET: CatalogoProductos
         public ActionResult Index()
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+
+            if (rol != "Admin+" && rol != "Admin")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View(db.CatalogoProductos.OrderByDescending(x => x.Descripcion).ToList());
         }
 

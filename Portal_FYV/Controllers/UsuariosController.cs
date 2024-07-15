@@ -17,6 +17,13 @@ namespace Portal_FYV.Controllers
         // GET: Usuarios
         public ActionResult Index()
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+
+            if (rol != "Admin+" && rol != "Admin")
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var usuarios = db.Usuarios.Include(u => u.Estatus).Include(u => u.Roles);
             return View(usuarios.OrderByDescending(x => x.Nombre).ToList());
         }
@@ -165,7 +172,16 @@ namespace Portal_FYV.Controllers
                 return HttpNotFound();
             }
             ViewBag.Id_Estatus = new SelectList(db.Estatus, "Id_Estatus", "Name", usuario.Id_Estatus);
-            ViewBag.Id_Rol = new SelectList(db.Roles, "Id_Rol", "Rol", usuario.Id_Rol);
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+
+            if (rol != "Admin+" && rol != "Admin")
+            {
+                ViewBag.Id_Rol = new SelectList(db.Roles.Where(x => x.Id_Rol != 1).ToList(), "Id_Rol", "Rol", usuario.Id_Rol);
+            }
+            else
+            {
+                ViewBag.Id_Rol = new SelectList(db.Roles, "Id_Rol", "Rol", usuario.Id_Rol);
+            }
             return View(usuario);
         }
 

@@ -14,7 +14,7 @@
 
     var ids_reqhdrs = REQHDRS.Split('-');
 
-    var ordenCompra_Web = db.OrdenCompras_Web.Where(x => x.REQHDRS == REQHDRS || ids_reqhdrs.Contains(x.REQHDRS)).ToList();
+    IEnumerable<Portal_FYV.Models.OrdenCompra_Web> ordenCompra_Web= ViewBag.ordenCompra != null ? ViewBag.ordenCompra : new List<Portal_FYV.Models.OrdenCompra_Web>();
     //
 
     foreach (var item in Model.Item1.Select(x => x.Id_REQHDR))
@@ -160,12 +160,25 @@
                             int id_prov = 0;
                             string proveedor = "";
                             int[] ids_up;
+                            string tr_class = "";
+                            string tr_id_ocw = "";
+                            if (ordenCompra_Web.Any(x => x.Producto == producto && x.Estatus == "CANCELADO"))
+                            {
+                                tr_class = "bg-danger fw-bold";
+                                tr_id_ocw = ordenCompra_Web.FirstOrDefault(x => x.Producto == producto && x.Estatus == "CANCELADO").Id_OrdenCompra.ToString();
+                            }
+                            if (ordenCompra_Web.Any(x => x.Producto == producto && x.Estatus == "CARRITO"))
+                            {
+                                tr_class = "bg-primary fw-bold";
+                                tr_id_ocw = ordenCompra_Web.FirstOrDefault(x => x.Producto == producto && x.Estatus == "CARRITO").Id_OrdenCompra.ToString();
+                            }
+                            if (ordenCompra_Web.Any(x => x.Producto == producto && x.Estatus == "CARRITO_PR"))
+                            {
+                                tr_class = "bg-success fw-bold";
+                                tr_id_ocw = ordenCompra_Web.FirstOrDefault(x => x.Producto == producto && x.Estatus == "CARRITO_PR").Id_OrdenCompra.ToString();
+                            }
                             <tr data-ids="@(String.Join("-", Model.Item2.Where(x => x.Descripcion == producto).Select(x => x.Id_REQHDR).ToArray()))">
-                                <td class="bg-opacity-50 
-                                    @(ordenCompra_Web.Any(x => x.Producto == producto && x.Estatus == "CANCELADO") ? "bg-danger fw-bold" : "") 
-                                    @(ordenCompra_Web.Any(x => x.Producto == producto && x.Estatus == "CARRITO") ? "bg-primary fw-bold" : "") 
-                                    @(ordenCompra_Web.Any(x => x.Producto == producto && x.Estatus == "CARRITO_PR") ? "bg-success fw-bold" : "") 
-                                    ">
+                                <td class="bg-opacity-50 @tr_class" data-ocw="@tr_id_ocw">
                                     <div>
                                         <div>@producto</div>
                                         @{
@@ -200,26 +213,26 @@
                                     ids_up = usuarioproducto != null ? Model.Item3.Where(x => x.Producto.Descripcion.Trim() == producto && x.Id_Usuario == item).Select(x => x.Id_UsuarioProducto).ToArray() : null;
                                     solicitado = ups.Where(x => x.Producto.Descripcion.Trim() == producto && x.Id_Usuario == id_prov && ids_up.Contains(x.Id_UsuarioProducto)).Sum(x => x.Cantidad_comprada);
 
-                                        if (ultimoPrecio != 0)
-                                        {
-                                            <td class="td-precio-proveedor">
-                                                <label class="control-label mb-2">Precio: $ <span class="text-muted precio-ultimo">@Math.Round(ultimoPrecio, 2)</span></label>
+                                    if (ultimoPrecio != 0)
+                                    {
+                                        <td class="td-precio-proveedor">
+                                            <label class="control-label mb-2">Precio: $ <span class="text-muted precio-ultimo">@Math.Round(ultimoPrecio, 2)</span></label>
+                                            <br />
+                                            <small class="text-muted cantidad-distribuida">
+                                                Disponible:
+                                                <span class="stocks"
+                                                      data-precio="@ultimoPrecio"
+                                                      data-producto="@producto"
+                                                      data-provedor="@proveedor"
+                                                      data-id-proveedor="@id_prov"
+                                                      data-stock="@ultimoStock"
+                                                      data-id-up="@String.Join(",", ids_up)">@Math.Round(ultimoStock, 2)</span>
+                                                </small>
                                                 <br />
-                                                <small class="text-muted cantidad-distribuida">
-                                                    Disponible:
-                                                    <span class="stocks"
-                                                          data-precio="@ultimoPrecio"
-                                                          data-producto="@producto"
-                                                          data-provedor="@proveedor"
-                                                          data-id-proveedor="@id_prov"
-                                                          data-stock="@ultimoStock"
-                                                          data-id-up="@String.Join(",", ids_up)">@Math.Round(ultimoStock, 2)</span>
-                                                    </small>
-                                                    <br />
-                                                    <small class="text-info-emphasis cantidad-solicitada">
-                                                        Solicitado:
-                                                        <span class="solicitado">@Math.Round(solicitado, 2)</span>
-                                                    </small>
+                                                <small class="text-info-emphasis cantidad-solicitada">
+                                                    Solicitado:
+                                                    <span class="solicitado">@Math.Round(solicitado, 2)</span>
+                                                </small>
                                             </td>
                                         }
                                         else
@@ -228,11 +241,25 @@
                                                 <label class="control-label mb-2"><span class="text-danger precio-ultimo">No asignado</span></label>
                                             </td>
                                         }
-                                }
+                                    }
 
                                 <td class="text-end">
                                     <div>
-                                        <button data-cantidad="@cantidadProducto" class="btn btn-sm btn-primary my-2" data-bs-toggle="modal" data-bs-target="#cantidadesModal" onclick="setData(this)">Capturar</button>
+                                        @switch (tr_class)
+                                        {
+                                            case "bg-primary fw-bold":
+                                            case "bg-success fw-bold":
+                                                //Si se están apenas procesando, que puedan cancelarse
+                                                <button data-cantidad="@cantidadProducto" class="btn btn-sm btn-danger my-2" onclick="cancelarODC(this, @tr_id_ocw)">Cancelar</button>
+                                                break;
+                                            case "":
+                                                //Si todavía no hay nada procesado, que pueda capturarse
+                                                <button data-cantidad="@cantidadProducto" class="btn btn-sm btn-primary my-2" data-bs-toggle="modal" data-bs-target="#cantidadesModal" onclick="setData(this)">Capturar</button>
+                                                break;
+                                            default:
+                                                //Si hay algo distinto a que todavía no se procese o esté en proceso, no haya opciones
+                                                break;
+                                        }
                                     </div>
                                 </td>
                             </tr>
@@ -330,10 +357,13 @@
                                                         List<string> data_prod_tags = new List<string>();
                                                         List<string> data_reqhdr_tags = new List<string>();
                                                         <th class="d-none "
-                                                            @foreach (var producto in Model.Item2.Where(x => x.Id_REQHDR == item.Id_REQHDR).Select(x => x.Descripcion)) { data_prod_tags.Add(producto); data_reqhdr_tags.Add(item.Id_REQHDR.ToString()); }
+                                                            @{
+                                                                foreach (var producto in Model.Item2.Where(x => x.Id_REQHDR == item.Id_REQHDR).Select(x => x.Descripcion)) { data_prod_tags.Add(producto); data_reqhdr_tags.Add(item.Id_REQHDR.ToString()); }
+                                                                data_reqhdr_tags = data_reqhdr_tags.Distinct().ToList();
+                                                            } 
                                                             data-productos="@string.Join(", ", data_prod_tags.ToArray())"
                                                             data-rhdrs="@string.Join(", ", data_reqhdr_tags.ToArray())">
-                                                            @item.Sucursal
+                                                            @item.Sucursal <br /> <small>Solicitud del @item.Fecha_creacion.ToString("M")</small>
                                                         </th>
                                                     }
                                                 </tr>
@@ -350,6 +380,8 @@
                                                             data_reqhdr_tags.Add(item.Id_REQHDR.ToString());
                                                             //Evitar que existan columnas por N cantidad de productos, y hacer que aparezcan acorde al producto en cuestión
                                                         }
+                                                        data_reqhdr_tags = data_reqhdr_tags.Distinct().ToList();
+
                                                         <td data-productos="@string.Join(", ", data_prod_tags.ToArray())" data-rhdrs="@string.Join(", ", data_reqhdr_tags.ToArray())" class="d-none @item.Sucursal">
                                                             <div style="width: 150px;" data-idrhdr="@Model.Item1.FirstOrDefault(x => x.Sucursal == item.Sucursal).Id_REQHDR">
                                                                 <label for="input-dist-@item.Sucursal" class="form-label">Cantidad a enviar:</label>

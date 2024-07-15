@@ -18,6 +18,12 @@ namespace Portal_FYV.Controllers
         // GET: UsuariosAltas
         public ActionResult Index()
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+
+            if (rol != "Admin+" && rol != "Admin")
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var usuariosAltas = db.UsuariosAltas.Include(u => u.Usuario).Include(u => u.Usuario1);
             return View(usuariosAltas.ToList());
         }
