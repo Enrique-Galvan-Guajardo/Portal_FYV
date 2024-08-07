@@ -336,9 +336,9 @@
                         for (let i = 0; i < rows.length; i++) {
                             let proveedorCell = rows[i].getElementsByTagName('td')[3]; // Columna "Proveedor"
                             if (selectedValue === 'ALL' || proveedorCell.innerText.trim() === selectedValue) {
-                                rows[i].style.display = '';
+                                rows[i].className = '';
                             } else {
-                                rows[i].style.display = 'none';
+                                rows[i].className = 'd-none';
                             }
                         }
                     });
@@ -346,7 +346,7 @@
                     function sendEmails() {
                         let OrdenesCompraLista = [];
                         let table = document.getElementById('productosConsolidados');
-                        let rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+                        let rows = table.getElementsByTagName('tbody')[0].querySelectorAll('tr:not(.d-none)');
                         for (let i = 0; i < rows.length; i++) {
                             let Id_OrdenCompra = rows[i].getElementsByTagName('td')[0].innerText; // Columna "Id"
                             let REQHDRS = rows[i].getElementsByTagName('td')[1].innerText; // Columna "REQHDRS"

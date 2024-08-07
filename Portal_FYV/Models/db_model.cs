@@ -1,6 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Configuration;
+using System.Data;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 
 namespace Portal_FYV.Models
@@ -94,5 +97,26 @@ namespace Portal_FYV.Models
                 .WithRequired(e => e.Usuario)
                 .WillCascadeOnDelete(false);
         }
+        public void ExecuteStoredProcedure(string storedProcedureName, params SqlParameter[] parameters)
+        {
+            string connectionString = ConfigurationManager.ConnectionStrings["db_model"].ConnectionString;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(storedProcedureName, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    if (parameters != null)
+                    {
+                        command.Parameters.AddRange(parameters);
+                    }
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
     }
+
 }

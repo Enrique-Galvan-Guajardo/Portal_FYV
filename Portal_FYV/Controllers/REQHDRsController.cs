@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Policy;
@@ -124,7 +125,7 @@ namespace Portal_FYV.Controllers
                     /*Estatus | CARRITO = Agregados al carrito, CARRITO_PR = Agregados y posteriormente procesandose, CAMCELADO = Productos cancelados, TERM = Finalizados*/
 
                     string[] descriptions_reqdets = rEQDETs.Select(x => x.Descripcion.Trim()).Distinct().ToArray();
-                    List<OrdenCompra_Web> ocw = db.OrdenCompras_Web.Where(x => descriptions_reqdets.Contains(x.Producto.Trim()) && x.Estatus == "CARRITO").OrderBy(x => x.Id_OrdenCompra).Distinct().ToList();
+                    List<OrdenCompra_Web> ocw = db.OrdenCompras_Web.Where(x => descriptions_reqdets.Contains(x.Producto.Trim())).OrderBy(x => x.Id_OrdenCompra).Distinct().ToList();
                     List<string> ids_reqhdrs_temps = selectedIds.Select(x => x.ToString()).ToList();
                     ocw = ocw.Where(x => x.REQHDRS.Split('-').Intersect(ids_reqhdrs_temps).Any()).ToList();
                     ViewBag.ordenCompra = ocw;
@@ -148,6 +149,7 @@ namespace Portal_FYV.Controllers
                     descripciones = rEQDETs.Select(x => x.Descripcion.Trim()).ToArray();
 
                     productos = db.Productos.Where(x => descripciones.Contains(x.Descripcion)).ToList();
+                    ViewBag.productos = productos;
 
                     ids_productos = productos.Select(x => x.Id_Producto).ToArray();
 
@@ -187,15 +189,16 @@ namespace Portal_FYV.Controllers
                     rEQHDRs = db.REQHDRs.Where(x => selectedIds.Contains(x.Id_REQHDR)).ToList();
 
                     productos = db.Productos.Where(x => x.Id_Proveedor == usuario.Id_Usuario).ToList();
+                    ViewBag.productos = productos;
 
                     descripciones = productos.Select(x => x.Descripcion.Trim()).ToArray();
                     ids_productos = productos.Select(x => x.Id_Producto).ToArray();
 
-                    catalogo = db.CatalogoProductos.Where(x => descripciones.Contains(x.Descripcion)).ToList();
+                    catalogo = db.CatalogoProductos.Where(x => descripciones.Contains(x.Descripcion.Trim())).ToList();
 
                     foreach (var r in rEQHDRs)
                     {
-                        rEQDETs.AddRange(r.REQDETs.Where(x => selectedIds.Contains(x.Id_REQHDR) && descripciones.Contains(x.Descripcion)).ToList());
+                        rEQDETs.AddRange(r.REQDETs.Where(x => selectedIds.Contains(x.Id_REQHDR) && descripciones.Contains(x.Descripcion.Trim())).ToList());
                     }
 
                     if (rEQDETs == null)
@@ -259,10 +262,10 @@ namespace Portal_FYV.Controllers
             try
             {
                 List<OrdenCompra_Web> ordenCompra_Web = new List<OrdenCompra_Web>();
+                List<OrdenCompra_Web> ordenCompra_Web_COMPRA = db.OrdenCompras_Web.Where(x => x.Estatus == "CARRITO").ToList();
 
                 var ids_reqhdrs = REQHDRS.Split('-');
-
-                ordenCompra_Web = db.OrdenCompras_Web.Where(x => x.REQHDRS == REQHDRS || ids_reqhdrs.Contains(x.REQHDRS)).ToList();
+                ordenCompra_Web = ordenCompra_Web_COMPRA.Where(x => x.REQHDRS.Split('-').Intersect(ids_reqhdrs).Any()).ToList();
 
                 if (ordenCompra_Web == null)
                 {
@@ -283,6 +286,7 @@ namespace Portal_FYV.Controllers
                     {
                         case 1:
                             oc.Estatus = "CARRITO_PR";
+                            oc.Fecha_limite = DateTime.Now.AddHours(1);
                             break;
                         case 2:
                             oc.Estatus = "CANCELADO";
@@ -297,6 +301,8 @@ namespace Portal_FYV.Controllers
                 switch (mode)
                 {
                     case 1:
+                        // Execute PA | SP
+                        db.ExecuteStoredProcedure("pa_Descarga_OC_FYV", null);
                         return Json(new
                         {
                             Success = true,
@@ -759,12 +765,14 @@ namespace Portal_FYV.Controllers
         }
 
         // POST: REQHDRs/Delete/5
+        // Actualiza precio de producto
         [HttpPost]
         public ActionResult guardarPrecio(UsuariosProductos precio, string producto, int[] ids_REQHDRS)
         {
+            int id = Convert.ToInt32(Session["Id_Usuario"]);
             try
             {
-                Producto productoR = db.Productos.FirstOrDefault( x => x.Descripcion.Trim() == producto);
+                Producto productoR = db.Productos.FirstOrDefault( x => x.Descripcion.Trim() == producto && x.Id_Proveedor == id);
                 List<UsuariosProductos> usuariosProductos = new List<UsuariosProductos>();
                 
                 bool check = true;
@@ -775,7 +783,7 @@ namespace Portal_FYV.Controllers
 
                     int diferenciaDias = (fechaLimiteProveedor - currentDate).Days; // Calcular la diferencia en días
 
-                    if (diferenciaDias > 0 && check)
+                    if (diferenciaDias < 0 && !check)
                     {
                         check = false;
                         break;

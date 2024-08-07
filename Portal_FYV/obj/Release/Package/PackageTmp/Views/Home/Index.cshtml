@@ -17,7 +17,8 @@
     List<Portal_FYV.Models.UsuariosProductos> uspr = new List<Portal_FYV.Models.UsuariosProductos>();
     // Obtener la fecha de inicio y fin del mes actual
     DateTime fechaInicioMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-    DateTime fechaFinMes = fechaInicioMes.AddMonths(1).AddDays(-1);
+    //DateTime fechaFinMes = fechaInicioMes.AddMonths(1).AddDays(-1);
+    DateTime fechaFinMes = fechaInicioMes.AddMonths(1);
     // Consultar la cantidad de registros en el rango de fechas del mes actual
     //ViewBag.totalRegistrosFiltrados = db.REQHDRs.Where(r => r.Fecha_creacion >= fechaInicioMes && r.Fecha_creacion <= fechaFinMes);
     // Convertir a lista

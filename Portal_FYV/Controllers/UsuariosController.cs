@@ -45,8 +45,12 @@ namespace Portal_FYV.Controllers
                     return RedirectToAction("CapturarDetalles", "REQDETs");
                 }
                 
+                return RedirectToAction("Index", "Home");
             }
-            return RedirectToAction("Index", "Home");
+            else
+            {
+                return RedirectToAction("Index", "Home", new { Message = "Usuario o contraseña erróneos.", Message_Classes = "warning" });
+            }
         }
         
         // GET: Usuarios/LogOut

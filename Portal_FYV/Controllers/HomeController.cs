@@ -22,7 +22,8 @@ namespace Portal_FYV.Controllers
                 Usuario usuario = db.Usuarios.Find(id);
                 // Obtener la fecha de inicio y fin del mes actual
                 DateTime fechaInicioMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                DateTime fechaFinMes = fechaInicioMes.AddMonths(1).AddDays(-1);
+                //DateTime fechaFinMes = fechaInicioMes.AddMonths(1).AddDays(-1);
+                DateTime fechaFinMes = fechaInicioMes.AddMonths(1);
                 
                 List<REQHDR> rEQHDRs = new List<REQHDR>();
                 List<REQDET> rEQDETs = new List<REQDET>();

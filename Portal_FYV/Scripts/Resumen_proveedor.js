@@ -96,3 +96,67 @@ function actualizarStock(Id_Producto, e) {
         */
     }
 }
+
+document.querySelectorAll('.uploadForm').forEach(form => {
+    form.querySelector('.btn-primary').addEventListener('click', function (event) {
+        event.preventDefault();
+
+        var form = this.closest('form');
+        var formData = new FormData(form);
+        formData.append("Id_Producto", form.querySelector('#Id_Producto').value);
+        formData.append("file", form.querySelector('#file').files[0]);
+
+        $.ajax({
+            url: '/Productos/actualizarImagen',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if (response.Success) {
+                    toastFill(response);
+                    let img = form.closest('td').querySelector('img');
+                    const reader = new FileReader();
+
+                    // Configura el evento onload para cuando se lee el archivo
+                    reader.onload = function (e) {
+                        img.src = e.target.result; // Establece la imagen en el src de la etiqueta img
+                    }
+
+                    // Lee el archivo como una URL de datos
+                    reader.readAsDataURL(form.querySelector('#file').files[0]);
+                } else {
+                    toastFill(response);
+                }
+            },
+            error: function () {
+                alert('Error al enviar la solicitud.');
+            }
+        });
+    });
+    form.querySelector('.btn-danger').addEventListener('click', function (event) {
+        var form = this.closest('form');
+        var formData = new FormData(form);
+        formData.append("Producto", form.closest('tr').children[0].children[0].innerText.trim());
+
+        $.ajax({
+            url: '/Productos/eliminarImagen',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if (response.Success) {
+                    toastFill(response);
+                    let img = form.closest('td').querySelector('img');
+                    img.src = response.value; // Establece la imagen en el src de la etiqueta img
+                } else {
+                    toastFill(response);
+                }
+            },
+            error: function () {
+                alert('Error al eliminar imagen.');
+            }
+        });
+    });
+});

@@ -270,6 +270,14 @@ function setData(button) {
     document.getElementById('cantidad-total-distribuir').innerText = 0;
     document.getElementById('producto-solicitar').innerText = producto;
 
+    //Mostrar imágenes de productos acorde al proveedor
+    document.querySelectorAll('#table-tab-pane tbody td img').forEach(function (img) {
+        if (img.dataset.imgname.includes(producto)) {
+            img.classList.remove('d-none')
+        } else {
+            img.classList.add('d-none')
+        }
+    })
     //Mostrar headers de sucursales acorde al producto
     document.querySelectorAll('#distribucion-tab-pane th').forEach(function (th) {
         if (th.dataset.productos.includes(producto)) {
@@ -576,7 +584,7 @@ function guardarOrdenCompra(button) {
                 console.log(response);
                 if (response.Success) {
                     let product_name = document.querySelector('#producto-solicitar').innerText
-                    document.querySelectorAll('tbody tr').forEach(function (tr) {
+                    document.querySelectorAll('#table-work tbody tr').forEach(function (tr) {
                         let celd_name = tr.children[0].children[0].children[0]
                         celd_name.innerText == product_name ? (tr.children[0].className = "bg-opacity-50 bg-success fw-bold") : console.log("Rechazado")
                     });

@@ -12,7 +12,7 @@
         public OrdenCompra_Web()
         {
             Fecha_creacion = DateTime.Now;
-            Fecha_limite = DateTime.Now;
+            Fecha_limite = Convert.ToDateTime(Fecha_creacion);
             Juarez = "0";
             Villas = "0";
             Almaguer = "0";

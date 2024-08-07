@@ -15,6 +15,7 @@
     var ids_reqhdrs = REQHDRS.Split('-');
 
     IEnumerable<Portal_FYV.Models.OrdenCompra_Web> ordenCompra_Web= ViewBag.ordenCompra != null ? ViewBag.ordenCompra : new List<Portal_FYV.Models.OrdenCompra_Web>();
+    IEnumerable<Portal_FYV.Models.Producto> Productos = ViewBag.productos != null ? ViewBag.productos : new List<Portal_FYV.Models.Producto>();
     //
 
     foreach (var item in Model.Item1.Select(x => x.Id_REQHDR))
@@ -44,6 +45,8 @@
             <input type="hidden" name="Id_REQHDRs" id="Id_REQHDRs" value="@String.Join(",", Model.Item1.Select(x => x.Id_REQHDR).ToArray())" />
             @if (rol != "Proveedores")
             {
+
+
                 <div class="d-flex ms-auto gap-3">
                     <button class="btn btn-success btn-lg ms-auto" type="button" onclick="procesarOC('@(String.Join("-", Model.Item2.Select(x => x.Id_REQHDR).Distinct().ToArray()))', this, 1)"><i class="bi bi-check-circle me-2"></i>Comprar</button>
                     <button class="btn btn-secondary btn-lg ms-2" type="button" onclick="procesarOC('@(String.Join("-", Model.Item2.Select(x => x.Id_REQHDR).Distinct().ToArray()))', this, 2)"><i class="bi bi-x-circle me-2"></i>Cancelar</button>
@@ -131,6 +134,10 @@
         </div>
     </div>
 
+    <div class="input-group mb-3 col-12">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="search" class="form-control" placeholder="Buscar" id="searchItem">
+    </div>
     @switch (rol)
     {
         case "Admin+":
@@ -138,7 +145,7 @@
         case "Compras":
 
             <div class="table-responsive rounded rounded-2 border">
-                <table class="table table-striped mb-0">
+                <table class="table table-striped mb-0" id="table-work">
                     <thead class="table-dark">
                         <tr>
                             <th>Producto</th>
@@ -176,6 +183,11 @@
                             {
                                 tr_class = "bg-success fw-bold";
                                 tr_id_ocw = ordenCompra_Web.FirstOrDefault(x => x.Producto == producto && x.Estatus == "CARRITO_PR").Id_OrdenCompra.ToString();
+                            }
+                            if (ordenCompra_Web.Any(x => x.Producto == producto && x.Estatus == "TERM"))
+                            {
+                                tr_class = "bg-warning fw-bold";
+                                tr_id_ocw = ordenCompra_Web.FirstOrDefault(x => x.Producto == producto && x.Estatus == "TERM").Id_OrdenCompra.ToString();
                             }
                             <tr data-ids="@(String.Join("-", Model.Item2.Where(x => x.Descripcion == producto).Select(x => x.Id_REQHDR).ToArray()))">
                                 <td class="bg-opacity-50 @tr_class" data-ocw="@tr_id_ocw">
@@ -317,6 +329,13 @@
                                                     @foreach (var item in Model.Item3.Select(x => x.Id_Usuario).Distinct())
                                                     {
                                                         <td id="id_prov_@item">
+
+                                                            <div class="align-content-center mb-3">
+                                                                @foreach (var prd in Productos.Where(x => x.Imagen_ruta != null && x.Id_Proveedor == item))
+                                                                {
+                                                                    <img class="d-none" style="width: 180px; height: 180px; object-fit: contain;" data-imgname="@(prd.Descripcion.Trim())" src="@(prd.Imagen_ruta != null ? prd.Imagen_ruta : "/Content/media/product_images/NA.png")" alt="Imagen de producto" />
+                                                                }
+                                                            </div>
                                                             <div class="mb-3 d-flex flex-column">
                                                                 Cantidad disponible:
                                                                 <span class="text-muted tag-disp" id="tag-disp-@item">0</span>
@@ -471,12 +490,13 @@
         case "Proveedores":
 
             <div class="table-responsive rounded rounded-2 border">
-                <table class="table table-striped mb-0">
+                <table class="table table-striped mb-0" id="table-work">
                     <thead class="table-dark">
                         <tr>
                             <th>Producto</th>
                             <th>Unidad</th>
                             <th>Cantidad</th>
+                            <th>Imagen</th>
                             <th>Precio</th>
                         </tr>
                     </thead>
@@ -488,19 +508,43 @@
                             <tr id="@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto).Select(x => x.Id_REQHDR.ToString()).ToArray())">
                                 <td>
                                     <div>
-                                        @producto
+                                        <div>@producto</div>
                                     </div>
                                 </td>
                                 <td>@(Model.Item4.Any(x => x.Descripcion.Trim() == producto) ? Model.Item4.FirstOrDefault(x => x.Descripcion.Trim() == producto).Unidades : "NA")</td>
                                 <td>@( new HtmlString(cantidad == 0 ? "<span class=\"text-danger\">No asignada</span>" : "<span class=\"text-primary\">" + cantidad.ToString() + "</span>"))</td>
+                                <td>
+                                    <div class="text-center mx-auto" style="width: 250px;">
+                                        <img class="w-100" src="@(Productos.Any(x => x.Descripcion.Trim() == producto) ? (Productos.FirstOrDefault(x => x.Descripcion.Trim() == producto).Imagen_ruta != null ? Productos.FirstOrDefault(x => x.Descripcion.Trim() == producto).Imagen_ruta : "/Content/media/product_images/NA.png") : "/Content/media/product_images/NA.png")" alt="Imagen de producto" />
+                                    </div>
+                                    <hr />
+                                    <div>
+                                        <details>
+                                            <summary class="text-dark text-center mb-2">Ver opciones</summary>
+
+                                            <form class="uploadForm w-100 d-flex flex-column" enctype="multipart/form-data">
+                                                <div class="mb-3">
+                                                    <input type="hidden" id="Id_Producto" name="Id_Producto" value="@(Productos.Any(x => x.Descripcion.Trim() == producto) ? Productos.FirstOrDefault(x => x.Descripcion.Trim() == producto).Id_Producto : 0)">
+                                                    <label for="file" class="form-label">Archivo de imagen:</label>
+                                                    <input class="form-control" type="file" id="file" name="file" accept="image/*">
+                                                </div>
+                                                <div class="w-100 d-flex flex-column gap-2">
+                                                    <button class="btn btn-primary w-100" type="submit">Actualizar Imagen</button>
+                                                    <button class="btn btn-danger w-100" type="button">Eliminar Imagen</button>
+                                                </div>
+                                            </form>
+                                        </details>
+                                    </div>
+                                </td>
                                 <td style="min-width: 22rem;">
                                     <div class="d-flex flex-column gap-1">
                                         @if (cantidad != 0)
                                         {
                                             Portal_FYV.Models.UsuariosProductos up = Model.Item3.Any(x => x.Producto.Descripcion.Trim() == producto) ? Model.Item3.Where(x => x.Producto.Descripcion.Trim() == producto).OrderByDescending(x => x.Id_UsuarioProducto).FirstOrDefault() : new Portal_FYV.Models.UsuariosProductos();
+
                                             decimal ultimoPrecio = up.Precio > 0 ? up.Precio : 0;
-                                            decimal stock = up.Producto != null ? up.Producto.Stock : 0;
-                                            decimal idProducto = up.Producto != null ? up.Producto.Id_Producto : 0;
+                                            decimal stock = Productos.Any(x => x.Descripcion.Trim() == producto) ? Productos.FirstOrDefault(x => x.Descripcion.Trim() == producto).Stock : 0;
+                                            decimal idProducto = Productos.Any(x => x.Descripcion.Trim() == producto) ? Productos.FirstOrDefault(x => x.Descripcion.Trim() == producto).Id_Producto : 0;
                                             <label class="control-label mb-2" id="label-@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto).Select(x => x.Id_REQDET.ToString()).ToArray())" for="precio-@String.Join("-", Model.Item2.Where(x => x.Descripcion == producto).Select(x => x.Id_REQDET.ToString()).ToArray())">Precio anterior: $ <span class="text-muted precio-ultimo">@ultimoPrecio</span></label>
                                             <div class="input-group">
                                                 <span title="Nuevo precio para @producto" class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
@@ -583,4 +627,12 @@
 
         document.querySelector('.total-suma').innerHTML = suma.toFixed(2);
     }
+
+    document.getElementById('searchItem').addEventListener('input', function () {
+        var filter = this.value.toLowerCase();
+        document.querySelectorAll('#table-work tbody tr').forEach(function (row) {
+            row.querySelector('td > div > div').innerText.toLowerCase().includes(filter) ? row.className = "" : row.className = "d-none"; 
+        });
+    });
+
 </script>
