@@ -1,0 +1,411 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\views\\reqhdrs\\consolidation.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\views\\reqhdrs\\consolidation.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\views\\reqhdrs\\newsconsolidations.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\views\\reqhdrs\\newsconsolidations.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\views\\home\\index.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\controllers\\reqhdrscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\controllers\\reqhdrscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|c:\\users\\sistemas11-pc\\source\\repos\\portal_fyv\\portal_fyv\\models\\reqhdr.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\models\\reqhdr.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\controllers\\reqdetscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\controllers\\reqdetscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|c:\\users\\sistemas11-pc\\source\\repos\\portal_fyv\\portal_fyv\\models\\reqdet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\models\\reqdet.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|c:\\users\\sistemas11-pc\\source\\repos\\portal_fyv\\portal_fyv\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\web.config||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\scripts\\documentsorders.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\scripts\\documentsorders.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\scripts\\regionscontroller.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\scripts\\regionscontroller.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\controllers\\homecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\controllers\\publiccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\controllers\\publiccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\scripts\\routes.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\scripts\\routes.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\scripts\\reqdetscontroller.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\scripts\\reqdetscontroller.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\views\\reqdets\\capturardetalles.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\views\\reqdets\\capturardetalles.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\views\\shared\\_layout.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\scripts\\resumen_comprador.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\scripts\\resumen_comprador.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\views\\reqhdrs\\resumen.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\views\\reqhdrs\\resumen.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\scripts\\toast_handler.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\scripts\\toast_handler.js||{14D17961-FE51-464D-9111-C4AF11D7D99A}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\views\\reqhdrs\\compra.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\views\\reqhdrs\\compra.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\content\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\content\\site.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\models\\producto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\models\\producto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\portal_fyv\\views\\usuarios\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{CBC47089-550E-4712-973B-24E7052BE290}|Portal_FYV\\Portal_FYV.csproj|solutionrelative:portal_fyv\\views\\usuarios\\edit.cshtml||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Consolidation.cshtml",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\REQHDRs\\Consolidation.cshtml",
+              "RelativeDocumentMoniker": "Portal_FYV\\Views\\REQHDRs\\Consolidation.cshtml",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\REQHDRs\\Consolidation.cshtml",
+              "RelativeToolTip": "Portal_FYV\\Views\\REQHDRs\\Consolidation.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAA4AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-11-14T14:04:08.482Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "NewsConsolidations.cshtml",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\REQHDRs\\NewsConsolidations.cshtml",
+              "RelativeDocumentMoniker": "Portal_FYV\\Views\\REQHDRs\\NewsConsolidations.cshtml",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\REQHDRs\\NewsConsolidations.cshtml",
+              "RelativeToolTip": "Portal_FYV\\Views\\REQHDRs\\NewsConsolidations.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-11-23T02:38:59.157Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "REQHDR.cs",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Models\\REQHDR.cs",
+              "RelativeDocumentMoniker": "Portal_FYV\\Models\\REQHDR.cs",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Models\\REQHDR.cs",
+              "RelativeToolTip": "Portal_FYV\\Models\\REQHDR.cs",
+              "ViewState": "AgIAAB0AAAAAAAAAAAAwwAkAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-18T20:52:43.484Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "REQHDRsController.cs",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Controllers\\REQHDRsController.cs",
+              "RelativeDocumentMoniker": "Portal_FYV\\Controllers\\REQHDRsController.cs",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Controllers\\REQHDRsController.cs",
+              "RelativeToolTip": "Portal_FYV\\Controllers\\REQHDRsController.cs",
+              "ViewState": "AgIAABcAAAAAAAAAAAAcwN0AAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-18T22:47:58.831Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Index.cshtml",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\Home\\Index.cshtml",
+              "RelativeDocumentMoniker": "Portal_FYV\\Views\\Home\\Index.cshtml",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\Home\\Index.cshtml",
+              "RelativeToolTip": "Portal_FYV\\Views\\Home\\Index.cshtml",
+              "ViewState": "AgIAAD4CAAAAAAAAAAAcwE8CAABpAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-05-25T20:18:30.23Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "RegionsController.js",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Scripts\\RegionsController.js",
+              "RelativeDocumentMoniker": "Portal_FYV\\Scripts\\RegionsController.js",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Scripts\\RegionsController.js",
+              "RelativeToolTip": "Portal_FYV\\Scripts\\RegionsController.js",
+              "ViewState": "AgIAAH0AAAAAAAAAAAAQwH0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-02-13T22:37:46.586Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "routes.js",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Scripts\\routes.js",
+              "RelativeDocumentMoniker": "Portal_FYV\\Scripts\\routes.js",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Scripts\\routes.js",
+              "RelativeToolTip": "Portal_FYV\\Scripts\\routes.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAABqAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-02-13T22:34:12.285Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "HomeController.cs",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Controllers\\HomeController.cs",
+              "RelativeDocumentMoniker": "Portal_FYV\\Controllers\\HomeController.cs",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Controllers\\HomeController.cs",
+              "RelativeToolTip": "Portal_FYV\\Controllers\\HomeController.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAgwHsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-01T21:14:55.82Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "Edit.cshtml",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\Usuarios\\Edit.cshtml",
+              "RelativeDocumentMoniker": "Portal_FYV\\Views\\Usuarios\\Edit.cshtml",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\Usuarios\\Edit.cshtml",
+              "RelativeToolTip": "Portal_FYV\\Views\\Usuarios\\Edit.cshtml",
+              "ViewState": "AgIAAAAAAAAAAAAAALCMwEoAAABxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-07-15T21:50:13.319Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "REQDETsController.cs",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Controllers\\REQDETsController.cs",
+              "RelativeDocumentMoniker": "Portal_FYV\\Controllers\\REQDETsController.cs",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Controllers\\REQDETsController.cs",
+              "RelativeToolTip": "Portal_FYV\\Controllers\\REQDETsController.cs",
+              "ViewState": "AgIAAOoAAAAAAAAAAAAwwAEBAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-07T01:43:19.004Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "REQDET.cs",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Models\\REQDET.cs",
+              "RelativeDocumentMoniker": "Portal_FYV\\Models\\REQDET.cs",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Models\\REQDET.cs",
+              "RelativeToolTip": "Portal_FYV\\Models\\REQDET.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-02-18T23:31:31.455Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "Web.config",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Web.config",
+              "RelativeDocumentMoniker": "Portal_FYV\\Web.config",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Web.config",
+              "RelativeToolTip": "Portal_FYV\\Web.config",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAE8AAAA4AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000601|",
+              "WhenOpened": "2024-10-21T15:04:30.261Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "documentsOrders.js",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Scripts\\documentsOrders.js",
+              "RelativeDocumentMoniker": "Portal_FYV\\Scripts\\documentsOrders.js",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Scripts\\documentsOrders.js",
+              "RelativeToolTip": "Portal_FYV\\Scripts\\documentsOrders.js",
+              "ViewState": "AgIAAEsAAADgZmZmZsYwwFMAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-02-16T00:12:38.163Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "PublicController.cs",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Controllers\\PublicController.cs",
+              "RelativeDocumentMoniker": "Portal_FYV\\Controllers\\PublicController.cs",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Controllers\\PublicController.cs",
+              "RelativeToolTip": "Portal_FYV\\Controllers\\PublicController.cs",
+              "ViewState": "AgIAAFgAAAAAAAAAAAAUwGQAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-10-25T21:19:02.409Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "REQDETsController.js",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Scripts\\REQDETsController.js",
+              "RelativeDocumentMoniker": "Portal_FYV\\Scripts\\REQDETsController.js",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Scripts\\REQDETsController.js",
+              "RelativeToolTip": "Portal_FYV\\Scripts\\REQDETsController.js",
+              "ViewState": "AgIAAAIAAAAAAAAAAMBcwAcAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-02-07T22:31:31.89Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "CapturarDetalles.cshtml",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\REQDETs\\CapturarDetalles.cshtml",
+              "RelativeDocumentMoniker": "Portal_FYV\\Views\\REQDETs\\CapturarDetalles.cshtml",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\REQDETs\\CapturarDetalles.cshtml",
+              "RelativeToolTip": "Portal_FYV\\Views\\REQDETs\\CapturarDetalles.cshtml",
+              "ViewState": "AgIAABgBAAAAAAAAACBjwCABAABWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-05-25T18:04:50.984Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "_Layout.cshtml",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\Shared\\_Layout.cshtml",
+              "RelativeDocumentMoniker": "Portal_FYV\\Views\\Shared\\_Layout.cshtml",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\Shared\\_Layout.cshtml",
+              "RelativeToolTip": "Portal_FYV\\Views\\Shared\\_Layout.cshtml",
+              "ViewState": "AgIAAFEAAAAAAAAAAIBZwHgAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-06-19T23:36:15.228Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "Resumen.cshtml",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\REQHDRs\\Resumen.cshtml",
+              "RelativeDocumentMoniker": "Portal_FYV\\Views\\REQHDRs\\Resumen.cshtml",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\REQHDRs\\Resumen.cshtml",
+              "RelativeToolTip": "Portal_FYV\\Views\\REQHDRs\\Resumen.cshtml",
+              "ViewState": "AgIAAPUBAAAAAAAAAABxwAQCAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2025-02-08T20:09:22.488Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Resumen_comprador.js",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Scripts\\Resumen_comprador.js",
+              "RelativeDocumentMoniker": "Portal_FYV\\Scripts\\Resumen_comprador.js",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Scripts\\Resumen_comprador.js",
+              "RelativeToolTip": "Portal_FYV\\Scripts\\Resumen_comprador.js",
+              "ViewState": "AgIAAHADAAAAAAAAAAAQwHADAABQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2025-02-10T21:44:20.854Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "toast_handler.js",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Scripts\\toast_handler.js",
+              "RelativeDocumentMoniker": "Portal_FYV\\Scripts\\toast_handler.js",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Scripts\\toast_handler.js",
+              "RelativeToolTip": "Portal_FYV\\Scripts\\toast_handler.js",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAQAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2024-10-25T22:40:13.545Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "Compra.cshtml",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\REQHDRs\\Compra.cshtml",
+              "RelativeDocumentMoniker": "Portal_FYV\\Views\\REQHDRs\\Compra.cshtml",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Views\\REQHDRs\\Compra.cshtml",
+              "RelativeToolTip": "Portal_FYV\\Views\\REQHDRs\\Compra.cshtml",
+              "ViewState": "AgIAAE0AAAAAAAAAAIBpwGUAAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
+              "WhenOpened": "2024-06-20T19:26:21.85Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "Site.css",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Content\\Site.css",
+              "RelativeDocumentMoniker": "Portal_FYV\\Content\\Site.css",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Content\\Site.css",
+              "RelativeToolTip": "Portal_FYV\\Content\\Site.css",
+              "ViewState": "AgIAAAAAAAAAAAAAAEBVwBAAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2024-10-26T00:32:18.694Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "Producto.cs",
+              "DocumentMoniker": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Models\\Producto.cs",
+              "RelativeDocumentMoniker": "Portal_FYV\\Models\\Producto.cs",
+              "ToolTip": "C:\\Users\\Sistemas11-PC\\source\\repos\\Portal_FYV\\Portal_FYV\\Models\\Producto.cs",
+              "RelativeToolTip": "Portal_FYV\\Models\\Producto.cs",
+              "ViewState": "AgIAABwAAAAA18zMzMwOwBIAAAAsAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-19T17:37:55.222Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -92,7 +92,7 @@
         </div>
     </nav>
 
-    <div class="container">
+    <div>
         @RenderBody()
         <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11;">
             <!-- Aquí se agregarán los toasts -->
@@ -110,6 +110,16 @@
                 form.submit();
             }
         }
+        setInterval(function () {
+            $.ajax({
+                url: RestoreSession,
+                type: 'GET',
+                success: function () {
+                    console.log('Sesión renovada');
+                }
+            });
+        }, 600000); // Cada 10 minutos
+
     </script>
     <script src="~/Scripts/alert_handler.js"></script>
 

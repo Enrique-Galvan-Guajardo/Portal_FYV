@@ -2,10 +2,39 @@
 
 @{
     ViewBag.Title = "CapturarDetalles";
+    string sucursal = "";
+    switch (Session["Sucursal"])
+    {
+        case "JUA":
+            sucursal = "Juarez";
+            break;
+        case "GUA":
+            sucursal = "Guanza";
+            break;
+        case "OFE":
+            sucursal = "Ofertas";
+            break;
+        case "BAL":
+            sucursal = "Balcones";
+            break;
+        case "GTO":
+            sucursal = "Guanajuato";
+            break;
+        case "JAR":
+            sucursal = "Jarachina";
+            break;
+        case "AMG":
+            sucursal = "Almaguer";
+            break;
+        default:
+            sucursal = "Sin sucursal";
+            break;
+    }
+
 }
 
 <script src="~/Scripts/REQDETsController.js"></script>
-<div class="bg-white capturarDetalles datasets" data-sucursal="@Session["Sucursal"]" data-fru="@Model.permitir_Fru" data-sec="@Model.permitir_Sec" data-veg="@Model.permitir_Veg">
+<div class="bg-white capturarDetalles datasets col-12 col-sm-10 col-md-10 mx-auto my-5 p-4 rounded border border-3" data-sucursal="@Session["Sucursal"]" data-sucursal-name="@sucursal" data-nombre="@Session["Nombre"]" data-fru="@Model.permitir_Fru" data-sec="@Model.permitir_Sec" data-veg="@Model.permitir_Veg">
     <div class="d-flex flex-column gap-2 mb-4">
         <h2>Capturar productos para la solicitud</h2>
         <div class="d-flex gap-3">
@@ -48,6 +77,31 @@
                     <button type="button" class="btn btn-success" onclick="saveREQDETS()"><i class="bi bi-floppy me-2"></i>Guardar</button>
                 </div>
             </div>
+
+            <details>
+                <summary class="text-muted">
+                    Opciones adicionales
+                </summary>
+
+                <div class="p-3">
+                    <div class="form-floating mb-3">
+                        <textarea id="paste-area" class="col-12 col-md-6 form-control tbody"></textarea>
+                        <label for="paste-area">Tabla a cargar</label>
+                    </div>
+                    <div class="form-group col-12 offset-md-6 col-md-6">
+                        <div class="input-group justify-content-end">
+                            <button type="button" class="btn btn-outline-primary" onclick="exportButton()">
+                                <i class="bi bi-clipboard"></i>
+                                Copiar
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="importButton()">
+                                <i class="bi bi-clipboard"></i>
+                                Pegar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </details>
         </div>
         <div class="table-responsive rounded rounded-2 border">
             <table class="table table-striped" id="productosSeleccionados">
@@ -237,3 +291,36 @@
         getProducts(document.getElementById('texto').value, sucursal)
     })
 </script>
+
+<div class="d-none">
+    <form action="https://heliostest.bsite.net/api/PDF/GeneratePDF" method="post" id="formPDF">
+        <div class="col-12">
+            <div class="col-12 mb-3">
+                <div class="d-flex justify-content-between">
+                    <div class="mb-3">
+                        <label class="form-label col-12">Bootstrap version:</label>
+                        <select class="form-select" name="Framework_version">
+                            <option value="4.5.2" selected>4.5.2</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="New_password" class="form-label">Password:</label>
+                        <input type="password" class="form-control" name="New_password" id="New_password">
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 form-floating mb-3">
+                <textarea class="form-control" rows="10" style="min-width: 100%;" placeholder="Write the new header content" name="New_head" id="New_head"></textarea>
+                <label for="New_head">Header</label>
+            </div>
+            <div class="col-12 form-floating mb-3">
+                <textarea class="form-control" rows="10" style="min-width: 100%;" placeholder="Write the new body content" name="New_content" id="New_content"></textarea>
+                <label for="New_content">Body</label>
+            </div>
+        </div>
+        <div class="d-flex gap-3 justify-content-between align-items-center">
+            <button class="btn btn-outline-primary" type="submit">Generar PDF</button>
+
+        </div>
+    </form>
+</div>

@@ -339,3 +339,30 @@ function saveREQHDRS(opt) {
         }
     });
 }
+
+function filterProductBySucursal(sucursal) {
+    let rows = document.querySelectorAll('tbody tr');
+
+    // Si el valor seleccionado es el genérico (por ejemplo, 'ALL'), mostramos todas las filas
+    if (sucursal === "Todos") {
+        rows.forEach(function (row) {
+            row.style.display = ""; // Mostrar todas las filas
+        });
+        return; // Salimos de la función ya que no necesitamos realizar más verificaciones
+    }
+
+    // Si el valor no es genérico, procedemos con el filtro normal
+    rows.forEach(function (row) {
+        let shouldDisplay = false;
+
+        // Verificamos cada badge en la fila
+        row.querySelectorAll('.badge').forEach(function (badge) {
+            if (badge.innerText.includes(sucursal)) {
+                shouldDisplay = true;
+            }
+        });
+
+        // Mostramos u ocultamos la fila basada en shouldDisplay
+        row.style.display = shouldDisplay ? "" : "none";
+    });
+}

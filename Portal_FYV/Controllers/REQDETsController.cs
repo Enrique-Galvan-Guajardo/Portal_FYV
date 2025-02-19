@@ -4,6 +4,8 @@ using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
@@ -50,6 +52,60 @@ namespace Portal_FYV.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<ActionResult> getProductListAPI(string urlAPI)
+        {
+            PublicController publicController = new PublicController();
+            var result = await publicController.ObtenerDatosDeAPI(urlAPI);
+
+            if (result is JsonResult jsonResult)
+            {
+                return Json(jsonResult.Data, JsonRequestBehavior.AllowGet);
+            }
+
+            return new HttpStatusCodeResult(500, "Error al obtener datos de la API desde PublicController.");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> SendProductDataAPI(string urlAPI, string arts_html, string usuario, string sucursal)
+        {
+            var payload = new
+            {
+                arts_html,
+                usuario,
+                sucursal
+            };
+
+            using (var httpClient = new HttpClient())
+            {
+                try
+                {
+                    // Configurar encabezados si es necesario
+                    httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+
+                    // Convertir el objeto a JSON
+                    var content = new StringContent(JsonConvert.SerializeObject(payload), System.Text.Encoding.UTF8, "application/json");
+
+                    // Realizar la solicitud POST
+                    var response = await httpClient.PostAsync(urlAPI, content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadAsStringAsync();
+                        return Content(responseData, "application/json");
+                    }
+                    else
+                    {
+                        return new HttpStatusCodeResult((int)response.StatusCode, "Error al enviar datos.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return new HttpStatusCodeResult(500, $"Error: {ex.Message}");
+                }
+            }
+        }
+
         // GET: REQDETs/Details/5
         public ActionResult Details(int? id)
         {
@@ -93,7 +149,7 @@ namespace Portal_FYV.Controllers
         }
 
         [HttpPost]
-        public ActionResult CreateREQDETS(List<REQDET> rs, string sucursal)
+        public ActionResult CreateREQDETS(List<REQDET> rs, string sucursal, int Id_rh)
         {
             Usuario us = db.Usuarios.Find(Convert.ToInt32(Session["Id_Usuario"]));
             try
@@ -102,22 +158,30 @@ namespace Portal_FYV.Controllers
                 DateTime fechaActual = DateTime.Now.Date;
 
                 // Consultar la base de datos para verificar si existe un REQHDR con la fecha de hoy
-                bool existeRegistroHoy = db.REQHDRs.Any(r => DbFunctions.TruncateTime(r.Fecha_creacion) == fechaActual && r.Sucursal == sucursal);
+                bool existeRegistroHoy = Id_rh > 0 ? false : db.REQHDRs.Any(r => DbFunctions.TruncateTime(r.Fecha_creacion) == fechaActual && r.Sucursal == sucursal);
                 if (rs == null)
                 {
                     return Json(new { Success = false, Message = "La solicitud no se ha podido guardar debido a que no se han seleccionado productos.", Message_data = "", Message_Classes = "warning", Message_concat = false });
                 }
                 //Si la prórroga es de -1, es para habilitar al usuario poder crear más solicitudes al día
+                //Si Id_rh es mayor que 0, significa que es una lista enviada por lotes
                 if (!existeRegistroHoy || us.Prorroga == "-1") {
                     REQHDR rh = new REQHDR();
-
-                    rh.Sucursal = sucursal;
-                    rh.Fecha_creacion = DateTime.Now;
-                    rh.Fecha_validacion = DateTime.Now.AddDays(1);
-                    rh.Id_Creador = us.Id_Usuario;
-                    rh.Estatus = 1;
-                    db.REQHDRs.Add(rh);
-                    db.SaveChanges();
+                    //Si existe el Id_rh, no hay necesidad de volverlo a guardar
+                    if (Id_rh > 0)
+                    {
+                        rh = db.REQHDRs.Find(Id_rh);
+                    }
+                    else
+                    {
+                        rh.Sucursal = sucursal;
+                        rh.Fecha_creacion = DateTime.Now;
+                        rh.Fecha_validacion = DateTime.Now.AddDays(1);
+                        rh.Id_Creador = us.Id_Usuario;
+                        rh.Estatus = 1;
+                        db.REQHDRs.Add(rh);
+                        db.SaveChanges();
+                    }
 
                     foreach (var item in rs)
                     {
@@ -129,19 +193,26 @@ namespace Portal_FYV.Controllers
                     }
 
                     db.REQDETs.AddRange(rs);
-                    db.SaveChanges();
+                    try
+                    {
+                        db.SaveChanges();
+                        //RedirectToAction("LogOut", "Usuarios");
+                        return Json(new { Success = true, Value = rh.Id_REQHDR, Message = (Id_rh > 0 ? "Elementos adjuntos. Los elementos de la lista se han enviado por lotes y han sido capturados a la solicitud existente." : "Solicitud generada. Los elementos de la lista han sido capturados."), Message_data = "", Message_Classes = "success", Message_concat = false });
+                    }
+                    catch (Exception)
+                    {
+                        return Json(new { Success = false, Message = "Solicitud no capturada. Comprueba que la sesión este activa y vuelve a intentar.", Message_data = "", Message_Classes = "warning", Message_concat = false });
+                    }
 
-                    return Json(new { Success = true, Message = "Solicitud generada. Los elementos de la lista han sido capturados.", Message_data = "", Message_Classes = "success", Message_concat = false });
                 }
                 else
                 {
                     return Json(new { Success = false, Message = "Ya se ha capturado una solicitud para el día de hoy, no se permite añadir otra.", Message_data = "", Message_Classes = "warning", Message_concat = false });
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
-                return Json(new { Success = false, Message = "Error al guardar la solicitud.", Message_data = "", Message_Classes = "warning", Message_concat = false });
+                return Json(new { Success = false, Message = "Error al guardar la solicitud.", Message_data = ("Método: " + e.TargetSite + ".<br> Situación: " + e.Message.ToString() + ".<br> Código de error: " + e.HResult+ ".<br> Tipo: " + e.StackTrace).ToString(), Message_Classes = "warning", Message_concat = false });
             }
         }
 
@@ -183,6 +254,12 @@ namespace Portal_FYV.Controllers
         [HttpPost]
         public ActionResult guardarREQDET([Bind(Include = "Id_REQDET,Id_REQHDR,Clave_articulo,Descripcion,Cantidad_solicitada,Id_Embalaje,Cantidad_validada,Id_Embalaje_validado")] REQDET rEQDET)
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+            int id = Convert.ToInt32(Session["Id_Usuario"]);
+            if (rol == "Compras")
+            {
+                rEQDET.Id_Creator = id;
+            }
             //rEQDET.Id_REQDET = 0;
             rEQDET.Fecha_creacion = DateTime.Now;
             rEQDET.Fecha_validacion = DateTime.Now;

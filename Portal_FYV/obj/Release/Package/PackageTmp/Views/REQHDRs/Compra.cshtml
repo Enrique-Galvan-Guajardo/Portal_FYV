@@ -8,7 +8,7 @@
     DateTime dateTime = DateTime.Now.AddDays(1);
 }
 
-<div class="bg-white productos-compra">
+<div class="bg-white productos-comprav col-12 col-sm-10 col-md-10 mx-auto my-5 p-4 rounded border border-3">
     <div class="col-12 col-sm-12 col-md-12 row m-0 p-3 bg-light bg-gradient shadow-sm mb-5 border-end border-start border-5 border-primary rounded">
         <div class="form-group col-12 col-sm-12 d-flex flex-wrap">
             <h2 class="text-primary fw-bold">Productos comprados.</h2>
@@ -116,14 +116,14 @@
             <label class="form-label">Filtrar por proveedor:</label>
             <select class="form-select" id="selectProveedor">
                     <option value="ALL">Todo</option>
-                @foreach (var item in Model.Item1.Select(x => x.Proveedor))
+                @foreach (var item in Model.Item1.Select(x => x.Proveedor).Distinct())
                 {
                     <option value="@item">@item</option>
                 }
             </select>
         </div>
         <div class="col-12 col-sm-4 col-md-3 col-lg-3 my-3 align-content-center ms-auto">
-            <button type="button" class="btn btn-primary btn-lg col-12" onclick="sendEmails()">Enviar a proveedor</button>
+            <button type="button" class="btn btn-primary btn-lg col-12" onclick="sendEmails(this)">Enviar a proveedor</button>
         </div>
     </div>
 
@@ -343,7 +343,7 @@
                         }
                     });
 
-                    function sendEmails() {
+                    function sendEmails(button) {
                         let OrdenesCompraLista = [];
                         let table = document.getElementById('productosConsolidados');
                         let rows = table.getElementsByTagName('tbody')[0].querySelectorAll('tr:not(.d-none)');
@@ -400,6 +400,9 @@
                         }
                         console.log(JSON.stringify(OrdenesCompraLista))
 
+                        // Bloquear el botón
+                        button.disabled = true;
+
                         if (OrdenesCompraLista.length > 0) {
 
                             // Enviar el arreglo de objetos al controlador utilizando AJAX
@@ -413,10 +416,14 @@
                                     console.log('Datos enviados correctamente');
                                     console.log(response);
                                     toastFill(response)
+                                    // Desbloquear el botón
+                                    button.disabled = false;
                                 },
                                 error: function (xhr, status, error) {
                                     // Manejar errores si ocurrieron durante la solicitud AJAX
                                     console.error('Error al enviar datos:', error);
+                                    // Desbloquear el botón
+                                    button.disabled = false;
                                 }
                             });
                         }

@@ -16,10 +16,17 @@
 input,
 select,
 textarea {
-    max-width: 280px;
+    &:not(.tbody)
+    {
+        /*max-width: 280px;*/
+    }
 }
 
-.container{
+textarea.tbody {
+    resize: vertical;
+}
+
+.container {
     max-width: unset;
     & > div.bg-white {
         border: 3px solid lightgray;

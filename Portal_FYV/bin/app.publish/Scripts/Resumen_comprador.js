@@ -280,21 +280,31 @@ function setData(button) {
     })
     //Mostrar headers de sucursales acorde al producto
     document.querySelectorAll('#distribucion-tab-pane th').forEach(function (th) {
-        if (th.dataset.productos.includes(producto)) {
-            th.classList.remove('d-none')
+        // Obtener productos como un array, eliminando espacios extra
+        const productosArray = th.dataset.productos.split(',').map(p => p.trim());
+
+        // Verificar si el producto específico está en el array
+        if (productosArray.includes(producto)) {
+            th.classList.remove('d-none');
         } else {
-            th.classList.add('d-none')
+            th.classList.add('d-none');
         }
     })
-    //Mostrar campos de sucursales acorde al producto
+    // Mostrar campos de sucursales acorde al producto
     document.querySelectorAll('#distribucion-tab-pane td').forEach(function (td) {
+        // Establecer valor inicial de los inputs
         td.querySelector('input').value = 0;
-        if (td.dataset.productos.includes(producto)) {
-            td.classList.remove('d-none')
+
+        // Obtener productos como un array, eliminando espacios extra
+        const productosArray = td.dataset.productos.split(',').map(p => p.trim());
+
+        // Verificar si el producto específico está en el array
+        if (productosArray.includes(producto)) {
+            td.classList.remove('d-none');
         } else {
-            td.classList.add('d-none')
+            td.classList.add('d-none');
         }
-    })
+    });
 
     // Seleccionar todos los elementos span con clase 'stocks' dentro de esa fila
     var stocksElements = row.querySelectorAll('span.stocks');

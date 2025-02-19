@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Policy;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.Ajax.Utilities;
@@ -93,7 +94,7 @@ namespace Portal_FYV.Controllers
                 case "Admin":
                 case "Compras":
                     selectedIds = db.REQHDRs
-                    .Where(x => DbFunctions.TruncateTime(x.Fecha_creacion) == searchDateOnly)
+                    .Where(x => DbFunctions.TruncateTime(x.Fecha_creacion) == searchDateOnly && x.Id_REQHDR_Parent == 0)
                     .Select(x => x.Id_REQHDR)
                     .ToArray();
                     if (selectedIds == null)
@@ -101,7 +102,7 @@ namespace Portal_FYV.Controllers
                         return RedirectToAction("Index", "Home");
                     }
 
-                    rEQHDRs = db.REQHDRs.Where(x => selectedIds.Contains(x.Id_REQHDR)).ToList();
+                    rEQHDRs = db.REQHDRs.Where(x => selectedIds.Contains(x.Id_REQHDR) && x.Id_REQHDR_Parent == 0).ToList();
 
                     /*
                     
@@ -178,7 +179,7 @@ namespace Portal_FYV.Controllers
 
                 case "Proveedores":
                     selectedIds = db.REQHDRs
-                    .Where(x => DbFunctions.TruncateTime(x.Fecha_validacion) == searchDateOnly)
+                    .Where(x => DbFunctions.TruncateTime(x.Fecha_validacion) == searchDateOnly && x.Id_REQHDR_Parent == 0)
                     .Select(x => x.Id_REQHDR)
                     .ToArray();
                     if (selectedIds == null)
@@ -186,7 +187,7 @@ namespace Portal_FYV.Controllers
                         return RedirectToAction("Index", "Home");
                     }
 
-                    rEQHDRs = db.REQHDRs.Where(x => selectedIds.Contains(x.Id_REQHDR)).ToList();
+                    rEQHDRs = db.REQHDRs.Where(x => selectedIds.Contains(x.Id_REQHDR) && x.Id_REQHDR_Parent == 0).ToList();
 
                     productos = db.Productos.Where(x => x.Id_Proveedor == usuario.Id_Usuario).ToList();
                     ViewBag.productos = productos;
@@ -218,7 +219,124 @@ namespace Portal_FYV.Controllers
             
         }
 
-        public ActionResult Compra(string REQHDRS)
+        public ActionResult NewsResumenes(string ids_REQHDRS)
+        {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+            string sucursal = Session["Sucursal"] != null ? Session["Sucursal"].ToString() : "";
+            int id = Convert.ToInt32(Session["Id_Usuario"]);
+
+            Usuario usuario = db.Usuarios.Find(id);
+
+            List<REQHDR> rEQHDRs = new List<REQHDR>();
+            List<REQDET> rEQDETs = new List<REQDET>();
+            List<Producto> productos = new List<Producto>();
+
+            string[] descripciones;
+            int[] ids_productos;
+
+            // Ajusta la fecha para eliminar la parte de la hora
+            DateTime searchDateOnly = DateTime.Now;
+
+            // Realiza la consulta comparando solo las fechas
+            int[] selectedIds = ids_REQHDRS.Split('-').Select(x => Convert.ToInt32(x)).ToArray();
+
+            List<CatalogoProducto> catalogo = new List<CatalogoProducto>();
+            List<UsuariosProductos> usuariosProductos = new List<UsuariosProductos>();
+
+            var modelos = new object();
+
+            if (selectedIds == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            rEQHDRs = db.REQHDRs.Where(x => selectedIds.Contains(x.Id_REQHDR)).ToList();
+
+
+            rEQDETs = db.REQDETs.Where(x => selectedIds.Contains(x.Id_REQHDR)).ToList();
+
+            /*Validar que los reqhdrs de cada reqdet no estén procesandose en ordencompraweb*/
+            /*Estatus | CARRITO = Agregados al carrito, CARRITO_PR = Agregados y posteriormente procesandose, CAMCELADO = Productos cancelados, TERM = Finalizados*/
+
+            string[] descriptions_reqdets = rEQDETs.Select(x => x.Descripcion.Trim()).Distinct().ToArray();
+            List<OrdenCompra_Web> ocw = db.OrdenCompras_Web.Where(x => descriptions_reqdets.Contains(x.Producto.Trim())).OrderBy(x => x.Id_OrdenCompra).Distinct().ToList();
+            List<string> ids_reqhdrs_temps = selectedIds.Select(x => x.ToString()).ToList();
+            ocw = ocw.Where(x => x.REQHDRS.Split('-').Intersect(ids_reqhdrs_temps).Any()).ToList();
+            ViewBag.ordenCompra = ocw;
+
+            descripciones = rEQDETs.Select(x => x.Descripcion.Trim()).ToArray();
+
+            productos = db.Productos.Where(x => descripciones.Contains(x.Descripcion.Trim())).ToList();
+            ViewBag.productos = productos;
+
+            ids_productos = productos.Select(x => x.Id_Producto).ToArray();
+
+            catalogo = db.CatalogoProductos.Where(x => descripciones.Contains(x.Descripcion.Trim())).ToList();
+
+            if (rEQDETs == null)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+
+            int[] ids_proveedores = new List<Int32>().ToArray();
+            if (rol == "Proveedores")
+            {
+                List<UsuariosProductos> usp = db.UsuariosProductos.Where(x => x.Id_Usuario == id).ToList();
+                usp = usp.Where(x => ids_productos.Contains(x.Id_Producto)).ToList();
+                List<Producto> prods_prov = productos.Where(x => x.Id_Proveedor == id && descripciones.Contains(x.Descripcion.Trim())).ToList();
+                int[] ids_prods_prov = prods_prov.Select(x => x.Id_Producto).ToArray();
+                string[] ids_prodsDesc_prov = prods_prov.Select(x => x.Descripcion.Trim()).Distinct().ToArray();
+
+                List<REQDET> rEQDETSProv = rEQDETs.Where(x => selectedIds.Contains(x.Id_REQHDR) && ids_prodsDesc_prov.Contains(x.Descripcion.Trim())).ToList();
+                
+                usp = usp.Where(x => x.Id_Usuario == id && ids_prods_prov.Contains(x.Id_Producto) && selectedIds.Contains(x.Id_REQHDR)).ToList();
+
+                if (usp.Count() != rEQDETSProv.Count())
+                {
+                    ids_prods_prov = ids_prods_prov.Except(usp.Select(x => x.Id_Producto).ToArray()).ToArray();
+                    ids_prodsDesc_prov = prods_prov.Where(x => ids_prods_prov.Contains(x.Id_Producto)).Select(x => x.Descripcion.Trim()).Distinct().ToArray();
+                    //string[] names_prec_prod_prov = usp.Where(x => !selectedIds.Contains(x.Id_REQHDR)).Select(x => x.Producto.Descripcion.Trim()).ToArray();
+                    rEQDETSProv = ids_prodsDesc_prov == null ? rEQDETSProv : rEQDETSProv.Where(x => ids_prodsDesc_prov.Contains(x.Descripcion.Trim())).ToList();
+                    foreach (var item in rEQDETSProv)
+                    {
+                        UsuariosProductos UsPs = new UsuariosProductos();
+                        UsPs.Id_Producto = prods_prov.FirstOrDefault(x => x.Descripcion.Trim() == item.Descripcion.Trim()).Id_Producto;
+                        UsPs.Id_Usuario = id;
+                        UsPs.Id_REQHDR = item.Id_REQHDR;
+                        UsPs.Precio = 0;
+                        UsPs.Cantidad_comprada = 0;
+                        UsPs.Fecha_Creacion = DateTime.Now;
+                        db.UsuariosProductos.Add(UsPs);
+                        db.SaveChanges();
+                        usuariosProductos.Add(UsPs);
+                    }
+                }
+                ids_proveedores = prods_prov.Select(x => x.Id_Proveedor).ToArray();
+            }
+            else {
+                ids_proveedores = db.UsuariosProductos.Where(x => selectedIds.Contains(x.Id_REQHDR) && ids_productos.Contains(x.Id_Producto)).Select(x => x.Id_Usuario).Distinct().ToArray();
+            }            
+            
+            List<UsuariosProductos> uspr = db.UsuariosProductos.Where(x => selectedIds.Contains(x.Id_REQHDR) && ids_productos.Contains(x.Id_Producto) && ids_proveedores.Contains(x.Id_Usuario)).OrderByDescending(x => x.Id_UsuarioProducto).ToList();
+            //List<UsuariosProductos> uspr = usp.Where(x => ids_productos.Contains(x.Id_Producto) && ids_proveedores.Contains(x.Id_Usuario)).OrderByDescending(x => x.Id_UsuarioProducto).ToList();
+            foreach (var r in uspr)
+            {
+                if (!usuariosProductos.Any(x => x.Id_Usuario == r.Id_Usuario && x.Id_Producto == r.Id_Producto && x.Id_REQHDR == r.Id_REQHDR))
+                {
+                    usuariosProductos.Add(r);
+                }
+            }
+
+            //Filtrar para saber cuales pertenecen al usuario Proveedor actual
+            string[] productsName = usuariosProductos.Select(x => x.Producto.Descripcion.Trim()).ToArray();
+            rEQDETs = rEQDETs.Where(x => productsName.Contains(x.Descripcion.Trim())).ToList();
+            // Crear un Tuple que contenga ambos modelos y la lista de embalajes
+            modelos = new Tuple<List<REQHDR>, List<REQDET>, List<UsuariosProductos>, List<CatalogoProducto>>(rEQHDRs, rEQDETs, usuariosProductos, catalogo);
+
+            return View(modelos);
+        }
+        public ActionResult Compra(string REQHDRS, DateTime date)
         {
             string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
             string sucursal = Session["Sucursal"] != null ? Session["Sucursal"].ToString() : "";
@@ -237,7 +355,7 @@ namespace Portal_FYV.Controllers
                 var ids_reqhdrs = REQHDRS.Split('-');
                 
                 ordenCompra_Web = ordenesCompra_Web
-                    .Where(x => x.REQHDRS.Split('-').Intersect(ids_reqhdrs).Any())
+                    .Where(x => x.REQHDRS.Split('-').Intersect(ids_reqhdrs).Any() && x.Fecha_creacion.ToString("M") == date.ToString("M"))
                     .ToList();
 
                 if (ordenCompra_Web != null)
@@ -620,7 +738,7 @@ namespace Portal_FYV.Controllers
                 .Split('-')  // Divide el string en subcadenas separadas por '-'
                 .Select(int.Parse)  // Convierte cada subcadena en un entero
                 .ToArray();  // Convierte el resultado en un arreglo
-            up = db.UsuariosProductos.FirstOrDefault(x => x.Producto.Descripcion == item.Producto && x.Usuario.Nombre == item.Proveedor && reqhdrs.Contains(x.Id_REQHDR));
+            up = db.UsuariosProductos.OrderByDescending(x => x.Id_UsuarioProducto).FirstOrDefault(x => x.Producto.Descripcion.Trim() == item.Producto.Trim() && x.Usuario.Nombre.Trim() == item.Proveedor.Trim() && reqhdrs.Contains(x.Id_REQHDR));
             if (up != null)
             {
                 return (Math.Round(Convert.ToDecimal(item.Cantidad_validada) * up.Precio, 4)).ToString("F4");
@@ -774,9 +892,18 @@ namespace Portal_FYV.Controllers
             {
                 Producto productoR = db.Productos.FirstOrDefault( x => x.Descripcion.Trim() == producto && x.Id_Proveedor == id);
                 List<UsuariosProductos> usuariosProductos = new List<UsuariosProductos>();
-                
+                List<REQDET> reqDETs = db.REQDETs.Where(x => ids_REQHDRS.Contains(x.Id_REQHDR) && x.Descripcion == producto).ToList();
+
+                /*
+                List<string> ids_reqhdrs = reqDETs.Select(x => x.Id_REQHDR.ToString()).ToList();
+                if (db.OrdenCompras_Web.Where(x => x.REQHDRS.Split('-').Intersect(ids_reqhdrs).Any()).Any())
+                {
+                    
+                }
+                */
+
                 bool check = true;
-                foreach (var item in db.REQDETs.Where(x => ids_REQHDRS.Contains(x.Id_REQHDR) && x.Descripcion == producto))
+                foreach (var item in reqDETs)
                 {
                     DateTime currentDate = DateTime.Now.Date; // Obtener la fecha actual sin la hora
                     DateTime fechaLimiteProveedor = Convert.ToDateTime(item.REQHDR.Fecha_lim_proveedor).Date; // Convertir la fecha límite del proveedor a DateTime sin la hora
@@ -820,18 +947,25 @@ namespace Portal_FYV.Controllers
 
         public ActionResult Consolidation(DateTime startDate, DateTime endDate)
         {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+
+            if (rol == "Eficiencia Operativa")
+            {
+                endDate = startDate;
+            }
             if (startDate == null || endDate == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             endDate = endDate.AddDays(1);
-            List<REQHDR> rEQHDRs = db.REQHDRs.Where(x => (x.Fecha_creacion >= startDate && x.Fecha_creacion < endDate) && (x.Estatus == 1)).ToList();
+
+            int[] EstatusIds = rol == "Eficiencia Operativa" ? new int[] { 1, 2 } : new int[] { 1, 2 };
+            List<REQHDR> rEQHDRs = db.REQHDRs.Where(x => x.Id_REQHDR_Parent == 0 && (x.Fecha_creacion >= startDate && x.Fecha_creacion < endDate) && EstatusIds.Contains(x.Estatus)).ToList();
             
             int[] req_Array = rEQHDRs.Select(x => x.Id_REQHDR).ToArray();
             
             List<REQDET> rEQDETs = db.REQDETs.Where(x => req_Array.Contains(x.Id_REQHDR)).ToList();
-
-            if (rEQHDRs.Count() == 0 || rEQHDRs.Count() == rEQHDRs.Where(x => x.Estatus == 2).Count())
+            if (rEQHDRs.Count() == 0)
             {
                 return RedirectToAction("Error", "Home");
             }
@@ -849,7 +983,74 @@ namespace Portal_FYV.Controllers
 
             return View(modelos);
         }
-        
+        public ActionResult DuplicateREQHDR(string ids_REQHDRS)
+        {
+            try
+            {
+                string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+                int id = Convert.ToInt32(Session["Id_Usuario"]);
+                DateTime creacion = DateTime.Now;
+                List<REQHDR> hdrs = new List<REQHDR>();
+                foreach (int Id_REQHDR_Parent in ids_REQHDRS.Split('-').Select(x => Convert.ToInt32(x)))
+                {
+                    REQHDR tempReqHDR = db.REQHDRs.Find(Id_REQHDR_Parent);
+                    REQHDR reqHDR = new REQHDR();
+
+                    reqHDR.Estatus = 1;
+                    reqHDR.Fecha_creacion = creacion;
+                    reqHDR.Fecha_lim_proveedor = tempReqHDR.Fecha_lim_proveedor;
+                    reqHDR.Fecha_validacion = creacion;
+                    reqHDR.Id_Comprador = id;
+                    reqHDR.Id_Creador = tempReqHDR.Id_Creador;
+                    reqHDR.Id_REQHDR_Parent = Id_REQHDR_Parent;
+                    reqHDR.Id_Validador = tempReqHDR.Id_Validador;
+                    reqHDR.Sucursal = tempReqHDR.Sucursal;
+
+                    hdrs.Add(reqHDR);
+                }
+                db.REQHDRs.AddRange(hdrs);
+                db.SaveChanges();
+                return Json(new { Success = true, value = ids_REQHDRS, Message = "Nuevos REQHDRs para cotizar generados correctamente.", Message_data = "", Message_Classes = "success", Message_concat = false });
+            }
+            catch (Exception e)
+            {
+                return Json(new { Success = false, value = ids_REQHDRS, Message = "Hubo un error al procesar estos REQHDRs.\n" + e.Message.ToString(), Message_data = "", Message_Classes = "danger", Message_concat = false });
+            }
+        }
+
+        public ActionResult NewsConsolidations(string ids_REQHDRS)
+        {
+            string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+            int[] ids = ids_REQHDRS.Split('-').Select(x => Convert.ToInt32(x)).ToArray();
+            if (rol != "Admin" && rol != "Compras")
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            List<REQHDR> rEQHDRs = db.REQHDRs.Where(x => ids.Contains(x.Id_REQHDR)).ToList();
+
+            int[] req_Array = rEQHDRs.Select(x => x.Id_REQHDR).ToArray();
+
+            List<REQDET> rEQDETs = db.REQDETs.Where(x => ids.Contains(x.Id_REQHDR)).ToList();
+
+            if (rEQHDRs.Count() == 0)
+            {
+                return RedirectToAction("Error", "Home");
+            }
+
+            int id = Convert.ToInt32(Session["Id_Usuario"]);
+
+            Usuario usuario = db.Usuarios.Find(id);
+
+            var embalajes = db.Embalajes.ToList();
+
+            // Crear un Tuple que contenga ambos modelos y la lista de embalajes
+            var modelos = new Tuple<List<REQHDR>, List<REQDET>, Usuario, SelectList>(rEQHDRs, rEQDETs, usuario, new SelectList(embalajes, "Id_Embalaje", "Tipo_Embalaje"));
+
+            ViewBag.Title = "Consolidación de " + rEQHDRs.OrderByDescending(x => x.Fecha_creacion).FirstOrDefault().Fecha_creacion.ToString("t");
+
+            return View(modelos);
+        }
         [HttpPost]
         public ActionResult updateDates(List<REQHDR> REQHDRs)
         {
@@ -1108,7 +1309,6 @@ namespace Portal_FYV.Controllers
             base.Dispose(disposing);
         }
 
-
         public class resumenProveedor
         {
             public resumenProveedor()
@@ -1127,6 +1327,20 @@ namespace Portal_FYV.Controllers
             public decimal Cantidad_disponible { get; set; }
             public decimal Cantidad_solicitada { get; set; }
             public string Producto { get; set; }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> getOrderSearchListAPI(string urlAPI)
+        {
+            PublicController publicController = new PublicController();
+            var result = await publicController.ObtenerDatosDeAPI(urlAPI);
+
+            if (result is JsonResult jsonResult)
+            {
+                return Json(jsonResult.Data, JsonRequestBehavior.AllowGet);
+            }
+
+            return new HttpStatusCodeResult(500, "Error al obtener datos de la API desde PublicController.");
         }
     }
 }

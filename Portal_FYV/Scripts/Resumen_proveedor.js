@@ -7,7 +7,7 @@
         suma += parseFloat(precios[i].innerHTML)
     }
     console.log(suma)
-    document.querySelector('.total-suma') ? (document.querySelector('.total-suma').innerText = "$" + suma) : ""
+    document.querySelector('.total-suma') ? (document.querySelector('.total-suma').innerText = "$" + suma.toFixed(2)) : ""
 }
 
 if (document.querySelectorAll('.precio-ultimo')) {
@@ -40,9 +40,11 @@ function guardarPrecio(Id_REQDET, producto, Id_Usuario, e) {
             console.log('Datos enviados correctamente');
             console.log(response);
             toastFill(response)
-            tag.querySelector('span').innerText = precio.Precio;
+            if (response.Success) {
+                tag.querySelector('span').innerText = precio.Precio;
+                sumarPrecios()
+            }
 
-            sumarPrecios()
             // Esperar 1 segundo (1000 milisegundos) y luego mostrar el texto
             setTimeout(function () {
                 e.disabled = false;

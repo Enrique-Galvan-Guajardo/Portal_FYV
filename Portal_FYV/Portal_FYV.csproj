@@ -134,6 +134,7 @@
     <Compile Include="Controllers\EstatusController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
+    <Compile Include="Controllers\PublicController.cs" />
     <Compile Include="Controllers\REQDETsController.cs" />
     <Compile Include="Controllers\REQHDRsController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
@@ -2268,6 +2269,7 @@
     <Content Include="Content\bootstrap-icons\README.md" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\Consolidation.js" />
+    <Content Include="Scripts\documentsOrders.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
     <Content Include="Scripts\jquery-3.7.1.slim.js" />
@@ -2354,10 +2356,13 @@
     <Content Include="Views\Embalajes\Edit.cshtml" />
     <Content Include="Views\Embalajes\Index.cshtml" />
     <Content Include="Views\Home\Error.cshtml" />
+    <Content Include="Views\REQHDRs\NewsConsolidations.cshtml" />
+    <Content Include="Views\REQHDRs\NewsResumenes.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\media\product_images\" />
+    <Folder Include="Views\Public\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

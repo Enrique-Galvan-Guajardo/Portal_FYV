@@ -1,11 +1,18 @@
 ﻿@model Tuple<List<Portal_FYV.Models.REQHDR>, List<Portal_FYV.Models.REQDET>, Portal_FYV.Models.Usuario, SelectList>
 @{
+    string rol = Session["Rol"] != null ? Session["Rol"].ToString() : "";
+    int id = Convert.ToInt32(Session["Id_Usuario"]);
     List<SelectListItem> opciones = new List<SelectListItem>();
 
+    List<Portal_FYV.Models.REQDET> rEQDETs = Model.Item2.ToList();
+    if (rol == "Compras")
+    {
+        rEQDETs = rEQDETs.Where(x => x.Id_Creator == id || x.Id_Creator == 0).ToList();
+    }
     foreach (var reqhdr in Model.Item1)
     {
         // Personaliza el texto que se mostrará en cada opción
-        string textoOpcion = $"{reqhdr.Sucursal} - {reqhdr.Fecha_creacion.ToString("M")} ( {String.Join(", ", Model.Item2.Where(x => x.Id_REQHDR == reqhdr.Id_REQHDR).Select(x => x.Clave_articulo).ToArray())} )";
+        string textoOpcion = $"{reqhdr.Sucursal} - {reqhdr.Fecha_creacion.ToString("M")} ( {String.Join(", ", rEQDETs.Where(x => x.Id_REQHDR == reqhdr.Id_REQHDR).Select(x => x.Clave_articulo).ToArray())} )";
 
         // Crea un objeto SelectListItem con el valor y el texto personalizado
         SelectListItem opcion = new SelectListItem
@@ -23,16 +30,23 @@
     DateTime dateTime = DateTime.Now.AddDays(1);
 }
 
-<div class="bg-white validar-consolidacion datasets" data-sucursal="@Session["Sucursal"]" data-fru="@Model.Item3.permitir_Fru" data-sec="@Model.Item3.permitir_Sec" data-veg="@Model.Item3.permitir_Veg">
-    <div class="col-12 col-sm-12 col-md-12 row m-0 p-3 bg-light bg-gradient shadow-sm mb-5 border-end border-start border-5 border-primary rounded">
+<div class="bg-white validar-consolidacion datasets col-12 col-sm-10 col-md-10 mx-auto my-5 p-4 rounded border border-3" data-sucursal="@Session["Sucursal"]" data-fru="@Model.Item3.permitir_Fru" data-sec="@Model.Item3.permitir_Sec" data-veg="@Model.Item3.permitir_Veg">
+    <div class="col-12 col-sm-12 col-md-12 row m-0 p-3 bg-light bg-gradient shadow-sm mb-5 border-end border-start border-5 border-primary rounded row-gap-4">
         <div class="form-group col-12 col-sm-12 d-flex flex-wrap">
             <h2 class="text-primary fw-bold">Información de solicitud.</h2>
             <input type="hidden" name="Id_REQHDRs" id="Id_REQHDRs" value="@String.Join(",", Model.Item1.Select(x => x.Id_REQHDR).ToArray())" />
-
-            <div class="d-flex ms-auto gap-3">
-                <button class="btn btn-success btn-lg ms-auto" type="button" onclick="saveREQHDRS(1)"><i class="bi bi-check-circle me-2"></i>Validar</button>
-                <button class="btn btn-secondary btn-lg ms-2" type="button" onclick="saveREQHDRS(0)"><i class="bi bi-x-circle me-2"></i>Cancelar</button>
-            </div>
+            @{
+                if (Model.Item1.Count() != Model.Item1.Where(x => x.Estatus == 2).Count())
+                {
+                    if (rol != "Eficiencia Operativa")
+                    {
+                        <div class="d-flex ms-auto gap-3">
+                            <button class="btn btn-success btn-lg ms-auto" type="button" onclick="saveREQHDRS(1)"><i class="bi bi-check-circle me-2"></i>Validar</button>
+                            <button class="btn btn-secondary btn-lg ms-2" type="button" onclick="saveREQHDRS(0)"><i class="bi bi-x-circle me-2"></i>Cancelar</button>
+                        </div>
+                    }
+                }
+            }
         </div>
 
         <div class="form-group col-12 col-sm-6">
@@ -54,7 +68,7 @@
             <label class="control-label col-md-12 fw-bold m-0">Total validado:</label>
             <div class="col-md-10">
                 <div class="total-sum">
-                    @Math.Round(Convert.ToDecimal(Model.Item2.Select(x => x.Cantidad_validada).Sum()), 2)
+                    @Math.Round(Convert.ToDecimal(rEQDETs.Select(x => x.Cantidad_validada).Sum()), 2)
                 </div>
             </div>
         </div>
@@ -63,63 +77,118 @@
             <label class="control-label col-md-12 fw-bold m-0">Sucursales:</label>
             <div class="col-md-10">
                 <div>
-                    @foreach (var sucursal in Model.Item1.Select(x => x.Sucursal).Distinct())
+                    @if (rol != "Eficiencia Operativa")
                     {
-                        
-                        <details>
-                            <summary>
-                                @if (sucursal == "JUA")
-                                {
-                                <span class="badge rounded-pill text-bg-primary p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
 
-                                }
-                                else if (sucursal == "GUA")
-                                {
-                                <span class="badge rounded-pill text-bg-secondary p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                                }
-                                else if (sucursal == "OFE")
-                                {
-                                <span class="badge rounded-pill text-bg-success p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                                }
-                                else if (sucursal == "BAL")
-                                {
-                                <span class="badge rounded-pill text-bg-danger p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                                }
-                                else if (sucursal == "GTO")
-                                {
-                                <span class="badge rounded-pill text-bg-warning p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                                }
-                                else if (sucursal == "CDI")
-                                {
-                                <span class="badge rounded-pill text-bg-info p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                                }
-                                else if (sucursal == "JAR")
-                                {
-                                <span class="badge rounded-pill text-bg-light p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                                }
-                                else if (sucursal == "AMG")
-                                {
-                                <span class="badge rounded-pill text-bg-dark p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
-                                }
-                                Fecha límite para proveedor:
-                            </summary>
-                            <div class="col-md-10">
-                                <div>
-                                    Capturar antes de @(Convert.ToDateTime(Model.Item1.Where(x => x.Sucursal == sucursal && x.Estatus != 0).Select(x => x.Fecha_lim_proveedor).FirstOrDefault()).ToString("D")) <br />
+                        foreach (var sucursal in Model.Item1.Select(x => x.Sucursal).Distinct())
+                        {
+
+                            <details>
+                                <summary>
+                                    @if (sucursal == "JUA")
+                                    {
+                                        <span class="badge rounded-pill text-bg-primary p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+
+                                    }
+                                    else if (sucursal == "GUA")
+                                    {
+                                        <span class="badge rounded-pill text-bg-secondary p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                    }
+                                    else if (sucursal == "OFE")
+                                    {
+                                        <span class="badge rounded-pill text-bg-success p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                    }
+                                    else if (sucursal == "BAL")
+                                    {
+                                        <span class="badge rounded-pill text-bg-danger p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                    }
+                                    else if (sucursal == "GTO")
+                                    {
+                                        <span class="badge rounded-pill text-bg-warning p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                    }
+                                    else if (sucursal == "CDI")
+                                    {
+                                        <span class="badge rounded-pill text-bg-info p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                    }
+                                    else if (sucursal == "JAR")
+                                    {
+                                        <span class="badge rounded-pill text-bg-light p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                    }
+                                    else if (sucursal == "AMG")
+                                    {
+                                        <span class="badge rounded-pill text-bg-dark p-2 m-1">@sucursal - @(Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 0 ? "Cancelado" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 1 ? "Pendiente" : (Model.Item1.FirstOrDefault(x => x.Sucursal == sucursal).Estatus == 2 ? "Aprobado" : "")))</span>
+                                    }
+                                    Fecha límite para proveedor:
+                                </summary>
+                                <div class="col-md-10">
+                                    <div>
+                                        Capturar antes de @(Convert.ToDateTime(Model.Item1.Where(x => x.Sucursal == sucursal && x.Estatus != 0).Select(x => x.Fecha_lim_proveedor).FirstOrDefault()).ToString("D")) <br />
+                                    </div>
                                 </div>
-                            </div>
-                        </details>
+                            </details>
+                        }
+                    }
+                    else
+                    {
+                        <select class="form-select w-auto" onchange="filterProductBySucursal(this.value)">
+                            <option value="Todos">Todos</option>
+                            @foreach (var sucursal in Model.Item1.Select(x => x.Sucursal).Distinct())
+                            {
+                                <option value="@sucursal">@sucursal</option>
+                            }
+                        </select>
                     }
                 </div>
             </div>
         </div>
-
-        <div class="form-group col-12 col-sm-6">
-            <label class="control-label col-md-12 fw-bold m-0">Establecer fecha límite:</label>
-            <div class="col-md-10">
-                <button class="btn btn-sm btn-primary my-3" data-bs-toggle="modal" data-bs-target="#FechasModal">Mostrar</button>
+        @if (rol != "Eficiencia Operativa")
+        {
+            <div class="form-group col-12 col-sm-6">
+                <label class="control-label col-md-12 fw-bold m-0">Establecer fecha límite:</label>
+                <div class="col-md-10">
+                    <button class="btn btn-sm btn-primary my-3" data-bs-toggle="modal" data-bs-target="#FechasModal">Mostrar</button>
+                </div>
             </div>
-        </div>
+        }
+
+        @if (rol == "Compras" || rol == "Admin" || rol == "Admin+")
+        {
+            <div class="form-group col-12 col-sm-6">
+                <label class="control-label col-md-12 fw-bold m-0">Opciones:</label>
+                <div class="col-md-10">
+                    <button class="btn btn-sm btn-primary my-3" onclick="duplicateREQHDR('@String.Join("-", Model.Item1.Select(x => x.Id_REQHDR).ToArray())', this)">Cotización nueva</button>
+                </div>
+            </div>
+            <script>
+                function duplicateREQHDR(ids_REQHDRS, button) {
+                    // Deshabilitar el botón
+                    button.disabled = true;
+                    button.innerText = 'Procesando';
+                    // Enviar el arreglo de objetos al controlador utilizando AJAX
+                    $.ajax({
+                        url: '/REQHDRs/DuplicateREQHDR',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ ids_REQHDRS }),
+                        success: function (response) {
+                            // Manejar la respuesta del servidor si es necesario
+                            console.log('Datos enviados correctamente');
+                            console.log(response);
+                            toastFill(response)
+                            // Rehabilitar el botón después de 3 segundos
+                            setTimeout(function () {
+                                button.disabled = false;
+                                button.innerText = 'Cotización nueva';
+                            }, 3000);
+                        },
+                        error: function (xhr, status, error) {
+                            // Manejar errores si ocurrieron durante la solicitud AJAX
+                            console.error('Error al enviar datos:', error);
+                        }
+                    });
+                }
+            </script>
+        }
     </div>
 
     <div class="table-responsive rounded rounded-2 border">
@@ -141,75 +210,82 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var item in Model.Item2.Select(x => x.Descripcion).Distinct())
+                @foreach (var item in rEQDETs.Select(x => x.Descripcion).Distinct())
                 {
-                    int[] itemsREQHDR = Model.Item2.Where(x => x.Descripcion == item).Select(x => x.Id_REQHDR).ToArray();
-                    decimal? total = Model.Item2.Where(x => x.Descripcion == item).Select(x => x.Cantidad_validada).Sum();
+                    int[] itemsREQHDR = rEQDETs.Where(x => x.Descripcion == item).Select(x => x.Id_REQHDR).ToArray();
+                    decimal? total = rEQDETs.Where(x => x.Descripcion == item).Select(x => x.Cantidad_validada).Sum();
                     string[] sucursales = Model.Item1.Where(x => itemsREQHDR.Contains(x.Id_REQHDR)).Select(x => x.Sucursal).ToArray();
                     string info;
-                    int Id_REQDET = Model.Item2.FirstOrDefault(x => x.Descripcion == item).Id_REQDET;
+                    int Id_REQDET = rEQDETs.FirstOrDefault(x => x.Descripcion == item).Id_REQDET;
 
-                    <tr class="py-3" id="tr_@String.Join("_", Model.Item2.Where(x => x.Descripcion == item).Select(x => x.Id_REQDET).ToArray())">
+                    <tr class="py-3 " id="tr_@String.Join("_", rEQDETs.Where(x => x.Descripcion == item).Select(x => x.Id_REQDET).ToArray())">
                         <td>
                             <div class="my-0">
-                                @Html.DisplayFor(modelItem => Model.Item2.FirstOrDefault(x => x.Descripcion == item).Clave_articulo)
+                                @Html.DisplayFor(modelItem => rEQDETs.FirstOrDefault(x => x.Descripcion == item).Clave_articulo)
                             </div>
                         </td>
 
                         <td>
                             <div class="my-0">
-                                <div class="accordion accordion-flush" id="accordionFlush-@Id_REQDET">
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-@Id_REQDET" aria-expanded="false" aria-controls="flush-@Model.Item2.FirstOrDefault(x => x.Descripcion == item).Id_REQDET">
-                                                @Html.DisplayFor(model => item)
-                                            </button>
-                                        </h2>
+                                @if (rol == "Eficiencia Operativa")
+                                {
+                                    <p>@Html.DisplayFor(model => item)</p>
+                                }
+                                else
+                                {
+                                    <div class="accordion accordion-flush" id="accordionFlush-@Id_REQDET">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-@Id_REQDET" aria-expanded="false" aria-controls="flush-@rEQDETs.FirstOrDefault(x => x.Descripcion == item).Id_REQDET">
+                                                    @Html.DisplayFor(model => item)
+                                                </button>
+                                            </h2>
+                                        </div>
                                     </div>
-                                </div>
-                                <div id="flush-@Id_REQDET" class="accordion-collapse collapse" data-bs-parent="#accordionFlush-@Id_REQDET">
-                                    <div class="accordion-body">
-                                        <div class="p-2 bg-light">
-                                            <div class="d-flex flex-column gap-4 m-1">
-                                                @foreach (var sucursal in sucursales.Distinct())
-                                                {
-                                                    decimal? cantidadValidada = Math.Round(Convert.ToDecimal(Model.Item2.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Cantidad_validada), 2);
-                                                    int? id_EmbalajeValidado = Convert.ToInt32(Model.Item2.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Id_Embalaje_validado);
-                                                    int id_rd = Convert.ToInt32(Model.Item2.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Id_REQDET);
-                                                    <div class="d-flex my-1">
-                                                        <div class="d-flex gap-4">
-                                                            <b>@sucursal:</b>
-                                                            <div class="d-flex flex-column gap-3">
-                                                                <span class="embalaje_@id_rd">&nbsp;@Model.Item2.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Embalaje.Tipo_Embalaje</span>
-                                                                @Html.DropDownListFor(model => id_EmbalajeValidado, Model.Item4.Select(x => new SelectListItem
-                                                                {
-                                                                    Text = x.Text,
-                                                                    Value = x.Value,
-                                                                    Selected = x.Value == (id_EmbalajeValidado == 0 ? 0 : id_EmbalajeValidado).ToString() // Aquí se compara el valor con id_EmbalajeValidado
-                                                                }), "Seleccione un tipo de embalaje", new { @class = "form-control", @id = "id_EmbalajeValidado_" + id_rd })
+                                    <div id="flush-@Id_REQDET" class="accordion-collapse collapse" data-bs-parent="#accordionFlush-@Id_REQDET">
+                                        <div class="accordion-body">
+                                            <div class="p-2 bg-light">
+                                                <div class="d-flex flex-column gap-4 m-1">
+                                                    @foreach (var sucursal in sucursales.Distinct())
+                                                    {
+                                                        decimal? cantidadValidada = Math.Round(Convert.ToDecimal(rEQDETs.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Cantidad_validada), 2);
+                                                        int? id_EmbalajeValidado = Convert.ToInt32(rEQDETs.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Id_Embalaje_validado);
+                                                        int id_rd = Convert.ToInt32(rEQDETs.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Id_REQDET);
+                                                        <div class="d-flex my-1">
+                                                            <div class="d-flex gap-4">
+                                                                <b>@sucursal:</b>
+                                                                <div class="d-flex flex-column gap-3">
+                                                                    <span class="embalaje_@id_rd">&nbsp;@rEQDETs.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Embalaje.Tipo_Embalaje</span>
+                                                                    @Html.DropDownListFor(model => id_EmbalajeValidado, Model.Item4.Select(x => new SelectListItem
+                                                                    {
+                                                                        Text = x.Text,
+                                                                        Value = x.Value,
+                                                                        Selected = x.Value == (id_EmbalajeValidado == 0 ? 0 : id_EmbalajeValidado).ToString() // Aquí se compara el valor con id_EmbalajeValidado
+                                                                    }), "Seleccione un tipo de embalaje", new { @class = "form-control", @id = "id_EmbalajeValidado_" + id_rd })
+                                                                </div>
+                                                                <div class="d-flex flex-column gap-3">
+                                                                    <span class="cantidad_@id_rd">&nbsp;@(cantidadValidada != null ? cantidadValidada : 0)</span>
+                                                                    <input type="number" min="0" class="form-control text-box single-line" name="cantidad_Validada" id="cantidad_Validada_@id_rd" value="@(cantidadValidada != null ? cantidadValidada : 0)" />
+                                                                </div>
                                                             </div>
-                                                            <div class="d-flex flex-column gap-3">
-                                                                <span class="cantidad_@id_rd">&nbsp;@(cantidadValidada != null ? cantidadValidada : 0)</span>
-                                                                <input type="number" min="0" class="form-control text-box single-line" name="cantidad_Validada" id="cantidad_Validada_@id_rd" value="@(cantidadValidada != null ? cantidadValidada : 0)" />
-                                                            </div>
-                                                        </div>
-                                                        <div class="ms-auto d-flex gap-2">
-                                                            <div>
-                                                                <button class="btn btn-sm btn-primary rounded-1 m-0 w-auto" type="button" onclick="confirmEdit(@id_rd, this)"><i class="bi bi-pencil"></i></button>
-                                                            </div>
-                                                            <div>
-                                                                <div class="m-0 w-auto">
-                                                                    <button class="btn btn-sm btn-danger rounded-1 w-auto" type="button" onclick="deleteREQDET(@id_rd, this, '@sucursal')"><i class="bi bi-trash"></i></button>
+                                                            <div class="ms-auto d-flex gap-2">
+                                                                <div>
+                                                                    <button class="btn btn-sm btn-primary rounded-1 m-0 w-auto" type="button" onclick="confirmEdit(@id_rd, this)"><i class="bi bi-pencil"></i></button>
+                                                                </div>
+                                                                <div>
+                                                                    <div class="m-0 w-auto">
+                                                                        <button class="btn btn-sm btn-danger rounded-1 w-auto" type="button" onclick="deleteREQDET(@id_rd, this, '@sucursal')"><i class="bi bi-trash"></i></button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                }
+                                                    }
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
+                                }
                             </div>
                         </td>
 
@@ -217,9 +293,9 @@
                             <div class="my-0">
                                 @foreach (var sucursal in sucursales.Distinct())
                                 {
-                                    decimal? cantidadValidada = Math.Round(Convert.ToDecimal(Model.Item2.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Cantidad_validada), 2);
+                                    decimal? cantidadValidada = Math.Round(Convert.ToDecimal(rEQDETs.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Cantidad_validada), 2);
                                     info = sucursal + " - " + (cantidadValidada != null ? cantidadValidada : 0);
-                                    int id_rd = Convert.ToInt32(Model.Item2.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Id_REQDET);
+                                    int id_rd = Convert.ToInt32(rEQDETs.FirstOrDefault(x => x.Descripcion == item && x.REQHDR.Sucursal == sucursal).Id_REQDET);
 
                                     if (sucursal == "JUA")
                                     {
@@ -269,10 +345,17 @@
         </table>
     </div>
 
-    <div class="d-grid gap-2 my-3 col-6 mx-auto">
-        <button class="btn btn-primary btn-lg" data-bs-target="#agregarProducto" data-bs-toggle="modal" type="button" onclick="showProducts()"><i class="bi bi-plus-square-dotted me-2"></i>Añadir nuevo registro</button>
-    </div>
-
+    @{
+        if (Model.Item1.Count() != Model.Item1.Where(x => x.Estatus == 2).Count())
+        {
+            if (rol != "Eficiencia Operativa")
+            {
+                <div class="d-grid gap-2 my-3 col-6 mx-auto">
+                    <button class="btn btn-primary btn-lg" data-bs-target="#agregarProducto" data-bs-toggle="modal" type="button" onclick="showProducts()"><i class="bi bi-plus-square-dotted me-2"></i>Añadir nuevo registro</button>
+                </div>
+            }
+        }
+    }
 </div>
 
 <div class="modal fade" id="agregarProducto" aria-hidden="true" aria-labelledby="agregarProductoLabel" tabindex="-1">

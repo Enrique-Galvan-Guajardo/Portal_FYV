@@ -9,6 +9,9 @@ namespace Portal_FYV.Models
     [Table("REQDET")]
     public partial class REQDET
     {
+        public REQDET() {
+            Id_Creator = 0;
+        }
         [Key]
         public int Id_REQDET { get; set; }
 
@@ -54,5 +57,6 @@ namespace Portal_FYV.Models
 
         public virtual REQHDR REQHDR { get; set; }
 
+        public int Id_Creator { get; set; }
     }
 }

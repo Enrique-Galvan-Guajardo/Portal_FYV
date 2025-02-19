@@ -36,6 +36,7 @@ namespace Portal_FYV.Controllers
             {
                 Usuario usuario = db.Usuarios.FirstOrDefault(x => (x.Username == user_session || x.Correo == user_session) && x.Contrasena == user_password);
                 
+                Session["Nombre"] = usuario.Nombre;
                 Session["Id_Usuario"] = usuario.Id_Usuario;
                 Session["Sucursal"] = usuario.Sucursal;
                 Session["Rol"] = usuario.Roles.Rol;

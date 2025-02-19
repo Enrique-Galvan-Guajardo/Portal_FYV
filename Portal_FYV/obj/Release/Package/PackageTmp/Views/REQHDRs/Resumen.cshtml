@@ -38,7 +38,7 @@
     /* 
     */
 }
-<div class="bg-white productos-consolidacion">
+<div class="bg-white productos-consolidacion col-12 col-sm-10 col-md-10 mx-auto my-5 p-4 rounded border border-3">
     <div class="col-12 col-sm-12 col-md-12 row m-0 p-3 bg-light bg-gradient shadow-sm mb-5 border-end border-start border-5 border-primary rounded">
         <div class="form-group col-12 col-sm-12 d-flex flex-wrap">
             <h2 class="text-primary fw-bold">Productos solicitados.</h2>
@@ -618,14 +618,16 @@
 
     function calcularTotal() {
         let precioProveedor = document.querySelectorAll('td.td-precio-proveedor')
-        let suma = 0;
-        precioProveedor.forEach(function (td) {
-            let precioUltimo = parseFloat(td.querySelector('span.precio-ultimo').innerText)
-            let solicitado = parseFloat(td.querySelector('span.solicitado').innerText)
-            suma += precioUltimo * solicitado;
-        });
+        if (precioProveedor.length > 0) {
+            let suma = 0;
+            precioProveedor.forEach(function (td) {
+                let precioUltimo = parseFloat(td.querySelector('span.precio-ultimo').innerText)
+                let solicitado = parseFloat(td.querySelector('span.solicitado').innerText)
+                suma += precioUltimo * solicitado;
+            });
 
-        document.querySelector('.total-suma').innerHTML = suma.toFixed(2);
+            document.querySelector('.total-suma').innerHTML = suma.toFixed(2);
+        }
     }
 
     document.getElementById('searchItem').addEventListener('input', function () {

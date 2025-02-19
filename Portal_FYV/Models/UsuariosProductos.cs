@@ -12,6 +12,7 @@ namespace Portal_FYV.Models
         public UsuariosProductos() {
             Id_REQHDR = 0;
             Cantidad_comprada = 0;
+            Fecha_Creacion = DateTime.Now;
         }
         [Key]
         public int Id_UsuarioProducto { get; set; }
@@ -27,5 +28,7 @@ namespace Portal_FYV.Models
         public virtual Producto Producto { get; set; }
 
         public virtual Usuario Usuario { get; set; }
+
+        public DateTime Fecha_Creacion { get; set; }
     }
 }

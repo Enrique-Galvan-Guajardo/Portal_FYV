@@ -67,7 +67,8 @@ namespace Portal_FYV.Controllers
 
                         break;
                     case "Proveedores":
-                        
+                    case "Eficiencia Operativa":
+
                         rEQHDRs = db.REQHDRs.Where(r => r.Fecha_creacion >= fechaInicioMes && r.Fecha_creacion <= fechaFinMes && r.Estatus == 2).ToList();
                         //rEQHDRs = db.REQHDRs.Where(r => r.Estatus == 2).ToList();
                         ids_reqhdrs = rEQHDRs.Select(r => r.Id_REQHDR).ToArray();
@@ -114,5 +115,12 @@ namespace Portal_FYV.Controllers
 
             return View();
         }
+
+        public ActionResult RenovarSesion()
+        {
+            Session["KeepAlive"] = DateTime.Now;
+            return new HttpStatusCodeResult(200);
+        }
+
     }
 }

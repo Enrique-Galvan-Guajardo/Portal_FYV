@@ -15,10 +15,29 @@
     int[] productosIds = new int[0];
     IEnumerable<Portal_FYV.Models.UsuariosProductos> precios = new List<Portal_FYV.Models.UsuariosProductos>();
     List<Portal_FYV.Models.UsuariosProductos> uspr = new List<Portal_FYV.Models.UsuariosProductos>();
+
+    // Definir las variables para las fechas
+    DateTime fechaInicio;
+    DateTime fechaFin;
+
+    // Verificar el rol del usuario
+    if (rol == "Compras")
+    {
+        // Si el usuario es de Compras, establecer el rango de los últimos 7 días
+        fechaInicio = DateTime.Now.AddDays(-6).Date; // 7 días atrás
+        fechaFin = DateTime.Now.AddDays(1).Date; // Hoy
+    }
+    else
+    {
+        // Para otros roles, usar el rango de inicio y fin del mes actual
+        fechaInicio = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1); // Inicio del mes
+        fechaFin = fechaInicio.AddMonths(1); // Fin del mes
+    }
+
     // Obtener la fecha de inicio y fin del mes actual
-    DateTime fechaInicioMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    //DateTime fechaInicioMes = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
     //DateTime fechaFinMes = fechaInicioMes.AddMonths(1).AddDays(-1);
-    DateTime fechaFinMes = fechaInicioMes.AddMonths(1);
+    //DateTime fechaFinMes = fechaInicioMes.AddMonths(1);
     // Consultar la cantidad de registros en el rango de fechas del mes actual
     //ViewBag.totalRegistrosFiltrados = db.REQHDRs.Where(r => r.Fecha_creacion >= fechaInicioMes && r.Fecha_creacion <= fechaFinMes);
     // Convertir a lista
@@ -27,10 +46,11 @@
 
 }
 <script src="~/Scripts/RegionsController.js"></script>
+<script src="~/Scripts/documentsOrders.js"></script>
 
 @if (Session["Id_Usuario"] == null)
 {
-    <div class="card my-5 shadow-lg">
+    <div class="card my-5 shadow-lg col-12 col-sm-10 col-md-10 mx-auto my-5 rounded border border-3">
         <div class="card-header">
             <div class="nav nav-tabs card-header-tabs" id="nav-tab" role="tablist">
                 <button class="nav-link active" id="nav-login-tab" data-bs-toggle="tab" data-bs-target="#nav-login" type="button" role="tab" aria-controls="nav-login" aria-selected="true"><i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión</button>
@@ -134,7 +154,16 @@
                                     </div>
                                     <div class="mb-3 col-12 col-sm-6">
                                         <label for="Colonia" class="form-label">Colonia</label>
-                                        <select id="Colonia" name="Colonia" class="form-select" required>
+                                        <select id="Colonia" name="Co
+
+
+
+
+
+
+
+
+                                                         lonia" class="form-select" required>
                                             <option>Selecciona</option>
                                         </select>
                                     </div>
@@ -227,12 +256,8 @@
                         </div>
                         <button type="submit" class="btn btn-primary">Crear</button>
                     }
-
-
-
                 </div>
             </div>
-
         </div>
     </div>
 }
@@ -242,7 +267,7 @@ else
     //Cualquiera excepto Proveedores
     if (rol != "Proveedores")
     {
-        <div class="card my-5 shadow-lg">
+        <div class="card my-5 shadow-lg col-12 col-sm-10 col-md-10 mx-auto my-5 rounded border border-3">
             <div class="card-header">
                 <h2 class="my-3">Búsqueda de solicitudes por fechas</h2>
             </div>
@@ -288,22 +313,59 @@ else
                                     <div class="accordion-body">
                                         <div class="list-group">
                                             @{
-                                                var solicitudes = rEQHDRs.OrderByDescending(x => x.Fecha_creacion).Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == DateTime.Now.ToString("d")).Select(x => Convert.ToDateTime(x.Fecha_creacion).ToString("D")).Distinct();
-                                                if (solicitudes.Count() > 0)
+
+                                                List<Portal_FYV.Models.REQHDR> solicitudes = rEQHDRs.OrderByDescending(x => x.Fecha_creacion).Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == DateTime.Now.ToString("d")).ToList();
+                                                var fechas = solicitudes.Where(x => x.Id_REQHDR_Parent == 0).Select(x => Convert.ToDateTime(x.Fecha_creacion).ToString("D")).Distinct();
+
+                                                if (fechas.Count() > 0)
                                                 {
 
-                                                    foreach (var item in solicitudes)
+                                                    foreach (var item in fechas)
                                                     {
                                                         DateTime fechaval = Convert.ToDateTime(item);
                                                         string fechaEncoded = HttpUtility.UrlEncode(fechaval.ToString("yyyy-MM-dd"));
-                                                        int todayCount = rEQHDRs.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == fechaval.ToString("d")).Count();
-                                                        int todayCountTrue = rEQHDRs.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == fechaval.ToString("d") && x.Estatus == 2).Count();
-                                                        <a @if (todayCount == todayCountTrue) { <text> href="#" </text>  } else { <text> href="/REQHDRs/Consolidation/?startDate=@fechaEncoded&endDate=@fechaEncoded" </text>  }
-                                                           class="list-group-item list-group-item-action" aria-current="true">
-                                                            <b class="@(todayCount == todayCountTrue ? "text-success" : "text-primary") text-opacity-75">@todayCount solicitudes en @fechaval.ToString("D", new System.Globalization.CultureInfo("es-ES"))</b>
-                                                            <br />
-                                                            <small class="text-muted">Aprobados: @todayCountTrue</small>
-                                                        </a>
+                                                        int todayCount = rEQHDRs.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == fechaval.ToString("d") && x.Id_REQHDR_Parent == 0).Count();
+                                                        int todayCountTrue = rEQHDRs.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == fechaval.ToString("d") && x.Estatus == 2 && x.Id_REQHDR_Parent == 0).Count();
+
+                                                        string link = "/REQHDRs/Consolidation/?startDate=" + fechaEncoded + "&endDate=" + fechaEncoded;
+
+                                                        /*
+                                                        string link = todayCount == todayCountTrue ? "#" : "/REQHDRs/Consolidation/?startDate=" + fechaEncoded + "&endDate=" + fechaEncoded;
+                                                        */
+                                                        if (rol == "Eficiencia Operativa")
+                                                        {
+                                                            link = "/REQHDRs/Consolidation/?startDate=" + fechaEncoded + "&endDate=" + fechaEncoded;
+                                                        }
+                                                        <div class="list-group-item list-group-item-action">
+                                                            <a href="@link" class="text-decoration-none" aria-current="true">
+                                                                <b class="@(todayCount == todayCountTrue ? "text-success" : "text-primary") text-opacity-75">@todayCount solicitudes en @fechaval.ToString("D", new System.Globalization.CultureInfo("es-ES"))</b>
+                                                                <br />
+                                                                <small class="text-muted">Aprobados: @todayCountTrue</small>
+                                                            </a>
+                                                            @if (solicitudes.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == fechaval.ToString("d") && x.Id_REQHDR_Parent != 0).Any() && rol == "Compras")
+                                                            {
+                                                                <details>
+                                                                    <summary><small class="text-muted">Nuevas cotizaciones</small></summary>
+                                                                    <ul>
+                                                                        @{
+                                                                            List<Portal_FYV.Models.REQHDR> nuevas_solicitudes = solicitudes.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == fechaval.ToString("d") && x.Id_REQHDR_Parent != 0).ToList();
+                                                                            var nuevas_fechas = nuevas_solicitudes.Select(x => Convert.ToDateTime(x.Fecha_creacion).ToString("t")).Distinct();
+
+                                                                            foreach (var nueva in nuevas_fechas)
+                                                                            {
+                                                                                <li>
+                                                                                    <a href="/REQHDRs/NewsConsolidations/?ids_REQHDRS=@String.Join("-", nuevas_solicitudes.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == fechaval.ToString("d") && Convert.ToDateTime(x.Fecha_creacion).ToString("t") == nueva).Select(x => x.Id_REQHDR).ToArray())" class="text-decoration-none" aria-current="true">
+                                                                                        <small>
+                                                                                            <b class="text-primary text-opacity-75">Nuevas solicitudes creadas a las @nueva</b>
+                                                                                        </small>
+                                                                                    </a>
+                                                                                </li>
+                                                                            }
+                                                                        }
+                                                                    </ul>
+                                                                </details>
+                                                            }
+                                                        </div>
                                                         if (todayCount != todayCountTrue)
                                                         {
                                                         }
@@ -340,6 +402,8 @@ else
                                                 {
                                                     foreach (var dia in ordenes_dias)
                                                     {
+                                                        DateTime fechaval = Convert.ToDateTime(dia);
+                                                        string fechaEncoded = HttpUtility.UrlEncode(fechaval.ToString("yyyy-MM-dd"));
                                                         var arr_reqhdrs_dia = ordenes.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == dia).Select(x => x.REQHDRS).ToArray();
                                                         var arr_reqhdrs_dia_ind = ordenes
                                                         .Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == dia)
@@ -348,7 +412,7 @@ else
                                                         .OrderByDescending(x => x)
                                                         .ToList();
                                                         <div class="list-group-item list-group-item-action">
-                                                            <a href="@Url.Action("Compra", "REQHDRs", new { REQHDRS = String.Join("-", arr_reqhdrs_dia_ind) })" class="text-decoration-none" aria-current="true">
+                                                            <a href="@Url.Action("Compra", "REQHDRs", new { REQHDRS = String.Join("-", arr_reqhdrs_dia_ind), date = fechaEncoded })" class="text-decoration-none" aria-current="true">
                                                                 <b class="text-primary text-opacity-75">@arr_reqhdrs_dia.Count() orden en @Convert.ToDateTime(dia).ToString("D", new System.Globalization.CultureInfo("es-ES"))</b>
                                                             </a>
                                                             <details>
@@ -359,12 +423,12 @@ else
                                                                     <div class="col-12 col-sm-12 col-md-6 my-3">
                                                                         <div class="col-12">
                                                                             <ul class="m-0 text-dark">
-                                                                            @foreach (var proveedor in ordenCompras.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == dia).Select(x => x.Proveedor).OrderBy(x => x))
-                                                                            {
-                                                                                <li>
-                                                                                    @proveedor
-                                                                                </li>
-                                                                            }
+                                                                                @foreach (var proveedor in ordenCompras.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == dia).Select(x => x.Proveedor).OrderBy(x => x).Distinct())
+                                                                                {
+                                                                                    <li>
+                                                                                        @proveedor
+                                                                                    </li>
+                                                                                }
                                                                             </ul>
                                                                         </div>
                                                                     </div>
@@ -394,6 +458,7 @@ else
         </div>
     }
 
+
     <ul class="d-none">
         @foreach (var item in rEQHDRs)
         {
@@ -403,7 +468,7 @@ else
 
 
     //Todos
-    <div class="card my-5 shadow-lg">
+    <div class="card my-5 shadow-lg col-12 col-sm-10 col-md-10 mx-auto my-5 rounded border border-3">
         <div class="card-header">
             <h2 class="my-3">Solicitudes disponibles</h2>
         </div>
@@ -439,7 +504,7 @@ else
                             break;
                     }
 
-                    List<Portal_FYV.Models.REQHDR> rEQHDRs_Mes = rEQHDRs.Where(r => r.Fecha_creacion >= fechaInicioMes && r.Fecha_creacion <= fechaFinMes).ToList();
+                    List<Portal_FYV.Models.REQHDR> rEQHDRs_Mes = rol == "Eficiencia Operativa" ? new List<Portal_FYV.Models.REQHDR>() : rEQHDRs.Where(r => r.Fecha_creacion >= fechaInicio && r.Fecha_creacion <= fechaFin).ToList();
                 }
                 <div class="accordion accordion-flush" id="accordionFlushExample">
                     <div class="accordion-item">
@@ -450,7 +515,8 @@ else
                         </h2>
                         <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">
-                                @using (Html.BeginForm("Resumen", "REQHDRs", FormMethod.Post, null)) { 
+                                @using (Html.BeginForm("Resumen", "REQHDRs", FormMethod.Post, null))
+                                {
                                     <div class="row mx-0 justify-content-center">
                                         <div class="col-12 col-sm-12 col-md-4">
                                             <label class="form-label">Fecha deseada:</label>
@@ -468,76 +534,107 @@ else
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                                Ordenes activas este mes (@(rEQHDRs_Mes.Count()))
+                                @(rol == "Compras" ? "Ordenes activas los últimos 7 días" : "Ordenes activas este mes" ) (@(rEQHDRs_Mes.Count()))
                             </button>
                         </h2>
                         <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
                             <div class="accordion-body">
                                 <div class="list-group">
-                                    @foreach (var fecha in rEQHDRs_Mes.OrderByDescending(x => x.Fecha_validacion).Select(x => x.Fecha_validacion.ToString("d")).Distinct())
-                                    {
-                                        string fechaEncoded = HttpUtility.UrlEncode(Convert.ToDateTime(fecha).ToString("yyyy-MM-dd"));
+                                    @{
+                                        List<Portal_FYV.Models.REQHDR> ordenes_mes = rEQHDRs_Mes.OrderByDescending(x => x.Fecha_validacion).ToList();
 
-                                        <div class="list-group-item list-group-item-action">
-                                            <div>
-                                                <a class="text-decoration-none" href="/REQHDRs/Resumen/?searchDate=@fechaEncoded">
-                                                    <b class="text-primary text-opacity-75">Solicitudes aprobadas en @Convert.ToDateTime(fecha).ToString("D", new System.Globalization.CultureInfo("es-ES"))</b>
-                                                </a>
-                                                <details>
-                                                    <summary class="text-muted">
-                                                        Información individual
-                                                    </summary>
-                                                    <div class="row mx-0">
-                                                        @foreach (var item in rEQHDRs.Where(x => x.Fecha_validacion.ToString("D") == Convert.ToDateTime(fecha).ToString("D")))
+                                        foreach (var fecha in ordenes_mes.Select(x => x.Fecha_validacion.ToString("d")).Distinct())
+                                        {
+                                            string fechaEncoded = HttpUtility.UrlEncode(Convert.ToDateTime(fecha).ToString("yyyy-MM-dd"));
+
+                                            <div class="list-group-item list-group-item-action">
+                                                <div>
+                                                    <a class="text-decoration-none" href="/REQHDRs/Resumen/?searchDate=@fechaEncoded">
+                                                        <b class="text-primary text-opacity-75">Solicitudes aprobadas en @Convert.ToDateTime(fecha).ToString("D", new System.Globalization.CultureInfo("es-ES"))</b>
+                                                    </a>
+                                                    <div class="d-flex">
+                                                        @if (ordenes_mes.Where(x => Convert.ToDateTime(x.Fecha_validacion).ToString("d") == fecha && x.Id_REQHDR_Parent != 0).Any())
                                                         {
-                                                            <div class="col-12 col-sm-12 col-md-6 my-3">
-                                                                <div class="col-12 fs-5 fw-medium mb-3">
-                                                                    <mark>
-                                                                        Solicitud <span class="text-primary">@item.Id_REQHDR</span>
-                                                                    </mark>
-                                                                </div>
-                                                                @switch (rol)
-                                                                {
-                                                                    case "Admin+":
-                                                                    case "Admin":
-                                                                    case "Compras":
-                                                                        decimal costoTotal = 0;
-                                                                        foreach (var calpre in uspr.Where(x => x.Id_REQHDR == item.Id_REQHDR).ToList())
-                                                                        {
-                                                                            costoTotal += Convert.ToDecimal(calpre.Precio * calpre.Cantidad_comprada);
-                                                                        }
+                                                            <details class="col-12 col-md-6">
+                                                                <summary><small class="text-muted">Nuevas cotizaciones</small></summary>
+                                                                <ul>
+                                                                    @{
+                                                                        List<Portal_FYV.Models.REQHDR> nuevas_ordenes_mes = ordenes_mes.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == fecha && x.Id_REQHDR_Parent != 0).ToList();
+                                                                        var nuevas_fechas = nuevas_ordenes_mes.Select(x => Convert.ToDateTime(x.Fecha_creacion).ToString("t")).Distinct();
 
-                                                                        <div class="col-12">
-                                                                            Productos: <span class="text-primary">@rEQDETs.Where(x => x.Id_REQHDR == item.Id_REQHDR).Count()</span>
+                                                                        foreach (var nueva in nuevas_fechas)
+                                                                        {
+                                                                            <li>
+                                                                                <a href="/REQHDRs/NewsResumenes/?ids_REQHDRS=@String.Join("-", nuevas_ordenes_mes.Where(x => Convert.ToDateTime(x.Fecha_creacion).ToString("d") == fecha && Convert.ToDateTime(x.Fecha_creacion).ToString("t") == nueva).Select(x => x.Id_REQHDR).ToArray())" class="text-decoration-none" aria-current="true">
+                                                                                    <small>
+                                                                                        <b class="text-primary text-opacity-75">Nuevas solicitudes creadas a las @nueva</b>
+                                                                                    </small>
+                                                                                </a>
+                                                                            </li>
+                                                                        }
+                                                                    }
+                                                                </ul>
+                                                            </details>
+                                                        }
+                                                        <details class="col-12 col-md-6">
+                                                            <summary class="text-muted" onclick='searchOrders(@(id), this)'>
+                                                                Información individual
+                                                            </summary>
+                                                            <div class="row mx-0">
+                                                                @foreach (var item in rEQHDRs.Where(x => x.Fecha_validacion.ToString("D") == Convert.ToDateTime(fecha).ToString("D")))
+                                                                {
+                                                                    <div class="col-12 col-sm-12 col-md-6 my-3 parentDiv">
+                                                                        <div class="col-12 fs-5 fw-medium mb-3">
+                                                                            <mark>
+                                                                                Solicitud <span class="text-primary">@item.Id_REQHDR</span>
+                                                                            </mark>
                                                                         </div>
-                                                                        <div class="col-12">
-                                                                            Costo total: <span class="text-success text-opacity-75 fw-medium">$@Math.Round(costoTotal, 3)</span>
+                                                                        <div class="d-flex flex-wrap my-3 gap-3 justify-content-around downloadBtns">
                                                                         </div>
-                                                                        <div class="col-12 d-none">
-                                                                            Proveedores disponibles: <span class="text-primary">@productos.Where(x => rEQDETsdescripciones.Contains(x.Descripcion)).Select(x => x.Id_Proveedor).Distinct().Count()</span>
-                                                                        </div>
-                                                                        <div class="col-12">
-                                                                            Productos con precio:
-                                                                            <span class="text-muted">@precios.Where(x => x.Id_REQHDR == item.Id_REQHDR && productosIds.Contains(x.Id_Producto) && x.Precio > 0).Select(x => x.Id_Producto).Distinct().Count()</span> /
-                                                                            <span class="text-primary">@rEQDETs.Where(x => x.Id_REQHDR == item.Id_REQHDR && x.Cantidad_validada > 0).Select(x => x.Descripcion).Distinct().Count()</span>
-                                                                        </div>
-                                                                        break;
-                                                                    case "Proveedores":
-                                                                        <div class="col-12">
-                                                                            Productos con precio:
-                                                                            <span class="text-muted">@precios.Where(x => x.Id_REQHDR == item.Id_REQHDR && productosIds.Contains(x.Id_Producto) && x.Precio > 0).Select(x => x.Id_Producto).Distinct().Count()</span> /
-                                                                            <span class="text-primary">@rEQDETs.Where(x => x.Id_REQHDR == item.Id_REQHDR && productosDescripciones.Contains(x.Descripcion) && x.Cantidad_validada > 0).Select(x => x.Descripcion).Distinct().Count()</span>
-                                                                        </div>
-                                                                        break;
-                                                                    default:
-                                                                        break;
+                                                                        @switch (rol)
+                                                                        {
+                                                                            case "Admin+":
+                                                                            case "Admin":
+                                                                            case "Compras":
+                                                                                decimal costoTotal = 0;
+                                                                                foreach (var calpre in uspr.Where(x => x.Id_REQHDR == item.Id_REQHDR).ToList())
+                                                                                {
+                                                                                    costoTotal += Convert.ToDecimal(calpre.Precio * calpre.Cantidad_comprada);
+                                                                                }
+
+                                                                                <div class="col-12">
+                                                                                    Productos: <span class="text-primary">@rEQDETs.Where(x => x.Id_REQHDR == item.Id_REQHDR).Count()</span>
+                                                                                </div>
+                                                                                <div class="col-12">
+                                                                                    Costo total: <span class="text-success text-opacity-75 fw-medium">$@Math.Round(costoTotal, 3)</span>
+                                                                                </div>
+                                                                                <div class="col-12 d-none">
+                                                                                    Proveedores disponibles: <span class="text-primary">@productos.Where(x => rEQDETsdescripciones.Contains(x.Descripcion)).Select(x => x.Id_Proveedor).Distinct().Count()</span>
+                                                                                </div>
+                                                                                <div class="col-12">
+                                                                                    Productos con precio:
+                                                                                    <span class="text-muted">@precios.Where(x => x.Id_REQHDR == item.Id_REQHDR && productosIds.Contains(x.Id_Producto) && x.Precio > 0).Select(x => x.Id_Producto).Distinct().Count()</span> /
+                                                                                    <span class="text-primary">@rEQDETs.Where(x => x.Id_REQHDR == item.Id_REQHDR && x.Cantidad_validada > 0).Select(x => x.Descripcion).Distinct().Count()</span>
+                                                                                </div>
+                                                                                break;
+                                                                            case "Proveedores":
+                                                                                <div class="col-12">
+                                                                                    Productos con precio:
+                                                                                    <span class="text-muted">@precios.Where(x => x.Id_REQHDR == item.Id_REQHDR && productosIds.Contains(x.Id_Producto) && x.Precio > 0).Select(x => x.Id_Producto).Distinct().Count()</span> /
+                                                                                    <span class="text-primary">@rEQDETs.Where(x => x.Id_REQHDR == item.Id_REQHDR && productosDescripciones.Contains(x.Descripcion) && x.Cantidad_validada > 0).Select(x => x.Descripcion).Distinct().Count()</span>
+                                                                                </div>
+                                                                                break;
+                                                                            default:
+                                                                                break;
+                                                                        }
+                                                                    </div>
                                                                 }
                                                             </div>
-                                                        }
+                                                        </details>
                                                     </div>
-                                                </details>
+                                                </div>
                                             </div>
-                                        </div>
+                                        }
                                     }
                                 </div>
                             </div>
@@ -545,10 +642,11 @@ else
                     </div>
                     @if (rol != "Proveedores" && (rol == "Admin+" || rol == "Admin"))
                     {
+                        rEQHDRs = rEQHDRs.Take(10);
                         <div class="accordion-item">
                             <h2 class="accordion-header">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-                                    Historial (@rEQHDRs.Count())
+                                    Historial (Últimos @rEQHDRs.Count())
                                 </button>
                             </h2>
                             <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">

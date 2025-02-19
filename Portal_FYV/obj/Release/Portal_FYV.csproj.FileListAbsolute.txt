@@ -85,6 +85,6 @@ C:\Users\Sistemas11-PC\source\repos\Portal_FYV\Portal_FYV\bin\es\System.Web.WebP
 C:\Users\Sistemas11-PC\source\repos\Portal_FYV\Portal_FYV\bin\es\System.Web.WebPages.Razor.resources.dll
 C:\Users\Sistemas11-PC\source\repos\Portal_FYV\Portal_FYV\obj\Release\Portal_FYV.csproj.AssemblyReference.cache
 C:\Users\Sistemas11-PC\source\repos\Portal_FYV\Portal_FYV\obj\Release\Portal_FYV.csproj.CoreCompileInputs.cache
-C:\Users\Sistemas11-PC\source\repos\Portal_FYV\Portal_FYV\obj\Release\Portal_FYV.csproj.CopyComplete
 C:\Users\Sistemas11-PC\source\repos\Portal_FYV\Portal_FYV\obj\Release\Portal_FYV.dll
 C:\Users\Sistemas11-PC\source\repos\Portal_FYV\Portal_FYV\obj\Release\Portal_FYV.pdb
+C:\Users\Sistemas11-PC\source\repos\Portal_FYV\Portal_FYV\obj\Release\Portal_FYV.csproj.Up2Date

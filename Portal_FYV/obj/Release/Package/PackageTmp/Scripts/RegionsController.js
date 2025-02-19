@@ -35,27 +35,29 @@ function imprimirEnListaDesplegable(data, id_element) {
     // Obtiene el elemento select
     let selectElement = document.getElementById(id_element);
 
-    // Limpia el select
-    selectElement.innerHTML = '';
+    if (selectElement) {
+        // Limpia el select
+        selectElement.innerHTML = '';
 
-    // Crea y agrega opciones al select
-    items.forEach(function (item) {
-        let option = document.createElement('option');
-        if (selectElement.id == "Estado") {
-            option.value = item.c_Estado;
-            option.textContent = item.Descripcion;
-        } else if (selectElement.id == "Municipio") {
-            option.value = item.c_Municipio;
-            option.textContent = item.Descripcion;
-        } else if (selectElement.id == "Colonia") {
-            option.value = item.c_Colonia;
-            option.textContent = item.Asentamiento;
-        } else if (selectElement.id == "Localidad") {
-            option.value = item.c_localidad;
-            option.textContent = item.Descripcion;
-        }
-        selectElement.appendChild(option);
-    });
+        // Crea y agrega opciones al select
+        items.forEach(function (item) {
+            let option = document.createElement('option');
+            if (selectElement.id == "Estado") {
+                option.value = item.c_Estado;
+                option.textContent = item.Descripcion;
+            } else if (selectElement.id == "Municipio") {
+                option.value = item.c_Municipio;
+                option.textContent = item.Descripcion;
+            } else if (selectElement.id == "Colonia") {
+                option.value = item.c_Colonia;
+                option.textContent = item.Asentamiento;
+            } else if (selectElement.id == "Localidad") {
+                option.value = item.c_localidad;
+                option.textContent = item.Descripcion;
+            }
+            selectElement.appendChild(option);
+        });
+    }
 }
 
 function addEvents(arr_element) {
